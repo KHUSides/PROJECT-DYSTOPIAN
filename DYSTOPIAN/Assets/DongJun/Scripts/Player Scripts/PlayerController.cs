@@ -48,13 +48,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float airDashFloatDuration = 0.18f;
     [SerializeField] private float airDashGravityMultiplier = 0.35f;
     [SerializeField] private float maxFallSpeedAfterAirDash = -2f;
-    [SerializeField] private BoxCollider chargedAttackRangeCollider;
+    [SerializeField] private Collider chargedAttackRangeCollider;
     [SerializeField] private float chargedAttackColliderActiveDuration = 0.25f;
-    [SerializeField] private float chargedAttackRangeColliderWidth = 1.2f;
-    [SerializeField] private bool showChargedAttackRangeDebug = true;
-    [SerializeField] private Color chargedAttackRangeDebugColor = new Color(0.1f, 0.7f, 1f, 1f);
-    [SerializeField] private float chargedAttackRangeDebugLineWidth = 0.06f;
-    [SerializeField] private float chargedAttackRangeDebugZOffset = 0.6f;
+    [SerializeField] private float chargedAttackRangeWidth = 1.2f;
+    [SerializeField] private bool showChargedAttackColliderDebug = true;
+    [SerializeField] private Color chargedAttackColliderDebugColor = new Color(0.2f, 0.8f, 1f, 1f);
+    [SerializeField] private float chargedAttackColliderDebugLineWidth = 0.05f;
 
     private float airDashFloatTimer;
 
@@ -79,11 +78,12 @@ public class PlayerController : MonoBehaviour
     private LineRenderer normalAttackDebugRight;
     private LineRenderer normalAttackDebugUp;
     private LineRenderer normalAttackDebugDown;
+    private LineRenderer chargedAttackDebugLine;
+    private Vector3 chargedAttackRangeLocalPositionOffset;
+    private Vector3 chargedAttackRangeColliderCenterOffset;
 
     private bool isCharging;
     private float chargeTimer;
-    private LineRenderer chargedAttackRangeDebugLine;
-    private float chargedAttackColliderDisableTime = -999f;
 
 private void Awake()
     {
@@ -94,10 +94,12 @@ private void Awake()
 
         ResolveNormalAttackColliders();
         ResolveNormalAttackColliderDebugVisuals();
-        ResolveChargedAttackRangeCollider();
-        ResolveChargedAttackRangeDebugVisual();
+        ResolveChargedAttackColliderDebugVisual();
+        CacheChargedAttackRangeOffsets();
         SetNormalAttackCollidersEnabled(false);
-        SetChargedAttackRangeColliderEnabled(false);
+ResolveChargedAttackColliderDebugVisual();
+        SetNormalAttackCollidersEnabled(false);
+        SetChargedAttackPreviewEnabled(false);
 
         LockSidePlane();
     }
@@ -107,14 +109,13 @@ private void Update()
         UpdateChargeTimer();
 
         UpdateFacingDirectionFromArrowKeys();
-        UpdateChargedAttackRangeDebugVisual();
 
         HandleArrowKeyMovement();
         HandleJumpInput();
         HandleNormalAttackInput();
         UpdateNormalAttackColliderState();
-        UpdateChargedAttackColliderState();
         HandleChargeAttackInput();
+        UpdateChargedAttackPreview();
 
         ApplyMovement();
 
@@ -539,11 +540,10 @@ private void ResolveNormalAttackColliderDebugVisuals()
     }
 
 
-private void OnDisable()
+    private void OnDisable()
     {
         SetNormalAttackCollidersEnabled(false);
-        SetChargedAttackRangeDebugEnabled(false);
-        SetChargedAttackRangeColliderEnabled(false);
+        SetChargedAttackPreviewEnabled(false);
         activeNormalAttackCollider = null;
     }
 
@@ -575,26 +575,24 @@ private void OnDisable()
         }
     }
 
-private void StartCharging()
+    private void StartCharging()
     {
         if (isCharging)
             return;
 
         isCharging = true;
         chargeTimer = 0f;
-        UpdateChargedAttackRangeDebugVisual();
 
         Debug.Log("[AnimLog] Charge Start");
     }
 
-private void ReleaseChargedAttack()
+    private void ReleaseChargedAttack()
     {
         if (!isCharging)
             return;
 
-        SetChargedAttackRangeDebugEnabled(false);
-        SetChargedAttackRangeColliderEnabled(false);
         isCharging = false;
+        SetChargedAttackPreviewEnabled(false);
 
         if (requireGroundedForChargeAttack && !controller.isGrounded)
         {
@@ -602,6 +600,8 @@ private void ReleaseChargedAttack()
             return;
         }
 
+        // D를 뗀 바로 그 순간, 현재 입력 중인 방향키 조합을 다시 읽는다.
+        // 입력이 있다면 그 방향으로 갱신하고, 입력이 없다면 마지막으로 바라보던 방향을 사용한다.
         Vector2 releaseDirectionInput = GetArrowAimDirection();
 
         if (releaseDirectionInput != Vector2.zero)
@@ -618,16 +618,18 @@ private void ReleaseChargedAttack()
 
         float chargeRate = Mathf.Clamp01(chargeTimer / maxChargeTime);
         float requestedDashDistance = Mathf.Lerp(dashMinDistance, dashMaxDistance, chargeRate);
+
         float safeDashDistance = GetSafeDashDistance(dashDirection, requestedDashDistance);
 
         bool wasAirborneBeforeDash = !controller.isGrounded;
-        Vector3 dashStartPosition = transform.TransformPoint(controller.center);
-        dashStartPosition.z = lockedZ;
+        Vector3 attackStartPosition = transform.position;
 
         controller.Move(dashDirection * safeDashDistance);
 
-        ActivateChargedAttackColliderAlongDashPath(dashStartPosition, dashDirection, safeDashDistance);
+        Vector3 attackEndPosition = transform.position;
+        CreateChargedAttackHitbox(attackStartPosition, attackEndPosition, dashDirection);
 
+        // 공중 대시, 위 대시, 대각선 위 대시 이후에 낙하가 너무 빠른 문제를 완화한다.
         if (wasAirborneBeforeDash || dashDirection.y > 0.01f)
         {
             ApplyAirDashFallCorrection(dashDirection);
@@ -642,6 +644,169 @@ private void ReleaseChargedAttack()
 
         chargeTimer = 0f;
     }
+
+    private void ResolveChargedAttackColliderDebugVisual()
+    {
+        if (attackColliderRoot == null)
+            attackColliderRoot = transform.Find("AttackColliders");
+
+        if (chargedAttackRangeCollider == null)
+        {
+            Transform searchRoot = attackColliderRoot != null ? attackColliderRoot : transform;
+            Transform found = searchRoot.Find("ChargedAttackRangeCollider");
+
+            if (found != null)
+                chargedAttackRangeCollider = found.GetComponent<Collider>();
+        }
+
+        if (chargedAttackRangeCollider == null)
+        {
+            GameObject colliderObject = new GameObject("ChargedAttackRangeCollider");
+            colliderObject.transform.SetParent(attackColliderRoot != null ? attackColliderRoot : transform, false);
+            chargedAttackRangeCollider = colliderObject.AddComponent<BoxCollider>();
+        }
+
+        chargedAttackRangeCollider.isTrigger = true;
+        chargedAttackRangeCollider.enabled = false;
+        chargedAttackDebugLine = CreateChargedAttackDebugVisual(chargedAttackRangeCollider, chargedAttackDebugLine, false);
+    }
+
+    private void CacheChargedAttackRangeOffsets()
+    {
+        chargedAttackRangeLocalPositionOffset = Vector3.zero;
+        chargedAttackRangeColliderCenterOffset = Vector3.zero;
+
+        if (chargedAttackRangeCollider == null)
+            return;
+
+        chargedAttackRangeLocalPositionOffset = chargedAttackRangeCollider.transform.localPosition;
+
+        BoxCollider boxCollider = chargedAttackRangeCollider as BoxCollider;
+
+        if (boxCollider != null)
+            chargedAttackRangeColliderCenterOffset = boxCollider.center;
+    }
+
+
+    private LineRenderer CreateChargedAttackDebugVisual(Collider targetCollider, LineRenderer existingLine, bool worldSpace)
+    {
+        if (targetCollider == null)
+            return existingLine;
+
+        if (existingLine == null)
+            existingLine = targetCollider.GetComponent<LineRenderer>();
+
+        if (existingLine == null)
+            existingLine = targetCollider.gameObject.AddComponent<LineRenderer>();
+
+        existingLine.useWorldSpace = worldSpace;
+        existingLine.loop = true;
+        existingLine.positionCount = 4;
+        existingLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        existingLine.receiveShadows = false;
+
+        if (existingLine.sharedMaterial == null)
+            existingLine.material = new Material(Shader.Find("Sprites/Default"));
+
+        existingLine.enabled = false;
+        return existingLine;
+    }
+
+    private void UpdateChargedAttackPreview()
+    {
+        if (!isCharging)
+            return;
+
+        ResolveChargedAttackColliderDebugVisual();
+
+        Vector3 dashDirection = new Vector3(facingDirection.x, facingDirection.y, 0f).normalized;
+        float chargeRate = Mathf.Clamp01(chargeTimer / maxChargeTime);
+        float requestedDashDistance = Mathf.Lerp(dashMinDistance, dashMaxDistance, chargeRate);
+        float safeDashDistance = GetSafeDashDistance(dashDirection, requestedDashDistance);
+
+        UpdateChargedAttackColliderShape(chargedAttackRangeCollider, transform.position, transform.position + dashDirection * safeDashDistance, dashDirection);
+        UpdateChargedAttackDebugVisual(chargedAttackRangeCollider, chargedAttackDebugLine);
+        SetChargedAttackPreviewEnabled(true);
+    }
+
+    private void SetChargedAttackPreviewEnabled(bool enabled)
+    {
+        if (chargedAttackRangeCollider != null)
+            chargedAttackRangeCollider.enabled = false;
+
+        if (chargedAttackDebugLine != null)
+            chargedAttackDebugLine.enabled = showChargedAttackColliderDebug && enabled;
+    }
+
+    private void CreateChargedAttackHitbox(Vector3 startPosition, Vector3 endPosition, Vector3 dashDirection)
+    {
+        ResolveChargedAttackColliderDebugVisual();
+
+        GameObject hitboxObject = new GameObject("ChargedAttackHitbox_Runtime");
+        hitboxObject.layer = chargedAttackRangeCollider != null ? chargedAttackRangeCollider.gameObject.layer : gameObject.layer;
+
+        BoxCollider hitboxCollider = hitboxObject.AddComponent<BoxCollider>();
+        hitboxCollider.isTrigger = true;
+        hitboxCollider.enabled = true;
+
+        LineRenderer hitboxLine = CreateChargedAttackDebugVisual(hitboxCollider, null, false);
+
+        UpdateChargedAttackColliderShape(hitboxCollider, startPosition, endPosition, dashDirection);
+        UpdateChargedAttackDebugVisual(hitboxCollider, hitboxLine);
+        hitboxLine.enabled = showChargedAttackColliderDebug;
+
+        Destroy(hitboxObject, Mathf.Max(0.01f, chargedAttackColliderActiveDuration));
+    }
+
+    private void UpdateChargedAttackColliderShape(Collider targetCollider, Vector3 startPosition, Vector3 endPosition, Vector3 dashDirection)
+    {
+        BoxCollider boxCollider = targetCollider as BoxCollider;
+
+        if (boxCollider == null)
+            return;
+
+        Vector3 path = endPosition - startPosition;
+        float pathLength = Mathf.Max(0.01f, path.magnitude);
+        Vector3 direction = dashDirection.sqrMagnitude > 0.0001f ? dashDirection.normalized : Vector3.right;
+        Vector3 localOffset = targetCollider == chargedAttackRangeCollider
+            ? chargedAttackRangeLocalPositionOffset + chargedAttackRangeColliderCenterOffset
+            : chargedAttackRangeLocalPositionOffset + chargedAttackRangeColliderCenterOffset;
+        Vector3 worldOffset = transform.TransformVector(localOffset);
+        Vector3 center = startPosition + direction * (pathLength * 0.5f) + worldOffset;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        boxCollider.transform.position = center;
+        boxCollider.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        boxCollider.transform.localScale = Vector3.one;
+        boxCollider.center = Vector3.zero;
+        boxCollider.size = new Vector3(pathLength, chargedAttackRangeWidth, 1f);
+    }
+
+    private void UpdateChargedAttackDebugVisual(Collider targetCollider, LineRenderer lineRenderer)
+    {
+        if (targetCollider == null || lineRenderer == null)
+            return;
+
+        BoxCollider boxCollider = targetCollider as BoxCollider;
+
+        if (boxCollider == null)
+            return;
+
+        Vector3 center = boxCollider.center;
+        Vector3 halfSize = boxCollider.size * 0.5f;
+        float debugZ = center.z - halfSize.z - 0.01f;
+
+        lineRenderer.SetPosition(0, new Vector3(center.x - halfSize.x, center.y - halfSize.y, debugZ));
+        lineRenderer.SetPosition(1, new Vector3(center.x - halfSize.x, center.y + halfSize.y, debugZ));
+        lineRenderer.SetPosition(2, new Vector3(center.x + halfSize.x, center.y + halfSize.y, debugZ));
+        lineRenderer.SetPosition(3, new Vector3(center.x + halfSize.x, center.y - halfSize.y, debugZ));
+
+        lineRenderer.startColor = chargedAttackColliderDebugColor;
+        lineRenderer.endColor = chargedAttackColliderDebugColor;
+        lineRenderer.startWidth = chargedAttackColliderDebugLineWidth;
+        lineRenderer.endWidth = chargedAttackColliderDebugLineWidth;
+    }
+
     private void ApplyAirDashFallCorrection(Vector3 dashDirection)
     {
         airDashFloatTimer = airDashFloatDuration;
@@ -802,267 +967,5 @@ private void ReleaseChargedAttack()
             return "Down";
 
         return "None";
-    }
-
-
-private void ResolveChargedAttackRangeDebugVisual()
-    {
-        Transform existingChild = transform.Find("ChargedAttackRangeDebug");
-
-        if (existingChild != null && existingChild.TryGetComponent(out chargedAttackRangeDebugLine))
-        {
-            ConfigureChargedAttackRangeDebugLine();
-            chargedAttackRangeDebugLine.enabled = false;
-            return;
-        }
-
-        GameObject debugObject = new GameObject("ChargedAttackRangeDebug");
-        debugObject.transform.SetParent(transform, false);
-
-        chargedAttackRangeDebugLine = debugObject.AddComponent<LineRenderer>();
-        chargedAttackRangeDebugLine.useWorldSpace = true;
-        chargedAttackRangeDebugLine.loop = true;
-        chargedAttackRangeDebugLine.positionCount = 4;
-        chargedAttackRangeDebugLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        chargedAttackRangeDebugLine.receiveShadows = false;
-        chargedAttackRangeDebugLine.material = new Material(Shader.Find("Sprites/Default"));
-
-        ConfigureChargedAttackRangeDebugLine();
-        chargedAttackRangeDebugLine.enabled = false;
-    }
-
-    private void ConfigureChargedAttackRangeDebugLine()
-    {
-        if (chargedAttackRangeDebugLine == null)
-            return;
-
-        chargedAttackRangeDebugLine.startColor = chargedAttackRangeDebugColor;
-        chargedAttackRangeDebugLine.endColor = chargedAttackRangeDebugColor;
-        chargedAttackRangeDebugLine.startWidth = chargedAttackRangeDebugLineWidth;
-        chargedAttackRangeDebugLine.endWidth = chargedAttackRangeDebugLineWidth;
-    }
-
-private void PlaceChargedAttackColliderAlongDashPath(Vector3 dashStartPosition, Vector3 dashDirection, float safeDashDistance)
-    {
-        if (chargedAttackRangeCollider == null)
-            return;
-
-        float rangeLength = Mathf.Max(0.01f, safeDashDistance);
-        Vector3 center = dashStartPosition + dashDirection * (rangeLength * 0.5f);
-        center.z = lockedZ;
-
-        float angle = Mathf.Atan2(dashDirection.y, dashDirection.x) * Mathf.Rad2Deg;
-
-        chargedAttackRangeCollider.transform.position = center;
-        chargedAttackRangeCollider.transform.rotation = Quaternion.Euler(0f, 0f, angle);
-        chargedAttackRangeCollider.center = Vector3.zero;
-        chargedAttackRangeCollider.size = new Vector3(rangeLength, chargedAttackRangeColliderWidth, 1f);
-    }
-
-    private void UpdateChargedAttackDebugOutlineAlongDashPath(Vector3 dashStartPosition, Vector3 dashDirection, float safeDashDistance)
-    {
-        float rangeLength = Mathf.Max(0.01f, safeDashDistance);
-        Vector3 center = dashStartPosition + dashDirection * (rangeLength * 0.5f);
-        center.z = lockedZ - chargedAttackRangeDebugZOffset;
-
-        Vector3 sideDirection = new Vector3(-dashDirection.y, dashDirection.x, 0f).normalized;
-
-        SetChargedAttackDebugOutline(center, dashDirection, sideDirection, rangeLength);
-    }
-
-    private void SetChargedAttackDebugOutline(Vector3 center, Vector3 dashDirection, Vector3 sideDirection, float rangeLength)
-    {
-        if (chargedAttackRangeDebugLine == null)
-            return;
-
-        Vector3 halfForward = dashDirection.normalized * (rangeLength * 0.5f);
-        Vector3 halfSide = sideDirection.normalized * (chargedAttackRangeColliderWidth * 0.5f);
-
-        ConfigureChargedAttackRangeDebugLine();
-        chargedAttackRangeDebugLine.SetPosition(0, center - halfForward - halfSide);
-        chargedAttackRangeDebugLine.SetPosition(1, center - halfForward + halfSide);
-        chargedAttackRangeDebugLine.SetPosition(2, center + halfForward + halfSide);
-        chargedAttackRangeDebugLine.SetPosition(3, center + halfForward - halfSide);
-        SetChargedAttackRangeDebugEnabled(true);
-    }
-
-
-private void UpdateChargedAttackRangeCollider(Vector3 dashDirection, float safeDashDistance)
-    {
-        Vector3 start = transform.TransformPoint(controller.center);
-        start.z = lockedZ;
-
-        PlaceChargedAttackColliderAlongDashPath(start, dashDirection, safeDashDistance);
-    }
-
-private void UpdateChargedAttackRangeDebugOutline(Vector3 dashDirection, float safeDashDistance)
-    {
-        if (chargedAttackRangeDebugLine == null)
-            return;
-
-        if (!showChargedAttackRangeDebug)
-        {
-            SetChargedAttackRangeDebugEnabled(false);
-            return;
-        }
-
-        Vector3 start = transform.TransformPoint(controller.center);
-        start.z = lockedZ;
-
-        UpdateChargedAttackDebugOutlineAlongDashPath(start, dashDirection, safeDashDistance);
-    }
-
-private void UpdateChargedAttackColliderDebugOutlineAtCurrentPosition()
-    {
-        if (chargedAttackRangeCollider == null || chargedAttackRangeDebugLine == null)
-            return;
-
-        if (!showChargedAttackRangeDebug)
-        {
-            SetChargedAttackRangeDebugEnabled(false);
-            return;
-        }
-
-        Vector3 center = chargedAttackRangeCollider.transform.position;
-        Vector3 dashDirection = chargedAttackRangeCollider.transform.right;
-        Vector3 sideDirection = chargedAttackRangeCollider.transform.up;
-        float rangeLength = chargedAttackRangeCollider.size.x;
-
-        center.z = lockedZ - chargedAttackRangeDebugZOffset;
-
-        SetChargedAttackDebugOutline(center, dashDirection, sideDirection, rangeLength);
-    }
-
-
-
-private void UpdateChargedAttackRangeDebugVisual()
-    {
-        if (!isCharging)
-        {
-            if (chargedAttackRangeCollider == null || !chargedAttackRangeCollider.enabled)
-                SetChargedAttackRangeDebugEnabled(false);
-
-            return;
-        }
-
-        Vector3 dashDirection = GetCurrentDashDirection();
-        float chargeRate = Mathf.Clamp01(chargeTimer / maxChargeTime);
-        float requestedDashDistance = Mathf.Lerp(dashMinDistance, dashMaxDistance, chargeRate);
-        float safeDashDistance = GetSafeDashDistance(dashDirection, requestedDashDistance);
-
-        UpdateChargedAttackRangeCollider(dashDirection, safeDashDistance);
-        SetChargedAttackRangeColliderEnabled(false);
-        UpdateChargedAttackRangeDebugOutline(dashDirection, safeDashDistance);
-    }
-
-    private Vector3 GetCurrentDashDirection()
-    {
-        Vector2 inputDirection = GetArrowAimDirection();
-        Vector2 dashFacingDirection = inputDirection != Vector2.zero ? inputDirection.normalized : facingDirection;
-
-        return new Vector3(dashFacingDirection.x, dashFacingDirection.y, 0f).normalized;
-    }
-
-private void SetChargedAttackRangeDebugEnabled(bool enabled)
-    {
-        if (chargedAttackRangeDebugLine != null)
-            chargedAttackRangeDebugLine.enabled = showChargedAttackRangeDebug && enabled;
-    }
-
-    private void SetChargedAttackRangeColliderEnabled(bool enabled)
-    {
-        if (chargedAttackRangeCollider != null)
-            chargedAttackRangeCollider.enabled = enabled;
-    }
-
-
-private void ResolveChargedAttackRangeCollider()
-    {
-        if (chargedAttackRangeCollider == null)
-        {
-            Transform searchRoot = attackColliderRoot != null ? attackColliderRoot : transform;
-            Transform existingCollider = searchRoot.Find("ChargedAttackRangeCollider");
-
-            if (existingCollider == null)
-            {
-                GameObject colliderObject = new GameObject("ChargedAttackRangeCollider");
-                colliderObject.transform.SetParent(searchRoot, false);
-                existingCollider = colliderObject.transform;
-            }
-
-            if (!existingCollider.TryGetComponent(out chargedAttackRangeCollider))
-                chargedAttackRangeCollider = existingCollider.gameObject.AddComponent<BoxCollider>();
-        }
-
-        chargedAttackRangeCollider.isTrigger = true;
-        chargedAttackRangeCollider.center = Vector3.zero;
-        chargedAttackRangeCollider.size = new Vector3(0.01f, chargedAttackRangeColliderWidth, 1f);
-        chargedAttackRangeCollider.enabled = false;
-    }
-
-
-private void ActivateChargedAttackColliderAlongDashPath(Vector3 dashStartPosition, Vector3 dashDirection, float safeDashDistance)
-    {
-        if (chargedAttackRangeCollider == null)
-            return;
-
-        PlaceChargedAttackColliderAlongDashPath(dashStartPosition, dashDirection, safeDashDistance);
-        SpawnChargedAttackHitboxFromTemplate();
-
-        Debug.Log("[AnimLog] Charged Attack Collider Spawned");
-    }
-
-private void UpdateChargedAttackColliderState()
-    {
-        if (chargedAttackRangeCollider != null && chargedAttackRangeCollider.enabled)
-            SetChargedAttackRangeColliderEnabled(false);
-    }
-
-
-private void SpawnChargedAttackHitboxFromTemplate()
-    {
-        GameObject hitboxObject = new GameObject("ChargedAttackHitbox_Runtime");
-        hitboxObject.layer = chargedAttackRangeCollider.gameObject.layer;
-        hitboxObject.transform.position = chargedAttackRangeCollider.transform.position;
-        hitboxObject.transform.rotation = chargedAttackRangeCollider.transform.rotation;
-        hitboxObject.transform.localScale = chargedAttackRangeCollider.transform.lossyScale;
-
-        BoxCollider hitboxCollider = hitboxObject.AddComponent<BoxCollider>();
-        hitboxCollider.isTrigger = true;
-        hitboxCollider.center = chargedAttackRangeCollider.center;
-        hitboxCollider.size = chargedAttackRangeCollider.size;
-        hitboxCollider.enabled = true;
-
-        if (showChargedAttackRangeDebug)
-            CreateChargedAttackHitboxDebugVisual(hitboxObject.transform, hitboxCollider);
-
-        Destroy(hitboxObject, Mathf.Max(0.01f, chargedAttackColliderActiveDuration));
-    }
-
-    private void CreateChargedAttackHitboxDebugVisual(Transform parent, BoxCollider hitboxCollider)
-    {
-        GameObject debugObject = new GameObject("DebugVisibleBounds");
-        debugObject.transform.SetParent(parent, false);
-
-        LineRenderer lineRenderer = debugObject.AddComponent<LineRenderer>();
-        lineRenderer.useWorldSpace = false;
-        lineRenderer.loop = true;
-        lineRenderer.positionCount = 4;
-        lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        lineRenderer.receiveShadows = false;
-        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-        lineRenderer.startColor = chargedAttackRangeDebugColor;
-        lineRenderer.endColor = chargedAttackRangeDebugColor;
-        lineRenderer.startWidth = chargedAttackRangeDebugLineWidth;
-        lineRenderer.endWidth = chargedAttackRangeDebugLineWidth;
-
-        Vector3 center = hitboxCollider.center;
-        Vector3 halfSize = hitboxCollider.size * 0.5f;
-        float debugZ = center.z - halfSize.z - 0.01f;
-
-        lineRenderer.SetPosition(0, new Vector3(center.x - halfSize.x, center.y - halfSize.y, debugZ));
-        lineRenderer.SetPosition(1, new Vector3(center.x - halfSize.x, center.y + halfSize.y, debugZ));
-        lineRenderer.SetPosition(2, new Vector3(center.x + halfSize.x, center.y + halfSize.y, debugZ));
-        lineRenderer.SetPosition(3, new Vector3(center.x + halfSize.x, center.y - halfSize.y, debugZ));
     }
 }
