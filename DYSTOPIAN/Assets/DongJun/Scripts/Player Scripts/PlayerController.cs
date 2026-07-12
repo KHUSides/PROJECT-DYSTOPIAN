@@ -28,6 +28,15 @@ public class PlayerController : MonoBehaviour
 
     [Header("Normal Attack")]
     [SerializeField] private float normalAttackCooldown = 0.25f;
+    [SerializeField] private float normalAttackColliderActiveDuration = 0.25f;
+    [SerializeField] private Transform attackColliderRoot;
+    [SerializeField] private Collider normalAttackColliderLeft;
+    [SerializeField] private Collider normalAttackColliderRight;
+    [SerializeField] private Collider normalAttackColliderUp;
+    [SerializeField] private Collider normalAttackColliderDown;
+    [SerializeField] private bool showNormalAttackColliderDebug = true;
+    [SerializeField] private Color normalAttackColliderDebugColor = new Color(1f, 0.1f, 0.1f, 1f);
+    [SerializeField] private float normalAttackColliderDebugLineWidth = 0.04f;
 
     [Header("Charged Attack")]
     [SerializeField] private LayerMask dashObstacleMask;
@@ -39,6 +48,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float airDashFloatDuration = 0.18f;
     [SerializeField] private float airDashGravityMultiplier = 0.35f;
     [SerializeField] private float maxFallSpeedAfterAirDash = -2f;
+    [SerializeField] private BoxCollider chargedAttackRangeCollider;
+    [SerializeField] private float chargedAttackColliderActiveDuration = 0.25f;
+    [SerializeField] private float chargedAttackRangeColliderWidth = 1.2f;
+    [SerializeField] private bool showChargedAttackRangeDebug = true;
+    [SerializeField] private Color chargedAttackRangeDebugColor = new Color(0.1f, 0.7f, 1f, 1f);
+    [SerializeField] private float chargedAttackRangeDebugLineWidth = 0.06f;
+    [SerializeField] private float chargedAttackRangeDebugZOffset = 0.6f;
 
     private float airDashFloatTimer;
 
@@ -53,32 +69,51 @@ public class PlayerController : MonoBehaviour
 
     // 이제 바라보는 방향은 좌우 float가 아니라 8방향 Vector2다.
     private Vector2 facingDirection = Vector2.right;
+    private Vector2 lastHorizontalFacingDirection = Vector2.right;
     private Vector2 previousFacingDirection = Vector2.right;
 
     private float lastNormalAttackTime = -999f;
+    private float normalAttackColliderDisableTime = -999f;
+    private Collider activeNormalAttackCollider;
+    private LineRenderer normalAttackDebugLeft;
+    private LineRenderer normalAttackDebugRight;
+    private LineRenderer normalAttackDebugUp;
+    private LineRenderer normalAttackDebugDown;
 
     private bool isCharging;
     private float chargeTimer;
+    private LineRenderer chargedAttackRangeDebugLine;
+    private float chargedAttackColliderDisableTime = -999f;
 
-    private void Awake()
+private void Awake()
     {
         controller = GetComponent<CharacterController>();
 
         if (visualRoot == null && transform.childCount > 0)
             visualRoot = transform.GetChild(0);
 
+        ResolveNormalAttackColliders();
+        ResolveNormalAttackColliderDebugVisuals();
+        ResolveChargedAttackRangeCollider();
+        ResolveChargedAttackRangeDebugVisual();
+        SetNormalAttackCollidersEnabled(false);
+        SetChargedAttackRangeColliderEnabled(false);
+
         LockSidePlane();
     }
 
-    private void Update()
+private void Update()
     {
         UpdateChargeTimer();
 
         UpdateFacingDirectionFromArrowKeys();
+        UpdateChargedAttackRangeDebugVisual();
 
         HandleArrowKeyMovement();
         HandleJumpInput();
         HandleNormalAttackInput();
+        UpdateNormalAttackColliderState();
+        UpdateChargedAttackColliderState();
         HandleChargeAttackInput();
 
         ApplyMovement();
@@ -99,11 +134,19 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 inputDirection = GetArrowAimDirection();
 
-        // 아무 방향키도 안 누르고 있으면 마지막으로 바라보던 방향 유지.
-        if (inputDirection == Vector2.zero)
-            return;
+        if (inputDirection.x < 0f)
+            lastHorizontalFacingDirection = Vector2.left;
+        else if (inputDirection.x > 0f)
+            lastHorizontalFacingDirection = Vector2.right;
 
-        facingDirection = inputDirection.normalized;
+        Vector2 nextFacingDirection;
+
+        if (Mathf.Abs(inputDirection.y) > 0f)
+            nextFacingDirection = inputDirection.normalized;
+        else
+            nextFacingDirection = lastHorizontalFacingDirection;
+
+        facingDirection = nextFacingDirection;
 
         if (facingDirection == previousFacingDirection)
             return;
@@ -249,7 +292,7 @@ public class PlayerController : MonoBehaviour
         Debug.Log($"[AnimLog] Jump End Early - {reason}");
     }
 
-    private void HandleNormalAttackInput()
+private void HandleNormalAttackInput()
     {
         if (!Input.GetKeyDown(KeyCode.A))
             return;
@@ -259,8 +302,265 @@ public class PlayerController : MonoBehaviour
 
         lastNormalAttackTime = Time.time;
 
-        Debug.Log($"[AnimLog] Normal Attack - Direction: {DirectionToText(facingDirection)}");
+        Vector2 normalAttackDirection = GetNormalAttackDirectionFromInput();
+        ActivateNormalAttackCollider(normalAttackDirection);
+
+        Debug.Log($"[AnimLog] Normal Attack - Direction: {DirectionToText(normalAttackDirection)}");
     }
+
+private Vector2 GetNormalAttackDirectionFromInput()
+    {
+        Vector2 inputDirection = GetArrowAimDirection();
+
+        if (inputDirection.x < 0f)
+            lastHorizontalFacingDirection = Vector2.left;
+        else if (inputDirection.x > 0f)
+            lastHorizontalFacingDirection = Vector2.right;
+
+        if (inputDirection.y > 0f)
+            return Vector2.up;
+
+        if (inputDirection.y < 0f)
+            return Vector2.down;
+
+        if (inputDirection.x < 0f)
+            return Vector2.left;
+
+        if (inputDirection.x > 0f)
+            return Vector2.right;
+
+        return lastHorizontalFacingDirection;
+    }
+
+
+private void ResolveNormalAttackColliders()
+    {
+        if (attackColliderRoot == null)
+            attackColliderRoot = transform.Find("AttackColliders");
+
+        if (normalAttackColliderLeft == null)
+            normalAttackColliderLeft = FindNormalAttackCollider("NormalAttackCollider_Left");
+
+        if (normalAttackColliderRight == null)
+            normalAttackColliderRight = FindNormalAttackCollider("NormalAttackCollider_Right");
+
+        if (normalAttackColliderUp == null)
+            normalAttackColliderUp = FindNormalAttackCollider("NormalAttackCollider_Up");
+
+        if (normalAttackColliderDown == null)
+            normalAttackColliderDown = FindNormalAttackCollider("NormalAttackCollider_Down");
+    }
+
+    private Collider FindNormalAttackCollider(string colliderName)
+    {
+        Transform searchRoot = attackColliderRoot != null ? attackColliderRoot : transform;
+        Transform found = searchRoot.Find(colliderName);
+
+        if (found != null && found.TryGetComponent(out Collider foundCollider))
+            return foundCollider;
+
+        Collider[] colliders = transform.GetComponentsInChildren<Collider>(true);
+
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i].name == colliderName)
+                return colliders[i];
+        }
+
+        Debug.LogWarning($"[AnimLog] Missing normal attack collider: {colliderName}", this);
+        return null;
+    }
+
+private void ActivateNormalAttackCollider(Vector2 direction)
+    {
+        Collider targetCollider = GetNormalAttackCollider(direction);
+
+        if (targetCollider == null)
+            return;
+
+        if (activeNormalAttackCollider != targetCollider)
+        {
+            SetNormalAttackColliderEnabled(activeNormalAttackCollider, false);
+            activeNormalAttackCollider = targetCollider;
+        }
+
+        SetNormalAttackColliderEnabled(activeNormalAttackCollider, true);
+        normalAttackColliderDisableTime = Time.time + Mathf.Max(0f, normalAttackColliderActiveDuration);
+
+        Debug.Log($"[AnimLog] Normal Attack Collider On - {targetCollider.name}");
+    }
+
+    private void UpdateNormalAttackColliderState()
+    {
+        if (activeNormalAttackCollider == null)
+            return;
+
+        if (Time.time < normalAttackColliderDisableTime)
+            return;
+
+        SetNormalAttackColliderEnabled(activeNormalAttackCollider, false);
+        activeNormalAttackCollider = null;
+    }
+
+    private Collider GetNormalAttackCollider(Vector2 direction)
+    {
+        Vector2 fourWayDirection = GetFourWayDirection(direction);
+
+        if (fourWayDirection == Vector2.left)
+            return normalAttackColliderLeft;
+
+        if (fourWayDirection == Vector2.right)
+            return normalAttackColliderRight;
+
+        if (fourWayDirection == Vector2.up)
+            return normalAttackColliderUp;
+
+        if (fourWayDirection == Vector2.down)
+            return normalAttackColliderDown;
+
+        return null;
+    }
+
+    private void SetNormalAttackCollidersEnabled(bool enabled)
+    {
+        SetNormalAttackColliderEnabled(normalAttackColliderLeft, enabled);
+        SetNormalAttackColliderEnabled(normalAttackColliderRight, enabled);
+        SetNormalAttackColliderEnabled(normalAttackColliderUp, enabled);
+        SetNormalAttackColliderEnabled(normalAttackColliderDown, enabled);
+    }
+
+private void SetNormalAttackColliderEnabled(Collider targetCollider, bool enabled)
+    {
+        if (targetCollider != null)
+            targetCollider.enabled = enabled;
+
+        SetNormalAttackColliderDebugEnabled(targetCollider, enabled);
+    }
+
+private void ResolveNormalAttackColliderDebugVisuals()
+    {
+        normalAttackDebugLeft = CreateNormalAttackColliderDebugVisual(normalAttackColliderLeft, normalAttackDebugLeft);
+        normalAttackDebugRight = CreateNormalAttackColliderDebugVisual(normalAttackColliderRight, normalAttackDebugRight);
+        normalAttackDebugUp = CreateNormalAttackColliderDebugVisual(normalAttackColliderUp, normalAttackDebugUp);
+        normalAttackDebugDown = CreateNormalAttackColliderDebugVisual(normalAttackColliderDown, normalAttackDebugDown);
+    }
+
+    private LineRenderer CreateNormalAttackColliderDebugVisual(Collider targetCollider, LineRenderer existingLine)
+    {
+        if (targetCollider == null)
+            return existingLine;
+
+        if (existingLine != null)
+        {
+            UpdateNormalAttackColliderDebugVisual(targetCollider, existingLine);
+            existingLine.enabled = false;
+            return existingLine;
+        }
+
+        Transform existingChild = targetCollider.transform.Find("DebugVisibleBounds");
+        LineRenderer lineRenderer;
+
+        if (existingChild != null && existingChild.TryGetComponent(out lineRenderer))
+        {
+            UpdateNormalAttackColliderDebugVisual(targetCollider, lineRenderer);
+            lineRenderer.enabled = false;
+            return lineRenderer;
+        }
+
+        GameObject debugObject = new GameObject("DebugVisibleBounds");
+        debugObject.transform.SetParent(targetCollider.transform, false);
+
+        lineRenderer = debugObject.AddComponent<LineRenderer>();
+        lineRenderer.useWorldSpace = false;
+        lineRenderer.loop = true;
+        lineRenderer.positionCount = 4;
+        lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        lineRenderer.receiveShadows = false;
+        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+
+        UpdateNormalAttackColliderDebugVisual(targetCollider, lineRenderer);
+        lineRenderer.enabled = false;
+        return lineRenderer;
+    }
+
+    private void UpdateNormalAttackColliderDebugVisual(Collider targetCollider, LineRenderer lineRenderer)
+    {
+        if (targetCollider == null || lineRenderer == null)
+            return;
+
+        BoxCollider boxCollider = targetCollider as BoxCollider;
+
+        if (boxCollider == null)
+            return;
+
+        Vector3 center = boxCollider.center;
+        Vector3 halfSize = boxCollider.size * 0.5f;
+        float debugZ = center.z - halfSize.z - 0.01f;
+
+        lineRenderer.SetPosition(0, new Vector3(center.x - halfSize.x, center.y - halfSize.y, debugZ));
+        lineRenderer.SetPosition(1, new Vector3(center.x - halfSize.x, center.y + halfSize.y, debugZ));
+        lineRenderer.SetPosition(2, new Vector3(center.x + halfSize.x, center.y + halfSize.y, debugZ));
+        lineRenderer.SetPosition(3, new Vector3(center.x + halfSize.x, center.y - halfSize.y, debugZ));
+
+        lineRenderer.startColor = normalAttackColliderDebugColor;
+        lineRenderer.endColor = normalAttackColliderDebugColor;
+        lineRenderer.startWidth = normalAttackColliderDebugLineWidth;
+        lineRenderer.endWidth = normalAttackColliderDebugLineWidth;
+    }
+
+    private void SetNormalAttackColliderDebugEnabled(Collider targetCollider, bool enabled)
+    {
+        LineRenderer lineRenderer = GetNormalAttackColliderDebugVisual(targetCollider);
+
+        if (lineRenderer == null)
+            return;
+
+        if (enabled)
+            UpdateNormalAttackColliderDebugVisual(targetCollider, lineRenderer);
+
+        lineRenderer.enabled = showNormalAttackColliderDebug && enabled;
+    }
+
+    private LineRenderer GetNormalAttackColliderDebugVisual(Collider targetCollider)
+    {
+        if (targetCollider == normalAttackColliderLeft)
+            return normalAttackDebugLeft;
+
+        if (targetCollider == normalAttackColliderRight)
+            return normalAttackDebugRight;
+
+        if (targetCollider == normalAttackColliderUp)
+            return normalAttackDebugUp;
+
+        if (targetCollider == normalAttackColliderDown)
+            return normalAttackDebugDown;
+
+        return null;
+    }
+
+
+private void OnDisable()
+    {
+        SetNormalAttackCollidersEnabled(false);
+        SetChargedAttackRangeDebugEnabled(false);
+        SetChargedAttackRangeColliderEnabled(false);
+        activeNormalAttackCollider = null;
+    }
+
+
+    private Vector2 GetFourWayDirection(Vector2 direction)
+    {
+        if (direction == Vector2.zero)
+            return Vector2.right;
+
+        Vector2 normalized = direction.normalized;
+
+        if (Mathf.Abs(normalized.x) >= Mathf.Abs(normalized.y))
+            return normalized.x >= 0f ? Vector2.right : Vector2.left;
+
+        return normalized.y >= 0f ? Vector2.up : Vector2.down;
+    }
+
 
     private void HandleChargeAttackInput()
     {
@@ -275,22 +575,25 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void StartCharging()
+private void StartCharging()
     {
         if (isCharging)
             return;
 
         isCharging = true;
         chargeTimer = 0f;
+        UpdateChargedAttackRangeDebugVisual();
 
         Debug.Log("[AnimLog] Charge Start");
     }
 
-    private void ReleaseChargedAttack()
+private void ReleaseChargedAttack()
     {
         if (!isCharging)
             return;
 
+        SetChargedAttackRangeDebugEnabled(false);
+        SetChargedAttackRangeColliderEnabled(false);
         isCharging = false;
 
         if (requireGroundedForChargeAttack && !controller.isGrounded)
@@ -299,8 +602,6 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // D를 뗀 바로 그 순간, 현재 입력 중인 방향키 조합을 다시 읽는다.
-        // 입력이 있다면 그 방향으로 갱신하고, 입력이 없다면 마지막으로 바라보던 방향을 사용한다.
         Vector2 releaseDirectionInput = GetArrowAimDirection();
 
         if (releaseDirectionInput != Vector2.zero)
@@ -317,14 +618,16 @@ public class PlayerController : MonoBehaviour
 
         float chargeRate = Mathf.Clamp01(chargeTimer / maxChargeTime);
         float requestedDashDistance = Mathf.Lerp(dashMinDistance, dashMaxDistance, chargeRate);
-
         float safeDashDistance = GetSafeDashDistance(dashDirection, requestedDashDistance);
 
         bool wasAirborneBeforeDash = !controller.isGrounded;
+        Vector3 dashStartPosition = transform.TransformPoint(controller.center);
+        dashStartPosition.z = lockedZ;
 
         controller.Move(dashDirection * safeDashDistance);
 
-        // 공중 대시, 위 대시, 대각선 위 대시 이후에 낙하가 너무 빠른 문제를 완화한다.
+        ActivateChargedAttackColliderAlongDashPath(dashStartPosition, dashDirection, safeDashDistance);
+
         if (wasAirborneBeforeDash || dashDirection.y > 0.01f)
         {
             ApplyAirDashFallCorrection(dashDirection);
@@ -499,5 +802,267 @@ public class PlayerController : MonoBehaviour
             return "Down";
 
         return "None";
+    }
+
+
+private void ResolveChargedAttackRangeDebugVisual()
+    {
+        Transform existingChild = transform.Find("ChargedAttackRangeDebug");
+
+        if (existingChild != null && existingChild.TryGetComponent(out chargedAttackRangeDebugLine))
+        {
+            ConfigureChargedAttackRangeDebugLine();
+            chargedAttackRangeDebugLine.enabled = false;
+            return;
+        }
+
+        GameObject debugObject = new GameObject("ChargedAttackRangeDebug");
+        debugObject.transform.SetParent(transform, false);
+
+        chargedAttackRangeDebugLine = debugObject.AddComponent<LineRenderer>();
+        chargedAttackRangeDebugLine.useWorldSpace = true;
+        chargedAttackRangeDebugLine.loop = true;
+        chargedAttackRangeDebugLine.positionCount = 4;
+        chargedAttackRangeDebugLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        chargedAttackRangeDebugLine.receiveShadows = false;
+        chargedAttackRangeDebugLine.material = new Material(Shader.Find("Sprites/Default"));
+
+        ConfigureChargedAttackRangeDebugLine();
+        chargedAttackRangeDebugLine.enabled = false;
+    }
+
+    private void ConfigureChargedAttackRangeDebugLine()
+    {
+        if (chargedAttackRangeDebugLine == null)
+            return;
+
+        chargedAttackRangeDebugLine.startColor = chargedAttackRangeDebugColor;
+        chargedAttackRangeDebugLine.endColor = chargedAttackRangeDebugColor;
+        chargedAttackRangeDebugLine.startWidth = chargedAttackRangeDebugLineWidth;
+        chargedAttackRangeDebugLine.endWidth = chargedAttackRangeDebugLineWidth;
+    }
+
+private void PlaceChargedAttackColliderAlongDashPath(Vector3 dashStartPosition, Vector3 dashDirection, float safeDashDistance)
+    {
+        if (chargedAttackRangeCollider == null)
+            return;
+
+        float rangeLength = Mathf.Max(0.01f, safeDashDistance);
+        Vector3 center = dashStartPosition + dashDirection * (rangeLength * 0.5f);
+        center.z = lockedZ;
+
+        float angle = Mathf.Atan2(dashDirection.y, dashDirection.x) * Mathf.Rad2Deg;
+
+        chargedAttackRangeCollider.transform.position = center;
+        chargedAttackRangeCollider.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        chargedAttackRangeCollider.center = Vector3.zero;
+        chargedAttackRangeCollider.size = new Vector3(rangeLength, chargedAttackRangeColliderWidth, 1f);
+    }
+
+    private void UpdateChargedAttackDebugOutlineAlongDashPath(Vector3 dashStartPosition, Vector3 dashDirection, float safeDashDistance)
+    {
+        float rangeLength = Mathf.Max(0.01f, safeDashDistance);
+        Vector3 center = dashStartPosition + dashDirection * (rangeLength * 0.5f);
+        center.z = lockedZ - chargedAttackRangeDebugZOffset;
+
+        Vector3 sideDirection = new Vector3(-dashDirection.y, dashDirection.x, 0f).normalized;
+
+        SetChargedAttackDebugOutline(center, dashDirection, sideDirection, rangeLength);
+    }
+
+    private void SetChargedAttackDebugOutline(Vector3 center, Vector3 dashDirection, Vector3 sideDirection, float rangeLength)
+    {
+        if (chargedAttackRangeDebugLine == null)
+            return;
+
+        Vector3 halfForward = dashDirection.normalized * (rangeLength * 0.5f);
+        Vector3 halfSide = sideDirection.normalized * (chargedAttackRangeColliderWidth * 0.5f);
+
+        ConfigureChargedAttackRangeDebugLine();
+        chargedAttackRangeDebugLine.SetPosition(0, center - halfForward - halfSide);
+        chargedAttackRangeDebugLine.SetPosition(1, center - halfForward + halfSide);
+        chargedAttackRangeDebugLine.SetPosition(2, center + halfForward + halfSide);
+        chargedAttackRangeDebugLine.SetPosition(3, center + halfForward - halfSide);
+        SetChargedAttackRangeDebugEnabled(true);
+    }
+
+
+private void UpdateChargedAttackRangeCollider(Vector3 dashDirection, float safeDashDistance)
+    {
+        Vector3 start = transform.TransformPoint(controller.center);
+        start.z = lockedZ;
+
+        PlaceChargedAttackColliderAlongDashPath(start, dashDirection, safeDashDistance);
+    }
+
+private void UpdateChargedAttackRangeDebugOutline(Vector3 dashDirection, float safeDashDistance)
+    {
+        if (chargedAttackRangeDebugLine == null)
+            return;
+
+        if (!showChargedAttackRangeDebug)
+        {
+            SetChargedAttackRangeDebugEnabled(false);
+            return;
+        }
+
+        Vector3 start = transform.TransformPoint(controller.center);
+        start.z = lockedZ;
+
+        UpdateChargedAttackDebugOutlineAlongDashPath(start, dashDirection, safeDashDistance);
+    }
+
+private void UpdateChargedAttackColliderDebugOutlineAtCurrentPosition()
+    {
+        if (chargedAttackRangeCollider == null || chargedAttackRangeDebugLine == null)
+            return;
+
+        if (!showChargedAttackRangeDebug)
+        {
+            SetChargedAttackRangeDebugEnabled(false);
+            return;
+        }
+
+        Vector3 center = chargedAttackRangeCollider.transform.position;
+        Vector3 dashDirection = chargedAttackRangeCollider.transform.right;
+        Vector3 sideDirection = chargedAttackRangeCollider.transform.up;
+        float rangeLength = chargedAttackRangeCollider.size.x;
+
+        center.z = lockedZ - chargedAttackRangeDebugZOffset;
+
+        SetChargedAttackDebugOutline(center, dashDirection, sideDirection, rangeLength);
+    }
+
+
+
+private void UpdateChargedAttackRangeDebugVisual()
+    {
+        if (!isCharging)
+        {
+            if (chargedAttackRangeCollider == null || !chargedAttackRangeCollider.enabled)
+                SetChargedAttackRangeDebugEnabled(false);
+
+            return;
+        }
+
+        Vector3 dashDirection = GetCurrentDashDirection();
+        float chargeRate = Mathf.Clamp01(chargeTimer / maxChargeTime);
+        float requestedDashDistance = Mathf.Lerp(dashMinDistance, dashMaxDistance, chargeRate);
+        float safeDashDistance = GetSafeDashDistance(dashDirection, requestedDashDistance);
+
+        UpdateChargedAttackRangeCollider(dashDirection, safeDashDistance);
+        SetChargedAttackRangeColliderEnabled(false);
+        UpdateChargedAttackRangeDebugOutline(dashDirection, safeDashDistance);
+    }
+
+    private Vector3 GetCurrentDashDirection()
+    {
+        Vector2 inputDirection = GetArrowAimDirection();
+        Vector2 dashFacingDirection = inputDirection != Vector2.zero ? inputDirection.normalized : facingDirection;
+
+        return new Vector3(dashFacingDirection.x, dashFacingDirection.y, 0f).normalized;
+    }
+
+private void SetChargedAttackRangeDebugEnabled(bool enabled)
+    {
+        if (chargedAttackRangeDebugLine != null)
+            chargedAttackRangeDebugLine.enabled = showChargedAttackRangeDebug && enabled;
+    }
+
+    private void SetChargedAttackRangeColliderEnabled(bool enabled)
+    {
+        if (chargedAttackRangeCollider != null)
+            chargedAttackRangeCollider.enabled = enabled;
+    }
+
+
+private void ResolveChargedAttackRangeCollider()
+    {
+        if (chargedAttackRangeCollider == null)
+        {
+            Transform searchRoot = attackColliderRoot != null ? attackColliderRoot : transform;
+            Transform existingCollider = searchRoot.Find("ChargedAttackRangeCollider");
+
+            if (existingCollider == null)
+            {
+                GameObject colliderObject = new GameObject("ChargedAttackRangeCollider");
+                colliderObject.transform.SetParent(searchRoot, false);
+                existingCollider = colliderObject.transform;
+            }
+
+            if (!existingCollider.TryGetComponent(out chargedAttackRangeCollider))
+                chargedAttackRangeCollider = existingCollider.gameObject.AddComponent<BoxCollider>();
+        }
+
+        chargedAttackRangeCollider.isTrigger = true;
+        chargedAttackRangeCollider.center = Vector3.zero;
+        chargedAttackRangeCollider.size = new Vector3(0.01f, chargedAttackRangeColliderWidth, 1f);
+        chargedAttackRangeCollider.enabled = false;
+    }
+
+
+private void ActivateChargedAttackColliderAlongDashPath(Vector3 dashStartPosition, Vector3 dashDirection, float safeDashDistance)
+    {
+        if (chargedAttackRangeCollider == null)
+            return;
+
+        PlaceChargedAttackColliderAlongDashPath(dashStartPosition, dashDirection, safeDashDistance);
+        SpawnChargedAttackHitboxFromTemplate();
+
+        Debug.Log("[AnimLog] Charged Attack Collider Spawned");
+    }
+
+private void UpdateChargedAttackColliderState()
+    {
+        if (chargedAttackRangeCollider != null && chargedAttackRangeCollider.enabled)
+            SetChargedAttackRangeColliderEnabled(false);
+    }
+
+
+private void SpawnChargedAttackHitboxFromTemplate()
+    {
+        GameObject hitboxObject = new GameObject("ChargedAttackHitbox_Runtime");
+        hitboxObject.layer = chargedAttackRangeCollider.gameObject.layer;
+        hitboxObject.transform.position = chargedAttackRangeCollider.transform.position;
+        hitboxObject.transform.rotation = chargedAttackRangeCollider.transform.rotation;
+        hitboxObject.transform.localScale = chargedAttackRangeCollider.transform.lossyScale;
+
+        BoxCollider hitboxCollider = hitboxObject.AddComponent<BoxCollider>();
+        hitboxCollider.isTrigger = true;
+        hitboxCollider.center = chargedAttackRangeCollider.center;
+        hitboxCollider.size = chargedAttackRangeCollider.size;
+        hitboxCollider.enabled = true;
+
+        if (showChargedAttackRangeDebug)
+            CreateChargedAttackHitboxDebugVisual(hitboxObject.transform, hitboxCollider);
+
+        Destroy(hitboxObject, Mathf.Max(0.01f, chargedAttackColliderActiveDuration));
+    }
+
+    private void CreateChargedAttackHitboxDebugVisual(Transform parent, BoxCollider hitboxCollider)
+    {
+        GameObject debugObject = new GameObject("DebugVisibleBounds");
+        debugObject.transform.SetParent(parent, false);
+
+        LineRenderer lineRenderer = debugObject.AddComponent<LineRenderer>();
+        lineRenderer.useWorldSpace = false;
+        lineRenderer.loop = true;
+        lineRenderer.positionCount = 4;
+        lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        lineRenderer.receiveShadows = false;
+        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        lineRenderer.startColor = chargedAttackRangeDebugColor;
+        lineRenderer.endColor = chargedAttackRangeDebugColor;
+        lineRenderer.startWidth = chargedAttackRangeDebugLineWidth;
+        lineRenderer.endWidth = chargedAttackRangeDebugLineWidth;
+
+        Vector3 center = hitboxCollider.center;
+        Vector3 halfSize = hitboxCollider.size * 0.5f;
+        float debugZ = center.z - halfSize.z - 0.01f;
+
+        lineRenderer.SetPosition(0, new Vector3(center.x - halfSize.x, center.y - halfSize.y, debugZ));
+        lineRenderer.SetPosition(1, new Vector3(center.x - halfSize.x, center.y + halfSize.y, debugZ));
+        lineRenderer.SetPosition(2, new Vector3(center.x + halfSize.x, center.y + halfSize.y, debugZ));
+        lineRenderer.SetPosition(3, new Vector3(center.x + halfSize.x, center.y - halfSize.y, debugZ));
     }
 }
