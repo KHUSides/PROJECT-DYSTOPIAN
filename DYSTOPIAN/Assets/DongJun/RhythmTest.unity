@@ -119,6 +119,6148 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &384746847
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 384746848}
+  - component: {fileID: 384746850}
+  - component: {fileID: 384746849}
+  m_Layer: 0
+  m_Name: Player BAD Late Zone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &384746848
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 384746847}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 910191057}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 103.600006, y: 0}
+  m_SizeDelta: {x: 44.4, y: 104}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &384746849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 384746847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.45, b: 0.18, a: 0.24}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &384746850
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 384746847}
+  m_CullTransparentMesh: 1
+--- !u!1 &482064944
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 482064945}
+  m_Layer: 0
+  m_Name: Pooled Notes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &482064945
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 482064944}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 603397796}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &495582919
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 495582920}
+  - component: {fileID: 495582922}
+  - component: {fileID: 495582921}
+  m_Layer: 0
+  m_Name: Player COOL Early Zone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &495582920
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 495582919}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 910191057}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -38.85, y: 0}
+  m_SizeDelta: {x: 25.9, y: 104}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &495582921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 495582919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.2, g: 0.9, b: 1, a: 0.24}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &495582922
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 495582919}
+  m_CullTransparentMesh: 1
+--- !u!1 &603397795
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 603397796}
+  - component: {fileID: 603397798}
+  - component: {fileID: 603397797}
+  m_Layer: 0
+  m_Name: Track Panel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &603397796
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603397795}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2090811590}
+  - {fileID: 910191057}
+  - {fileID: 912227305}
+  - {fileID: 482064945}
+  m_Father: {fileID: 1609622996}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 35}
+  m_SizeDelta: {x: 1500, y: 230}
+  m_Pivot: {x: 0.5, y: 0}
+--- !u!114 &603397797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603397795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &603397798
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603397795}
+  m_CullTransparentMesh: 1
+--- !u!1 &703620140
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 703620141}
+  - component: {fileID: 703620143}
+  - component: {fileID: 703620142}
+  m_Layer: 0
+  m_Name: Player GOOD Early Zone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &703620141
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 703620140}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 910191057}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -66.6, y: 0}
+  m_SizeDelta: {x: 29.600002, y: 104}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &703620142
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 703620140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.25, g: 1, b: 0.48, a: 0.24}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &703620143
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 703620140}
+  m_CullTransparentMesh: 1
+--- !u!1 &797630487
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 797630489}
+  - component: {fileID: 797630488}
+  - component: {fileID: 797630490}
+  m_Layer: 0
+  m_Name: Rhythm System
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &797630488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797630487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4687574fca3e77d4d81e1d10894ac107, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Dystopian.Rhythm.RhythmSystem
+  musicSource: {fileID: 797630490}
+  musicClip: {fileID: 8300000, guid: c720540c725b0a0489619a605c8aec02, type: 3}
+  bpm: 120
+  firstBeatOffsetSeconds: 0
+  startDelaySeconds: 0.5
+  playMusicOnStart: 0
+  useUnscaledClockWithoutMusic: 1
+  startMusicOnFirstPlayerJudgement: 1
+  autoStartDelayFromTravelBeats: 1
+  useDspScheduling: 1
+  minimumDspLeadSeconds: 0.1
+  preloadMusicOnAwake: 1
+  primeMusicSourceOnLoad: 1
+  loadBmsOnStart: 1
+  playerBms: {fileID: 4900000, guid: e903822a72ff5b04995a9231e1b6fe71, type: 3}
+  opponentBms: {fileID: 4900000, guid: 971d6d134fc3b474d97c7ad41ff4da76, type: 3}
+  opponentActor: 1
+  beatsPerMeasure: 4
+  waitForStartInput: 1
+  toggleChartWithStartKey: 1
+  startChartKey: 115
+  singleNoteKey: 97
+  longNoteKey: 100
+  enableFreeInputDuringAttackState: 1
+  travelBeats: 2
+  returnNoteToPoolAtTarget: 1
+  judgement:
+    criticalSeconds: 0.035
+    coolSeconds: 0.07
+    goodSeconds: 0.11
+    badSeconds: 0.17
+  initialPoolSize: 500
+  allowPoolExpansion: 1
+  chart:
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 0
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 1
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 1
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 2
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 2.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 3
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 4
+    durationBeats: 0.75
+    lane: 0
+    actionId: Player Long
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 4
+    durationBeats: 1
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 6
+    durationBeats: 0.75
+    lane: 0
+    actionId: Player Long
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 6
+    durationBeats: 1
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 8
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 9
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 9
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 10
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 10.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 11
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 12
+    durationBeats: 0.75
+    lane: 0
+    actionId: Player Long
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 12
+    durationBeats: 1
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 14
+    durationBeats: 0.75
+    lane: 0
+    actionId: Player Long
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 14
+    durationBeats: 1
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 16
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 17
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 17
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 18
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 18.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 19
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 20
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 21
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 21
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 22
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 22.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 23
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 24
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 25
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 26
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 26.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 27
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 28
+    durationBeats: 0.75
+    lane: 0
+    actionId: Player Long
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 28
+    durationBeats: 1.25
+    lane: 0
+    actionId: Enemy Long
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 30
+    durationBeats: 1.25
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 30
+    durationBeats: 0.75
+    lane: 0
+    actionId: Player Long
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 32
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 32
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 32.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 34
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 34
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 36
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 36
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 36.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 38
+    durationBeats: 1.75
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 38
+    durationBeats: 1.5
+    lane: 0
+    actionId: Player Long
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 40
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 40
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 40.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 42
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 42
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 44
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 44
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 44.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 46
+    durationBeats: 1.75
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 46
+    durationBeats: 1.5
+    lane: 0
+    actionId: Player Long
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 48
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 48
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 48.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 52
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 52
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 52.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 54
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 54.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 56
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 56
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 56.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 60
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 60
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 60.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 62.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 62.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 64
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 64
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 64.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 68
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 68
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 68.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 70.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 70.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 72
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 73
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 73
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 74
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 74
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 76
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 76
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 76.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 76.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 76.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 78.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 78.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 79
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 79.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 79.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 79.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 80
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 80
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 80.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 80.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 80.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 82.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 82.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 83
+    durationBeats: 0.75
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 83
+    durationBeats: 0.5
+    lane: 0
+    actionId: Player Long
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 84
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 84
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 84.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 84.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 84.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 86.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 86.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 87
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 87
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 87.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 87.25
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 87.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 87.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 88
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 88
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 88.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 88.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 88.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 90.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 90.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 91
+    durationBeats: 0.75
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 91
+    durationBeats: 0.5
+    lane: 0
+    actionId: Player Long
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 92
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 92
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 92.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 92.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 92.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 94.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 94.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 95
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 95.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 95.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 95.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 96
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 96
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 96.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 96.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 96.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 98.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 98.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 99
+    durationBeats: 0.5
+    lane: 0
+    actionId: Player Long
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 99
+    durationBeats: 0.75
+    lane: 0
+    actionId: Enemy Long
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 100
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 100
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 100.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 100.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 100.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 102.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 103
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 103
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 103.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 103.25
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 103.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 103.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 104
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 104
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 104.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 104.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 104.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 106.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 106.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 107
+    durationBeats: 0.5
+    lane: 0
+    actionId: Player Long
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 107
+    durationBeats: 0.75
+    lane: 0
+    actionId: Enemy Long
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 108
+    durationBeats: 1.75
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 108
+    durationBeats: 1.5
+    lane: 0
+    actionId: Player Long
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 110.25
+    durationBeats: 1.5
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 110.25
+    durationBeats: 1.5
+    lane: 0
+    actionId: Player Long
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 112
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 112.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 112.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 112.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 112.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 114.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 114.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 115
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 115.25
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 115.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 115.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 116
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 116
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 116.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 116.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 116.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 118.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 118.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 119
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 119
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 119.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 119.25
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 119.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 119.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 120
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 120
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 120.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 120.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 120.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 122.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 122.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 123
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 123
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 123.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 123.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 123.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 124
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 124
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 124.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 124.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 124.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 126.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 126.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 127
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 127
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 127.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 127.25
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 127.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 127.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 128
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 128
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 128.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 128.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 128.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 130.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 130.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 131
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 131.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 131.25
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 131.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 132
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 132
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 132.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 132.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 132.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 134.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 134.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 135
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 135
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 135.25
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 135.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 135.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 135.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 136
+    durationBeats: 1.5
+    lane: 0
+    actionId: Player Long
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 136
+    durationBeats: 1.75
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 138.25
+    durationBeats: 1.5
+    lane: 0
+    actionId: Player Long
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 138.25
+    durationBeats: 1.5
+    lane: 0
+    actionId: Enemy Long
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 140
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 140
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 141
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 141
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 142
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 142
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 143
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 143
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 144
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 144
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 145
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 145
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 146
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 146
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 147
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 147
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 148
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 148
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 149
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 149
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 150
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 150
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 151
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 151
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 152
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 152
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 153
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 153
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 154
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 154
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 155
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 155
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 156
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 156
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 157
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 157
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 158
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 158
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 159
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 159
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 160
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 160
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 161
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 161
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 162
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 162
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 163
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 163
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 164
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 164
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 165
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 165
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 166
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 166
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 167
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 167
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 168
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 168
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 169
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 169
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 170
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 170
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 171
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 171
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 172
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 172
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 173
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 173
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 174
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 174
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 175
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 175
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 176
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 176
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 177
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 177
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 178
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 178
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 179
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 179
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 180
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 180
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 181
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 181
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 182
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 182
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 183
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 183
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 184
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 184
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 185
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 185
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 186
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 186
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 187
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 187
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 188
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 188
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 189
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 189
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 190
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 190
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 191
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 191
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 192
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 192
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 193
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 193
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 194
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 194
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 195
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 195
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 196
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 196
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 197
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 197
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 198
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 198
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 199
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 199
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 200
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 200
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 201
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 201
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 202
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 202
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 203
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 203
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 204
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 204
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 204.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 204.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 204.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 206.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 206.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 207
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 207.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 207.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 207.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 208
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 208
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 208.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 208.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 208.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 210.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 210.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 211
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 211.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 211.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 211.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 212
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 212.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 212.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 212.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 214.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 215
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 215
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 215.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 215.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 216
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 216
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 216.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 216.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 216.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 218.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 218.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 219
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 219.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 219.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 219.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 220
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 220
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 220.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 220.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 220.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 222.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 222.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 223
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 223.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 223.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 223.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 224
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 224
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 224.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 224.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 224.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 226.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 226.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 227
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 227.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 227.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 227.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 228
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 228
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 228.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 228.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 228.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 230.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 230.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 231
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 231.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 231.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 231.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 232
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 232
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 232.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 232.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 232.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 234.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 234.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 235
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 235.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 235.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 235.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 236
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 236
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 236.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 236.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 236.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 238.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 238.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 239
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 239.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 239.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 239.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 240
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 240
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 240.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 240.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 240.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 242.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 242.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 243
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 243.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 243.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 243.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 244
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 244
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 244.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 244.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 244.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 246.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 246.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 247
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 247.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 247.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 247.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 248
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 248
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 248.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 248.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 248.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 250.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 251
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 251
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 251.25
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 251.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 251.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 251.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 252
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 252
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 252.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 252.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 252.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 254.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 254.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 255
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 255.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 255.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 255.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 256
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 256
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 256.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 256.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 256.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 258.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 258.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 259
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 259.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 259.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 259.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 260
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 260
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 260.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 260.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 260.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 262.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 263
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 263
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 263.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 263.25
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 263.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 263.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 264
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 264
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 264.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 264.75
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 264.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 266.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 266.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 267
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 267.25
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 267.5
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 267.5
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 268
+    durationBeats: 0.75
+    lane: 0
+    actionId: Player Long
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 268
+    durationBeats: 1
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 269
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 270
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 270
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 271
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 272
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 272
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 273
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 274
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 274
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 275
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 276
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 276
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 277
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 278
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 279
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 279
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 280
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 281
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 281
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 282
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 282.75
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 283
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 284
+    durationBeats: 0.75
+    lane: 0
+    actionId: Player Long
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 284
+    durationBeats: 1
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 285
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 286
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 286
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 287
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 288
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 288
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 289
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 290
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 290
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 291
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 292
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 292
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 293
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 294
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 295
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 295
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 296
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 297
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 297
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 298
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 299
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 299
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 300
+    durationBeats: 1
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 300
+    durationBeats: 0.75
+    lane: 0
+    actionId: Player Long
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 301
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 302
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 302
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 303
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 304
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 304
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 305
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 306
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 306
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 307
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 308
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 308
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 309
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 310
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 311
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 311
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 312
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 313
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 313
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 314
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 315
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 315
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Long
+    enabled: 1
+    actor: 0
+    type: 1
+    beat: 316
+    durationBeats: 0.75
+    lane: 0
+    actionId: Player Long
+  - label: Enemy Long
+    enabled: 1
+    actor: 1
+    type: 1
+    beat: 316
+    durationBeats: 1
+    lane: 0
+    actionId: Enemy Long
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 317
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 318
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 318
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 319
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 320
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 320
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 321
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 322
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  - label: Enemy Single
+    enabled: 1
+    actor: 1
+    type: 0
+    beat: 322
+    durationBeats: 0
+    lane: 0
+    actionId: Enemy Single
+  - label: Player Single
+    enabled: 1
+    actor: 0
+    type: 0
+    beat: 323
+    durationBeats: 0
+    lane: 0
+    actionId: Player Single
+  layout:
+    referenceResolution: {x: 1920, y: 1080}
+    panelSize: {x: 1500, y: 230}
+    bottomMargin: 35
+    playerTargetX: -300
+    opponentTargetX: 300
+    edgePadding: 25
+    offscreenSpawnPadding: 80
+    judgementLineWidth: 7
+    judgementLineHeight: 190
+    railThickness: 4
+    judgementZoneHeight: 104
+    singleNoteWidth: 20
+    noteHeight: 72
+    laneOffset: 48
+    minimumLongWidth: 42
+    sortingOrder: 100
+  colors:
+    panel: {r: 0.025, g: 0.035, b: 0.055, a: 0.92}
+    playerLane: {r: 0.04, g: 0.16, b: 0.22, a: 0.9}
+    enemyLane: {r: 0.22, g: 0.055, b: 0.07, a: 0.9}
+    playerNote: {r: 0.1, g: 0.85, b: 1, a: 1}
+    enemyNote: {r: 1, g: 0.2, b: 0.26, a: 1}
+    bossNote: {r: 1, g: 0.72, b: 0.1, a: 1}
+    attackState: {r: 1, g: 0.25, b: 0.82, a: 0.9}
+    judgementLine: {r: 1, g: 1, b: 1, a: 1}
+    critical: {r: 1, g: 0.9, b: 0.25, a: 1}
+    cool: {r: 0.2, g: 0.9, b: 1, a: 1}
+    good: {r: 0.25, g: 1, b: 0.48, a: 1}
+    bad: {r: 1, g: 0.45, b: 0.18, a: 1}
+    miss: {r: 1, g: 0.15, b: 0.2, a: 1}
+  showPlayerJudgementZones: 1
+  showOpponentJudgementZones: 0
+  judgementZoneAlpha: 0.24
+  judgementTextSeconds: 0.55
+  judgementFontSize: 42
+  logJudgements: 0
+  onChartStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  onChartStopped:
+    m_PersistentCalls:
+      m_Calls: []
+  onPlayerSingle:
+    m_PersistentCalls:
+      m_Calls: []
+  onChargeStart:
+    m_PersistentCalls:
+      m_Calls: []
+  onChargeEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  onAttackStateStart:
+    m_PersistentCalls:
+      m_Calls: []
+  onAttackStateEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  onFreeSingleInput:
+    m_PersistentCalls:
+      m_Calls: []
+  onFreeLongInput:
+    m_PersistentCalls:
+      m_Calls: []
+  onJudged:
+    m_PersistentCalls:
+      m_Calls: []
+  onEnemyAction:
+    m_PersistentCalls:
+      m_Calls: []
+  onEnemyLongEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  onBossAction:
+    m_PersistentCalls:
+      m_Calls: []
+  onBossLongEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  onGhostAction:
+    m_PersistentCalls:
+      m_Calls: []
+  rhythmCanvas: {fileID: 1609622999}
+  panel: {fileID: 603397796}
+  noteLayer: {fileID: 482064945}
+  playerJudgementLine: {fileID: 910191057}
+  opponentJudgementLine: {fileID: 912227305}
+  judgementText: {fileID: 1060547243}
+--- !u!4 &797630489
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797630487}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1609622996}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &797630490
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797630487}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: c720540c725b0a0489619a605c8aec02, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!1 &910191056
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 910191057}
+  - component: {fileID: 910191059}
+  - component: {fileID: 910191058}
+  m_Layer: 0
+  m_Name: Player Judgement Line
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &910191057
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910191056}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1145269892}
+  - {fileID: 384746848}
+  - {fileID: 703620141}
+  - {fileID: 1355044518}
+  - {fileID: 495582920}
+  - {fileID: 1167021529}
+  - {fileID: 1332139365}
+  m_Father: {fileID: 603397796}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -200, y: 0}
+  m_SizeDelta: {x: 7, y: 190}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &910191058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910191056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &910191059
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910191056}
+  m_CullTransparentMesh: 1
+--- !u!1 &912227304
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 912227305}
+  - component: {fileID: 912227307}
+  - component: {fileID: 912227306}
+  m_Layer: 0
+  m_Name: Opponent Judgement Line
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &912227305
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 912227304}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 603397796}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 200, y: 0}
+  m_SizeDelta: {x: 7, y: 190}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &912227306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 912227304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &912227307
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 912227304}
+  m_CullTransparentMesh: 1
+--- !u!1 &1060547242
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1060547245}
+  - component: {fileID: 1060547244}
+  - component: {fileID: 1060547243}
+  m_Layer: 0
+  m_Name: Judgement Text
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1060547243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060547242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 42
+    m_FontStyle: 1
+    m_BestFit: 0
+    m_MinSize: 10
+    m_MaxSize: 42
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 
+--- !u!222 &1060547244
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060547242}
+  m_CullTransparentMesh: 1
+--- !u!224 &1060547245
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060547242}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1609622996}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 280}
+  m_SizeDelta: {x: 600, y: 80}
+  m_Pivot: {x: 0.5, y: 0}
+--- !u!1 &1145269891
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1145269892}
+  - component: {fileID: 1145269894}
+  - component: {fileID: 1145269893}
+  m_Layer: 0
+  m_Name: Player BAD Early Zone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1145269892
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145269891}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 910191057}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -103.600006, y: 0}
+  m_SizeDelta: {x: 44.4, y: 104}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1145269893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145269891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.45, b: 0.18, a: 0.24}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1145269894
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145269891}
+  m_CullTransparentMesh: 1
+--- !u!1 &1167021528
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1167021529}
+  - component: {fileID: 1167021531}
+  - component: {fileID: 1167021530}
+  m_Layer: 0
+  m_Name: Player COOL Late Zone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1167021529
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1167021528}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 910191057}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 38.85, y: 0}
+  m_SizeDelta: {x: 25.9, y: 104}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1167021530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1167021528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.2, g: 0.9, b: 1, a: 0.24}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1167021531
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1167021528}
+  m_CullTransparentMesh: 1
 --- !u!1 &1209594923
 GameObject:
   m_ObjectHideFlags: 0
@@ -221,6 +6363,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1221010256}
   - component: {fileID: 1221010255}
+  - component: {fileID: 1221010257}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -308,9 +6451,367 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &1221010257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1221010254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
+--- !u!1 &1332139364
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1332139365}
+  - component: {fileID: 1332139367}
+  - component: {fileID: 1332139366}
+  m_Layer: 0
+  m_Name: Player CRITICAL Zone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1332139365
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1332139364}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 910191057}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 51.8, y: 104}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1332139366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1332139364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.9, b: 0.25, a: 0.24}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1332139367
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1332139364}
+  m_CullTransparentMesh: 1
+--- !u!1 &1355044517
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1355044518}
+  - component: {fileID: 1355044520}
+  - component: {fileID: 1355044519}
+  m_Layer: 0
+  m_Name: Player GOOD Late Zone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1355044518
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1355044517}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 910191057}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 66.6, y: 0}
+  m_SizeDelta: {x: 29.600002, y: 104}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1355044519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1355044517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.25, g: 1, b: 0.48, a: 0.24}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1355044520
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1355044517}
+  m_CullTransparentMesh: 1
+--- !u!1 &1609622995
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1609622996}
+  - component: {fileID: 1609622999}
+  - component: {fileID: 1609622998}
+  - component: {fileID: 1609622997}
+  m_Layer: 0
+  m_Name: Rhythm UI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1609622996
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1609622995}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 603397796}
+  - {fileID: 1060547245}
+  m_Father: {fileID: 797630489}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0, y: 0}
+--- !u!114 &1609622997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1609622995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!114 &1609622998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1609622995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
+  m_UiScaleMode: 1
+  m_ReferencePixelsPerUnit: 100
+  m_ScaleFactor: 1
+  m_ReferenceResolution: {x: 1920, y: 1080}
+  m_ScreenMatchMode: 0
+  m_MatchWidthOrHeight: 0.5
+  m_PhysicalUnit: 3
+  m_FallbackScreenDPI: 96
+  m_DefaultSpriteDPI: 96
+  m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
+--- !u!223 &1609622999
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1609622995}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 0
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 100
+  m_TargetDisplay: 0
+--- !u!1 &2090811589
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2090811590}
+  - component: {fileID: 2090811592}
+  - component: {fileID: 2090811591}
+  m_Layer: 0
+  m_Name: Note Rail
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2090811590
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2090811589}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 603397796}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1920, y: 4}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2090811591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2090811589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &2090811592
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2090811589}
+  m_CullTransparentMesh: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1209594926}
   - {fileID: 1221010256}
+  - {fileID: 797630489}
