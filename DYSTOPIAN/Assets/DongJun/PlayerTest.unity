@@ -2356,10 +2356,10 @@ MonoBehaviour:
   normalAttackCooldown: 0.25
   normalAttackColliderActiveDuration: 0.25
   attackColliderRoot: {fileID: 856717454}
-  normalAttackColliderLeft: {fileID: 0}
-  normalAttackColliderRight: {fileID: 0}
-  normalAttackColliderUp: {fileID: 0}
-  normalAttackColliderDown: {fileID: 0}
+  normalAttackColliderLeft: {fileID: 1473541454}
+  normalAttackColliderRight: {fileID: 489990436}
+  normalAttackColliderUp: {fileID: 674615651}
+  normalAttackColliderDown: {fileID: 110905246}
   showNormalAttackColliderDebug: 1
   normalAttackColliderDebugColor: {r: 1, g: 0.1, b: 0.1, a: 1}
   normalAttackColliderDebugLineWidth: 0.04
