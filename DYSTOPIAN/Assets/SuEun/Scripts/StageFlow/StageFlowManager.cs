@@ -1,24 +1,40 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace Dystopian.SuEun.StageFlow
 {
     public class StageFlowManager : MonoBehaviour
     {
-        [SerializeField] private BattleZone firstZone;
-        [SerializeField] private bool allowDebugHotkeys = true;
+        [FormerlySerializedAs("firstZone")]
+        [SerializeField] private BattleZone firstZone_;
+        [FormerlySerializedAs("allowDebugHotkeys")]
+        [SerializeField] private bool allowDebugHotkeys_ = true;
 
         [Header("Events")]
-        [SerializeField] private UnityEvent onAnyBattleStarted;
-        [SerializeField] private UnityEvent onAnyBattleCleared;
+        [FormerlySerializedAs("onAnyBattleStarted")]
+        [SerializeField] private UnityEvent onAnyBattleStarted_;
+        [FormerlySerializedAs("onAnyBattleCleared")]
+        [SerializeField] private UnityEvent onAnyBattleCleared_;
+        [FormerlySerializedAs("onBattleStarted")]
+        [SerializeField] private BattleZoneEvent onBattleStarted_;
+        [FormerlySerializedAs("onBattleCleared")]
+        [SerializeField] private BattleZoneEvent onBattleCleared_;
+        [FormerlySerializedAs("onRemainingEnemyCountChanged")]
+        [SerializeField] private BattleZoneEnemyCountEvent onRemainingEnemyCountChanged_;
 
-        private readonly List<BattleZone> clearedZones = new();
-        private BattleZone activeZone;
+        private readonly List<BattleZone> clearedZones_ = new();
+        private BattleZone activeZone_;
 
         public static StageFlowManager Instance { get; private set; }
-        public BattleZone ActiveZone => activeZone;
-        public IReadOnlyList<BattleZone> ClearedZones => clearedZones;
+        public BattleZone ActiveZone => activeZone_;
+        public IReadOnlyList<BattleZone> ClearedZones => clearedZones_;
+
+        public event Action<BattleZone> BattleStarted;
+        public event Action<BattleZone> BattleCleared;
+        public event Action<BattleZone, int> RemainingEnemyCountChanged;
 
         private void Awake()
         {
@@ -32,7 +48,7 @@ namespace Dystopian.SuEun.StageFlow
 
         private void Update()
         {
-            if (!allowDebugHotkeys)
+            if (!allowDebugHotkeys_)
                 return;
 
             if (Input.GetKeyDown(KeyCode.B))
@@ -47,55 +63,65 @@ namespace Dystopian.SuEun.StageFlow
 
         public void NotifyBattleStarted(BattleZone zone)
         {
-            activeZone = zone;
-            onAnyBattleStarted?.Invoke();
+            activeZone_ = zone;
+            BattleStarted?.Invoke(zone);
+            onBattleStarted_?.Invoke(zone);
+            onAnyBattleStarted_?.Invoke();
         }
 
         public void NotifyBattleCleared(BattleZone zone)
         {
-            if (activeZone == zone)
-                activeZone = null;
+            if (activeZone_ == zone)
+                activeZone_ = null;
 
-            if (zone != null && !clearedZones.Contains(zone))
-                clearedZones.Add(zone);
+            if (zone != null && !clearedZones_.Contains(zone))
+                clearedZones_.Add(zone);
 
-            onAnyBattleCleared?.Invoke();
+            BattleCleared?.Invoke(zone);
+            onBattleCleared_?.Invoke(zone);
+            onAnyBattleCleared_?.Invoke();
+        }
+
+        public void NotifyRemainingEnemyCountChanged(BattleZone zone, int remainingEnemyCount)
+        {
+            RemainingEnemyCountChanged?.Invoke(zone, remainingEnemyCount);
+            onRemainingEnemyCountChanged_?.Invoke(zone, remainingEnemyCount);
         }
 
         [ContextMenu("Debug/Start First Zone")]
         public void StartFirstZoneForDebug()
         {
-            if (firstZone == null)
+            if (firstZone_ == null)
             {
                 Debug.LogWarning("[StageFlow] First zone is not assigned.");
                 return;
             }
 
-            firstZone.StartBattle();
+            firstZone_.StartBattle();
         }
 
         [ContextMenu("Debug/Clear Active Zone")]
         public void ClearActiveZoneForDebug()
         {
-            if (activeZone == null)
+            if (activeZone_ == null)
             {
                 Debug.LogWarning("[StageFlow] No active battle zone to clear.");
                 return;
             }
 
-            activeZone.ClearBattle();
+            activeZone_.ClearBattle();
         }
 
         [ContextMenu("Debug/Defeat One Enemy")]
         public void DefeatOneEnemyForDebug()
         {
-            if (activeZone == null)
+            if (activeZone_ == null)
             {
                 Debug.LogWarning("[StageFlow] No active battle zone to defeat an enemy in.");
                 return;
             }
 
-            activeZone.DefeatOneEnemyForDebug();
+            activeZone_.DefeatOneEnemyForDebug();
         }
     }
 }

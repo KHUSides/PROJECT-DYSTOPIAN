@@ -1,23 +1,26 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dystopian.SuEun.StageFlow
 {
     public class StageEnemy : MonoBehaviour
     {
-        [SerializeField] private BattleZone battleZone;
-        [SerializeField] private bool disableOnDefeated = true;
+        [FormerlySerializedAs("battleZone")]
+        [SerializeField] private BattleZone battleZone_;
+        [FormerlySerializedAs("disableOnDefeated")]
+        [SerializeField] private bool disableOnDefeated_ = true;
 
         public bool IsDefeated { get; private set; }
 
         private void Awake()
         {
-            if (battleZone == null)
-                battleZone = GetComponentInParent<BattleZone>();
+            if (battleZone_ == null)
+                battleZone_ = GetComponentInParent<BattleZone>();
         }
 
         public void BindToZone(BattleZone zone)
         {
-            battleZone = zone;
+            battleZone_ = zone;
         }
 
         public void ResetForBattle()
@@ -35,9 +38,9 @@ namespace Dystopian.SuEun.StageFlow
                 return;
 
             IsDefeated = true;
-            battleZone?.NotifyEnemyDefeated(this);
+            battleZone_?.NotifyEnemyDefeated(this);
 
-            if (disableOnDefeated)
+            if (disableOnDefeated_)
                 gameObject.SetActive(false);
         }
     }

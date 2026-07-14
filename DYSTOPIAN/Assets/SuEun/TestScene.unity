@@ -336,6 +336,7 @@ GameObject:
   - component: {fileID: 300000001}
   - component: {fileID: 300000002}
   - component: {fileID: 300000003}
+  - component: {fileID: 300000004}
   m_Layer: 0
   m_Name: StageFlowRoot
   m_TagString: Untagged
@@ -372,12 +373,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44a1d77770065d641b99f38f6024def9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.StageFlowManager
-  firstZone: {fileID: 300000013}
-  allowDebugHotkeys: 1
-  onAnyBattleStarted:
+  firstZone_: {fileID: 300000013}
+  allowDebugHotkeys_: 1
+  onAnyBattleStarted_:
     m_PersistentCalls:
       m_Calls: []
-  onAnyBattleCleared:
+  onAnyBattleCleared_:
+    m_PersistentCalls:
+      m_Calls: []
+  onBattleStarted_:
+    m_PersistentCalls:
+      m_Calls: []
+  onBattleCleared_:
+    m_PersistentCalls:
+      m_Calls: []
+  onRemainingEnemyCountChanged_:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &300000003
@@ -392,8 +402,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edc9ca495a5593e47afcdf4ffbb56fc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.StageFlowDebugUI
-  showDebugUI: 0
-  showRemainingEnemyUI: 1
+  showDebugUI_: 0
+  showRemainingEnemyUI_: 1
+--- !u!114 &300000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300000000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65cfd2332ecc28541ac80a6d2d450736, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.StageFlowExternalBridge
+  manager_: {fileID: 0}
+  onRhythmStartRequested_:
+    m_PersistentCalls:
+      m_Calls: []
+  onRhythmStopRequested_:
+    m_PersistentCalls:
+      m_Calls: []
+  onHudShowRequested_:
+    m_PersistentCalls:
+      m_Calls: []
+  onHudHideRequested_:
+    m_PersistentCalls:
+      m_Calls: []
+  onRemainingEnemyCountRequested_:
+    m_PersistentCalls:
+      m_Calls: []
+  onZoneRemainingEnemyCountRequested_:
+    m_PersistentCalls:
+      m_Calls: []
+  onCombatMusicRequested_:
+    m_PersistentCalls:
+      m_Calls: []
+  onExplorationMusicRequested_:
+    m_PersistentCalls:
+      m_Calls: []
+  onCameraBoundsRequested_:
+    m_PersistentCalls:
+      m_Calls: []
+  onCameraBoundsReleased_:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &300000010
 GameObject:
   m_ObjectHideFlags: 0
@@ -463,27 +516,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 026b5fad97ddf3840bd121a3df863e76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.BattleZone
-  zoneId: Arena01
-  triggerOnce: 1
-  startOnEnter: 1
-  useOverlapPolling: 1
-  activatorLayers:
+  zoneId_: Arena01
+  triggerOnce_: 1
+  startOnEnter_: 1
+  useOverlapPolling_: 1
+  activatorLayers_:
     serializedVersion: 2
     m_Bits: 64
-  requiredTag: 
-  barriers:
+  requiredTag_: 
+  barriers_:
   - {fileID: 300000023}
   - {fileID: 300000033}
-  findEnemiesInChildren: 1
-  resetEnemiesOnBattleStart: 1
-  enemies: []
-  onBattleStarted:
+  findEnemiesInChildren_: 1
+  resetEnemiesOnBattleStart_: 1
+  enemies_: []
+  onBattleStarted_:
     m_PersistentCalls:
       m_Calls: []
-  onBattleCleared:
+  onBattleCleared_:
     m_PersistentCalls:
       m_Calls: []
-  onRemainingEnemyCountChanged:
+  onRemainingEnemyCountChanged_:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &300000020
@@ -553,9 +606,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a142b8c376b6ebe4092a5c35d0e7f761, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.StageBarrier
-  startClosed: 0
-  visualRoot: {fileID: 300000024}
-  blockingCollider: {fileID: 300000022}
+  startClosed_: 0
+  visualRoot_: {fileID: 300000024}
+  blockingCollider_: {fileID: 300000022}
 --- !u!1 &300000024
 GameObject:
   m_ObjectHideFlags: 0
@@ -713,9 +766,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a142b8c376b6ebe4092a5c35d0e7f761, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.StageBarrier
-  startClosed: 0
-  visualRoot: {fileID: 300000034}
-  blockingCollider: {fileID: 300000032}
+  startClosed_: 0
+  visualRoot_: {fileID: 300000034}
+  blockingCollider_: {fileID: 300000032}
 --- !u!1 &300000034
 GameObject:
   m_ObjectHideFlags: 0
@@ -853,8 +906,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814203c62b48ba94da9c12820e7c0487, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.StageEnemy
-  battleZone: {fileID: 0}
-  disableOnDefeated: 1
+  battleZone_: {fileID: 0}
+  disableOnDefeated_: 1
 --- !u!23 &305848722
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1070,8 +1123,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814203c62b48ba94da9c12820e7c0487, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.StageEnemy
-  battleZone: {fileID: 0}
-  disableOnDefeated: 1
+  battleZone_: {fileID: 0}
+  disableOnDefeated_: 1
 --- !u!23 &405966397
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1196,9 +1249,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a142b8c376b6ebe4092a5c35d0e7f761, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.StageBarrier
-  startClosed: 0
-  visualRoot: {fileID: 1630703422}
-  blockingCollider: {fileID: 541252980}
+  startClosed_: 0
+  visualRoot_: {fileID: 1630703422}
+  blockingCollider_: {fileID: 541252980}
 --- !u!65 &541252980
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1268,27 +1321,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 026b5fad97ddf3840bd121a3df863e76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.BattleZone
-  zoneId: Arena01
-  triggerOnce: 1
-  startOnEnter: 1
-  useOverlapPolling: 1
-  activatorLayers:
+  zoneId_: Arena01
+  triggerOnce_: 1
+  startOnEnter_: 1
+  useOverlapPolling_: 1
+  activatorLayers_:
     serializedVersion: 2
     m_Bits: 64
-  requiredTag: 
-  barriers:
+  requiredTag_: 
+  barriers_:
   - {fileID: 541252979}
   - {fileID: 1689806535}
-  findEnemiesInChildren: 1
-  resetEnemiesOnBattleStart: 1
-  enemies: []
-  onBattleStarted:
+  findEnemiesInChildren_: 1
+  resetEnemiesOnBattleStart_: 1
+  enemies_: []
+  onBattleStarted_:
     m_PersistentCalls:
       m_Calls: []
-  onBattleCleared:
+  onBattleCleared_:
     m_PersistentCalls:
       m_Calls: []
-  onRemainingEnemyCountChanged:
+  onRemainingEnemyCountChanged_:
     m_PersistentCalls:
       m_Calls: []
 --- !u!65 &606408687
@@ -1359,8 +1412,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814203c62b48ba94da9c12820e7c0487, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.StageEnemy
-  battleZone: {fileID: 0}
-  disableOnDefeated: 1
+  battleZone_: {fileID: 0}
+  disableOnDefeated_: 1
 --- !u!23 &785057875
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1580,8 +1633,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814203c62b48ba94da9c12820e7c0487, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.StageEnemy
-  battleZone: {fileID: 0}
-  disableOnDefeated: 1
+  battleZone_: {fileID: 0}
+  disableOnDefeated_: 1
 --- !u!23 &1085079971
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1819,8 +1872,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814203c62b48ba94da9c12820e7c0487, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.StageEnemy
-  battleZone: {fileID: 0}
-  disableOnDefeated: 1
+  battleZone_: {fileID: 0}
+  disableOnDefeated_: 1
 --- !u!23 &1354166801
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2035,9 +2088,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a142b8c376b6ebe4092a5c35d0e7f761, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.StageBarrier
-  startClosed: 0
-  visualRoot: {fileID: 2100541342}
-  blockingCollider: {fileID: 1689806536}
+  startClosed_: 0
+  visualRoot_: {fileID: 2100541342}
+  blockingCollider_: {fileID: 1689806536}
 --- !u!65 &1689806536
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2266,8 +2319,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814203c62b48ba94da9c12820e7c0487, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.StageEnemy
-  battleZone: {fileID: 0}
-  disableOnDefeated: 1
+  battleZone_: {fileID: 0}
+  disableOnDefeated_: 1
 --- !u!23 &1736759617
 MeshRenderer:
   m_ObjectHideFlags: 0

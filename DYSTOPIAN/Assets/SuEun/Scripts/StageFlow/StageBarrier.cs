@@ -1,24 +1,28 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dystopian.SuEun.StageFlow
 {
     public class StageBarrier : MonoBehaviour
     {
-        [SerializeField] private bool startClosed;
-        [SerializeField] private GameObject visualRoot;
-        [SerializeField] private Collider blockingCollider;
+        [FormerlySerializedAs("startClosed")]
+        [SerializeField] private bool startClosed_;
+        [FormerlySerializedAs("visualRoot")]
+        [SerializeField] private GameObject visualRoot_;
+        [FormerlySerializedAs("blockingCollider")]
+        [SerializeField] private Collider blockingCollider_;
 
         public bool IsClosed { get; private set; }
 
         private void Awake()
         {
-            if (visualRoot == null)
-                visualRoot = gameObject;
+            if (visualRoot_ == null)
+                visualRoot_ = gameObject;
 
-            if (blockingCollider == null)
-                blockingCollider = GetComponent<Collider>();
+            if (blockingCollider_ == null)
+                blockingCollider_ = GetComponent<Collider>();
 
-            SetClosed(startClosed);
+            SetClosed(startClosed_);
         }
 
         public void Close()
@@ -35,11 +39,11 @@ namespace Dystopian.SuEun.StageFlow
         {
             IsClosed = closed;
 
-            if (visualRoot != null)
-                visualRoot.SetActive(closed);
+            if (visualRoot_ != null)
+                visualRoot_.SetActive(closed);
 
-            if (blockingCollider != null)
-                blockingCollider.enabled = closed;
+            if (blockingCollider_ != null)
+                blockingCollider_.enabled = closed;
         }
     }
 }

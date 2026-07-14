@@ -1,11 +1,14 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dystopian.SuEun.StageFlow
 {
     public class StageFlowDebugUI : MonoBehaviour
     {
-        [SerializeField] private bool showDebugUI = true;
-        [SerializeField] private bool showRemainingEnemyUI = true;
+        [FormerlySerializedAs("showDebugUI")]
+        [SerializeField] private bool showDebugUI_ = true;
+        [FormerlySerializedAs("showRemainingEnemyUI")]
+        [SerializeField] private bool showRemainingEnemyUI_ = true;
 
         private void OnGUI()
         {
@@ -14,7 +17,7 @@ namespace Dystopian.SuEun.StageFlow
                 ? manager.ActiveZone.ZoneId
                 : "None";
 
-            if (showDebugUI)
+            if (showDebugUI_)
             {
                 GUILayout.BeginArea(new Rect(16f, 16f, 360f, 140f), GUI.skin.box);
                 GUILayout.Label("Stage Flow Prototype");
@@ -25,7 +28,7 @@ namespace Dystopian.SuEun.StageFlow
                 GUILayout.EndArea();
             }
 
-            if (!showRemainingEnemyUI || manager == null || manager.ActiveZone == null)
+            if (!showRemainingEnemyUI_ || manager == null || manager.ActiveZone == null)
                 return;
 
             Rect enemyCountRect = new Rect(Screen.width - 256f, Screen.height - 88f, 240f, 72f);

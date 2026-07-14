@@ -1,77 +1,96 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace Dystopian.SuEun.StageFlow
 {
     [RequireComponent(typeof(Collider))]
     public class BattleZone : MonoBehaviour
     {
-        [SerializeField] private string zoneId = "BattleZone";
-        [SerializeField] private bool triggerOnce = true;
-        [SerializeField] private bool startOnEnter = true;
-        [SerializeField] private bool useOverlapPolling = true;
-        [SerializeField] private LayerMask activatorLayers = ~0;
-        [SerializeField] private string requiredTag = "";
-        [SerializeField] private StageBarrier[] barriers;
+        [FormerlySerializedAs("zoneId")]
+        [SerializeField] private string zoneId_ = "BattleZone";
+        [FormerlySerializedAs("triggerOnce")]
+        [SerializeField] private bool triggerOnce_ = true;
+        [FormerlySerializedAs("startOnEnter")]
+        [SerializeField] private bool startOnEnter_ = true;
+        [FormerlySerializedAs("useOverlapPolling")]
+        [SerializeField] private bool useOverlapPolling_ = true;
+        [FormerlySerializedAs("activatorLayers")]
+        [SerializeField] private LayerMask activatorLayers_ = ~0;
+        [FormerlySerializedAs("requiredTag")]
+        [SerializeField] private string requiredTag_ = "";
+        [FormerlySerializedAs("barriers")]
+        [SerializeField] private StageBarrier[] barriers_;
 
         [Header("Enemies")]
-        [SerializeField] private bool findEnemiesInChildren = true;
-        [SerializeField] private bool resetEnemiesOnBattleStart = true;
-        [SerializeField] private StageEnemy[] enemies;
+        [FormerlySerializedAs("findEnemiesInChildren")]
+        [SerializeField] private bool findEnemiesInChildren_ = true;
+        [FormerlySerializedAs("resetEnemiesOnBattleStart")]
+        [SerializeField] private bool resetEnemiesOnBattleStart_ = true;
+        [FormerlySerializedAs("enemies")]
+        [SerializeField] private StageEnemy[] enemies_;
 
         [Header("Events")]
-        [SerializeField] private UnityEvent onBattleStarted;
-        [SerializeField] private UnityEvent onBattleCleared;
-        [SerializeField] private UnityEvent<int> onRemainingEnemyCountChanged;
+        [FormerlySerializedAs("onBattleStarted")]
+        [SerializeField] private UnityEvent onBattleStarted_;
+        [FormerlySerializedAs("onBattleCleared")]
+        [SerializeField] private UnityEvent onBattleCleared_;
+        [FormerlySerializedAs("onRemainingEnemyCountChanged")]
+        [SerializeField] private UnityEvent<int> onRemainingEnemyCountChanged_;
 
-        private readonly List<StageEnemy> trackedEnemies = new();
-        private bool hasTriggered;
-        private bool isRunning;
-        private int remainingEnemyCount;
-        private Collider triggerCollider;
+        private readonly List<StageEnemy> trackedEnemies_ = new();
+        private bool hasTriggered_;
+        private bool isRunning_;
+        private int remainingEnemyCount_;
+        private Collider triggerCollider_;
 
-        public string ZoneId => zoneId;
-        public bool IsRunning => isRunning;
-        public bool HasTriggered => hasTriggered;
-        public int RemainingEnemyCount => remainingEnemyCount;
-        public int TotalEnemyCount => trackedEnemies.Count;
+        public string ZoneId => zoneId_;
+        public bool IsRunning => isRunning_;
+        public bool HasTriggered => hasTriggered_;
+        public int RemainingEnemyCount => remainingEnemyCount_;
+        public int TotalEnemyCount => trackedEnemies_.Count;
+
+        public event Action<BattleZone> BattleStarted;
+        public event Action<BattleZone> BattleCleared;
+        public event Action<BattleZone, int> RemainingEnemyCountChanged;
 
         private void Reset()
         {
-            triggerCollider = GetComponent<Collider>();
-            triggerCollider.isTrigger = true;
+            triggerCollider_ = GetComponent<Collider>();
+            triggerCollider_.isTrigger = true;
         }
 
         private void Awake()
         {
-            triggerCollider = GetComponent<Collider>();
-            triggerCollider.isTrigger = true;
+            triggerCollider_ = GetComponent<Collider>();
+            triggerCollider_.isTrigger = true;
         }
 
         private void Update()
         {
-            if (!useOverlapPolling || !startOnEnter)
+            if (!useOverlapPolling_ || !startOnEnter_)
                 return;
 
-            if (triggerOnce && hasTriggered)
+            if (triggerOnce_ && hasTriggered_)
                 return;
 
-            if (isRunning || triggerCollider == null)
+            if (isRunning_ || triggerCollider_ == null)
                 return;
 
-            Bounds bounds = triggerCollider.bounds;
+            Bounds bounds = triggerCollider_.bounds;
             Collider[] overlaps = Physics.OverlapBox(
                 bounds.center,
                 bounds.extents,
                 transform.rotation,
-                activatorLayers,
+                activatorLayers_,
                 QueryTriggerInteraction.Ignore
             );
 
             foreach (Collider overlap in overlaps)
             {
-                if (overlap == null || overlap == triggerCollider)
+                if (overlap == null || overlap == triggerCollider_)
                     continue;
 
                 if (!IsValidActivator(overlap.gameObject))
@@ -84,10 +103,10 @@ namespace Dystopian.SuEun.StageFlow
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!startOnEnter)
+            if (!startOnEnter_)
                 return;
 
-            if (triggerOnce && hasTriggered)
+            if (triggerOnce_ && hasTriggered_)
                 return;
 
             if (!IsValidActivator(other.gameObject))
@@ -101,34 +120,35 @@ namespace Dystopian.SuEun.StageFlow
             if (activator == null)
                 return false;
 
-            if (activatorLayers.value != 0)
+            if (activatorLayers_.value != 0)
             {
                 int activatorLayerMask = 1 << activator.layer;
 
-                if ((activatorLayers.value & activatorLayerMask) == 0)
+                if ((activatorLayers_.value & activatorLayerMask) == 0)
                     return false;
             }
 
-            return string.IsNullOrWhiteSpace(requiredTag) || activator.CompareTag(requiredTag);
+            return string.IsNullOrWhiteSpace(requiredTag_) || activator.CompareTag(requiredTag_);
         }
 
         [ContextMenu("Start Battle")]
         public void StartBattle()
         {
-            if (isRunning)
+            if (isRunning_)
                 return;
 
             PrepareEnemiesForBattle();
 
-            hasTriggered = true;
-            isRunning = true;
+            hasTriggered_ = true;
+            isRunning_ = true;
 
             SetBarriersClosed(true);
             StageFlowManager.Instance?.NotifyBattleStarted(this);
-            onBattleStarted?.Invoke();
+            BattleStarted?.Invoke(this);
+            onBattleStarted_?.Invoke();
             NotifyRemainingEnemyCountChanged();
 
-            Debug.Log($"[StageFlow] Battle started: {zoneId}");
+            Debug.Log($"[StageFlow] Battle started: {zoneId_}");
 
             TryClearIfNoEnemiesRemain();
         }
@@ -136,35 +156,36 @@ namespace Dystopian.SuEun.StageFlow
         [ContextMenu("Clear Battle")]
         public void ClearBattle()
         {
-            if (!isRunning)
+            if (!isRunning_)
                 return;
 
-            isRunning = false;
+            isRunning_ = false;
 
             SetBarriersClosed(false);
             NotifyRemainingEnemyCountChanged();
             StageFlowManager.Instance?.NotifyBattleCleared(this);
-            onBattleCleared?.Invoke();
+            BattleCleared?.Invoke(this);
+            onBattleCleared_?.Invoke();
 
-            Debug.Log($"[StageFlow] Battle cleared: {zoneId}");
+            Debug.Log($"[StageFlow] Battle cleared: {zoneId_}");
         }
 
         public void NotifyEnemyDefeated(StageEnemy enemy)
         {
-            if (enemy != null && !trackedEnemies.Contains(enemy))
-                trackedEnemies.Add(enemy);
+            if (enemy != null && !trackedEnemies_.Contains(enemy))
+                trackedEnemies_.Add(enemy);
 
-            SetRemainingEnemyCount(remainingEnemyCount - 1);
+            SetRemainingEnemyCount(remainingEnemyCount_ - 1);
         }
 
         public void NotifyEnemyDefeated()
         {
-            SetRemainingEnemyCount(remainingEnemyCount - 1);
+            SetRemainingEnemyCount(remainingEnemyCount_ - 1);
         }
 
         public void SetRemainingEnemyCount(int count)
         {
-            remainingEnemyCount = Mathf.Max(0, count);
+            remainingEnemyCount_ = Mathf.Max(0, count);
             NotifyRemainingEnemyCountChanged();
             TryClearIfNoEnemiesRemain();
         }
@@ -172,7 +193,7 @@ namespace Dystopian.SuEun.StageFlow
         [ContextMenu("Debug/Defeat One Enemy")]
         public void DefeatOneEnemyForDebug()
         {
-            foreach (StageEnemy enemy in trackedEnemies)
+            foreach (StageEnemy enemy in trackedEnemies_)
             {
                 if (enemy == null || enemy.IsDefeated)
                     continue;
@@ -181,41 +202,41 @@ namespace Dystopian.SuEun.StageFlow
                 return;
             }
 
-            Debug.LogWarning($"[StageFlow] No remaining enemies in {zoneId}.");
+            Debug.LogWarning($"[StageFlow] No remaining enemies in {zoneId_}.");
         }
 
         [ContextMenu("Reset Zone")]
         public void ResetZone()
         {
-            hasTriggered = false;
-            isRunning = false;
+            hasTriggered_ = false;
+            isRunning_ = false;
             PrepareEnemiesForBattle();
             SetBarriersClosed(false);
         }
 
         private void PrepareEnemiesForBattle()
         {
-            trackedEnemies.Clear();
+            trackedEnemies_.Clear();
 
-            AddEnemies(enemies);
+            AddEnemies(enemies_);
 
-            if (findEnemiesInChildren)
+            if (findEnemiesInChildren_)
                 AddEnemies(GetComponentsInChildren<StageEnemy>(true));
 
-            remainingEnemyCount = 0;
+            remainingEnemyCount_ = 0;
 
-            foreach (StageEnemy enemy in trackedEnemies)
+            foreach (StageEnemy enemy in trackedEnemies_)
             {
                 if (enemy == null)
                     continue;
 
                 enemy.BindToZone(this);
 
-                if (resetEnemiesOnBattleStart)
+                if (resetEnemiesOnBattleStart_)
                     enemy.ResetForBattle();
 
                 if (!enemy.IsDefeated)
-                    remainingEnemyCount++;
+                    remainingEnemyCount_++;
             }
         }
 
@@ -226,21 +247,23 @@ namespace Dystopian.SuEun.StageFlow
 
             foreach (StageEnemy enemy in enemiesToAdd)
             {
-                if (enemy == null || trackedEnemies.Contains(enemy))
+                if (enemy == null || trackedEnemies_.Contains(enemy))
                     continue;
 
-                trackedEnemies.Add(enemy);
+                trackedEnemies_.Add(enemy);
             }
         }
 
         private void NotifyRemainingEnemyCountChanged()
         {
-            onRemainingEnemyCountChanged?.Invoke(remainingEnemyCount);
+            RemainingEnemyCountChanged?.Invoke(this, remainingEnemyCount_);
+            StageFlowManager.Instance?.NotifyRemainingEnemyCountChanged(this, remainingEnemyCount_);
+            onRemainingEnemyCountChanged_?.Invoke(remainingEnemyCount_);
         }
 
         private void TryClearIfNoEnemiesRemain()
         {
-            if (!isRunning || remainingEnemyCount > 0)
+            if (!isRunning_ || remainingEnemyCount_ > 0)
                 return;
 
             ClearBattle();
@@ -248,10 +271,10 @@ namespace Dystopian.SuEun.StageFlow
 
         private void SetBarriersClosed(bool closed)
         {
-            if (barriers == null)
+            if (barriers_ == null)
                 return;
 
-            foreach (StageBarrier barrier in barriers)
+            foreach (StageBarrier barrier in barriers_)
             {
                 if (barrier == null)
                     continue;
