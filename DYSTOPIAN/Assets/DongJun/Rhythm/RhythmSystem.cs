@@ -5,6 +5,7 @@ using System.Globalization;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Dystopian.Rhythm
 {
@@ -83,6 +84,7 @@ namespace Dystopian.Rhythm
 
     [Serializable] public sealed class NoteUnityEvent : UnityEvent<RhythmChartNote> { }
     [Serializable] public sealed class JudgementUnityEvent : UnityEvent<RhythmJudgement, float> { }
+    [Serializable] public sealed class IntUnityEvent : UnityEvent<int> { }
 
     [DisallowMultipleComponent]
     public sealed class RhythmSystem : MonoBehaviour
@@ -136,8 +138,24 @@ namespace Dystopian.Rhythm
         public bool showOpponentJudgementZones;
         [Range(0f, 1f)] public float judgementZoneAlpha = 0.24f;
         [Min(0f)] public float judgementTextSeconds = 0.55f;
+        [Tooltip("When enabled, RhythmSystem applies the judgement font and size at runtime.")]
+        public bool controlJudgementPresentation;
         [Min(8)] public int judgementFontSize = 42;
+        public TMP_FontAsset judgementFont;
         public bool logJudgements;
+
+        [Header("Combo")]
+        public bool showCombo = true;
+        public bool hideComboAtZero;
+        public bool resetComboOnBadOrMiss = true;
+        [Tooltip("When enabled, RhythmSystem applies the combo font, size, color, position, and bounds at runtime.")]
+        public bool controlComboPresentation;
+        [Min(8)] public int comboFontSize = 32;
+        public TMP_FontAsset comboFont;
+        public Color comboColor = Color.white;
+        public Vector2 comboOffset = Vector2.zero;
+        public Vector2 comboTextSize = new Vector2(320f, 64f);
+        public string comboFormat = "{0}";
 
         [Header("Player Events")]
         public UnityEvent onChartStarted = new UnityEvent();
@@ -150,6 +168,7 @@ namespace Dystopian.Rhythm
         public UnityEvent onFreeSingleInput = new UnityEvent();
         public UnityEvent onFreeLongInput = new UnityEvent();
         public JudgementUnityEvent onJudged = new JudgementUnityEvent();
+        public IntUnityEvent onComboChanged = new IntUnityEvent();
 
         [Header("Enemy / Boss Events")]
         public NoteUnityEvent onEnemyAction = new NoteUnityEvent();
@@ -164,7 +183,8 @@ namespace Dystopian.Rhythm
         [SerializeField] private RectTransform noteLayer;
         [SerializeField] private RectTransform playerJudgementLine;
         [SerializeField] private RectTransform opponentJudgementLine;
-        [SerializeField] private Text judgementText;
+        [SerializeField] private TextMeshProUGUI judgementText;
+        [SerializeField] private TextMeshProUGUI comboText;
 
         private readonly Queue<RhythmNoteView> pool = new Queue<RhythmNoteView>();
         private readonly List<RuntimeNote> runtimeNotes = new List<RuntimeNote>();
@@ -178,6 +198,7 @@ namespace Dystopian.Rhythm
         private bool musicPriming;
         private bool pendingMusicStart;
         private int activeAttackStates;
+        private int combo;
         private float hideJudgementAt;
 
         private sealed class RuntimeNote
@@ -208,6 +229,7 @@ namespace Dystopian.Rhythm
         public float CurrentBeat => (CurrentSongSeconds - firstBeatOffsetSeconds) * Mathf.Max(1f, bpm) / 60f;
         public bool IsChartRunning => clockRunning;
         public bool IsAttackStateActive => activeAttackStates > 0;
+        public int CurrentCombo => combo;
 
         private void Reset()
         {
@@ -221,6 +243,7 @@ namespace Dystopian.Rhythm
             travelBeats = Mathf.Max(0.1f, travelBeats);
             initialPoolSize = Mathf.Max(1, initialPoolSize);
             judgement.Clamp();
+            if (comboText != null) UpdateComboText();
         }
 
         private void Awake()
@@ -286,6 +309,7 @@ namespace Dystopian.Rhythm
             foreach (RuntimeNote note in runtimeNotes) if (note.view != null) ReturnToPool(note.view);
             runtimeNotes.Clear();
             activeAttackStates = 0;
+            SetCombo(0);
             musicStarted = false;
             pendingMusicStart = false;
             pendingChartStart = false;
@@ -547,19 +571,19 @@ namespace Dystopian.Rhythm
                 noteLayer = CreateRect("Pooled Notes", panel);
                 Stretch(noteLayer);
 
-                GameObject textObject = new GameObject("Judgement Text", typeof(RectTransform), typeof(Text));
+                GameObject textObject = new GameObject("Judgement Text", typeof(RectTransform), typeof(TextMeshProUGUI));
                 textObject.transform.SetParent(canvasObject.transform, false);
-                judgementText = textObject.GetComponent<Text>();
+                judgementText = textObject.GetComponent<TextMeshProUGUI>();
                 RectTransform textRect = textObject.GetComponent<RectTransform>();
                 textRect.anchorMin = textRect.anchorMax = new Vector2(0.5f, 0f);
                 textRect.pivot = new Vector2(0.5f, 0f);
                 textRect.sizeDelta = new Vector2(600f, 80f);
                 textRect.anchoredPosition = new Vector2(0f, layout.bottomMargin + layout.panelSize.y + 15f);
-                judgementText.alignment = TextAnchor.MiddleCenter;
-                judgementText.fontSize = judgementFontSize;
-                judgementText.fontStyle = FontStyle.Bold;
+                judgementText.alignment = TextAlignmentOptions.Center;
+                judgementText.fontStyle = FontStyles.Bold;
                 judgementText.raycastTarget = false;
                 judgementText.text = string.Empty;
+                ApplyJudgementPresentation();
                 judgementText.gameObject.SetActive(false);
             }
             else
@@ -570,15 +594,64 @@ namespace Dystopian.Rhythm
                 playerJudgementLine = panel != null ? panel.Find("Player Judgement Line") as RectTransform : null;
                 opponentJudgementLine = panel != null ? panel.Find("Opponent Judgement Line") as RectTransform : null;
                 Transform textTransform = existing.Find("Judgement Text");
-                judgementText = textTransform != null ? textTransform.GetComponent<Text>() : null;
+                if (textTransform != null)
+                {
+                    Text legacyText = textTransform.GetComponent<Text>();
+                    if (legacyText != null)
+                    {
+                        if (Application.isPlaying) Destroy(legacyText); else DestroyImmediate(legacyText);
+                    }
+                    judgementText = textTransform.GetComponent<TextMeshProUGUI>();
+                    if (judgementText == null)
+                    {
+                        judgementText = textTransform.gameObject.AddComponent<TextMeshProUGUI>();
+                        judgementText.alignment = TextAlignmentOptions.Center;
+                        judgementText.fontStyle = FontStyles.Bold;
+                        judgementText.raycastTarget = false;
+                        ApplyJudgementPresentation();
+                    }
+                }
             }
-            AssignRuntimeFont();
+            EnsureComboText();
         }
 
-        private void AssignRuntimeFont()
+        private void EnsureComboText()
         {
-            if (judgementText == null || judgementText.font != null) return;
-            try { judgementText.font = Font.CreateDynamicFontFromOSFont("Arial", judgementFontSize); } catch { }
+            if (panel == null) return;
+            Transform existing = panel.Find("Combo Text");
+            bool created = false;
+            if (existing == null)
+            {
+                GameObject comboObject = new GameObject("Combo Text", typeof(RectTransform), typeof(TextMeshProUGUI));
+                comboObject.transform.SetParent(panel, false);
+                comboText = comboObject.GetComponent<TextMeshProUGUI>();
+                created = true;
+            }
+            else
+            {
+                Text legacyText = existing.GetComponent<Text>();
+                if (legacyText != null)
+                {
+                    if (Application.isPlaying) Destroy(legacyText); else DestroyImmediate(legacyText);
+                }
+                comboText = existing.GetComponent<TextMeshProUGUI>();
+                if (comboText == null)
+                {
+                    comboText = existing.gameObject.AddComponent<TextMeshProUGUI>();
+                    created = true;
+                }
+            }
+
+            comboText.raycastTarget = false;
+            if (created)
+            {
+                RectTransform comboRect = comboText.rectTransform;
+                comboRect.anchorMin = comboRect.anchorMax = comboRect.pivot = new Vector2(0.5f, 0.5f);
+                comboText.alignment = TextAlignmentOptions.Center;
+                comboText.fontStyle = FontStyles.Bold;
+                ApplyComboPresentation();
+            }
+            UpdateComboText();
         }
 
         private static RectTransform CreateRect(string name, Transform parent)
@@ -939,13 +1012,58 @@ namespace Dystopian.Rhythm
             return RhythmJudgement.Miss;
         }
 
+        public void SetCombo(int value)
+        {
+            combo = Mathf.Max(0, value);
+            UpdateComboText();
+            onComboChanged.Invoke(combo);
+        }
+
+        public void ResetCombo()
+        {
+            SetCombo(0);
+        }
+
+        private void ApplyJudgementToCombo(RhythmJudgement rating)
+        {
+            if (rating <= RhythmJudgement.Good) SetCombo(combo + 1);
+            else if (resetComboOnBadOrMiss) SetCombo(0);
+        }
+
+        private void UpdateComboText()
+        {
+            if (comboText == null) return;
+            if (controlComboPresentation) ApplyComboPresentation();
+            try { comboText.text = string.Format(CultureInfo.InvariantCulture, comboFormat, combo); }
+            catch (FormatException) { comboText.text = combo.ToString(CultureInfo.InvariantCulture); }
+            comboText.gameObject.SetActive(showCombo && (!hideComboAtZero || combo > 0));
+        }
+
+        private void ApplyComboPresentation()
+        {
+            if (comboText == null) return;
+            RectTransform comboRect = comboText.rectTransform;
+            comboRect.anchoredPosition = comboOffset;
+            comboRect.sizeDelta = comboTextSize;
+            if (comboFont != null) comboText.font = comboFont;
+            comboText.fontSize = comboFontSize;
+            comboText.color = comboColor;
+        }
+
+        private void ApplyJudgementPresentation()
+        {
+            if (judgementText == null) return;
+            if (judgementFont != null) judgementText.font = judgementFont;
+            judgementText.fontSize = judgementFontSize;
+        }
+
         private void ShowJudgement(RhythmJudgement rating, float deltaSeconds)
         {
+            ApplyJudgementToCombo(rating);
             onJudged.Invoke(rating, deltaSeconds);
             if (logJudgements) Debug.Log("[Rhythm] " + rating.ToString().ToUpperInvariant() + " (" + deltaSeconds.ToString("+0.000;-0.000;0.000") + "s)", this);
             if (judgementText == null) return;
-            AssignRuntimeFont();
-            judgementText.fontSize = judgementFontSize;
+            if (controlJudgementPresentation) ApplyJudgementPresentation();
             judgementText.text = rating == RhythmJudgement.Critical ? "CRITICAL!" : rating.ToString().ToUpperInvariant();
             judgementText.color = GetJudgementColor(rating);
             judgementText.gameObject.SetActive(true);
