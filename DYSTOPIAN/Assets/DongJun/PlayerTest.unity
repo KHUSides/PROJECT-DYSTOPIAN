@@ -2342,44 +2342,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53c15b0efd9ad5d4a8525a9aaa8a11f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  visualRoot: {fileID: 1197201102}
-  lockedZ: 0
-  moveSpeed: 8
-  chargeMoveSpeed: 1.5
-  gravity: -45
-  groundedStickVelocity: -2
-  initialJumpVelocity: 10
-  jumpHoldAcceleration: 20
-  maxJumpHoldTime: 0.3
-  maxUpwardVelocity: 17.5
-  allowJumpWhileCharging: 0
-  normalAttackCooldown: 0.25
-  normalAttackColliderActiveDuration: 0.25
-  attackColliderRoot: {fileID: 856717454}
-  normalAttackColliderLeft: {fileID: 1473541454}
-  normalAttackColliderRight: {fileID: 489990436}
-  normalAttackColliderUp: {fileID: 674615651}
-  normalAttackColliderDown: {fileID: 110905246}
-  showNormalAttackColliderDebug: 1
-  normalAttackColliderDebugColor: {r: 1, g: 0.1, b: 0.1, a: 1}
-  normalAttackColliderDebugLineWidth: 0.04
-  dashObstacleMask:
+  lockedZ_: 0
+  moveSpeed_: 8
+  chargeMoveSpeed_: 1.5
+  gravity_: -45
+  groundedStickVelocity_: -2
+  initialJumpVelocity_: 10
+  jumpHoldAcceleration_: 20
+  maxJumpHoldTime_: 0.3
+  maxUpwardVelocity_: 17.5
+  allowJumpWhileCharging_: 0
+  normalAttackCooldown_: 0.25
+  normalAttackColliderActiveDuration_: 0.25
+  showNormalAttackColliderDebug_: 1
+  normalAttackColliderDebugColor_: {r: 1, g: 0.1, b: 0.1, a: 1}
+  normalAttackColliderDebugLineWidth_: 0.04
+  dashObstacleMask_:
     serializedVersion: 2
     m_Bits: 128
-  maxChargeTime: 1.2
-  dashMinDistance: 2
-  dashMaxDistance: 6
-  dashWallBuffer: 0.08
-  requireGroundedForChargeAttack: 0
-  airDashFloatDuration: 0.18
-  airDashGravityMultiplier: 0.35
-  maxFallSpeedAfterAirDash: -2
-  chargedAttackRangeCollider: {fileID: 347687232}
-  chargedAttackColliderActiveDuration: 0.25
-  chargedAttackRangeWidth: 1.2
-  showChargedAttackColliderDebug: 1
-  chargedAttackColliderDebugColor: {r: 0.2, g: 0.8, b: 1, a: 1}
-  chargedAttackColliderDebugLineWidth: 0.05
+  maxChargeTime_: 1.2
+  dashMinDistance_: 2
+  dashMaxDistance_: 6
+  dashWallBuffer_: 0.08
+  requireGroundedForChargeAttack_: 0
+  airDashFloatDuration_: 0.18
+  airDashGravityMultiplier_: 0.35
+  maxFallSpeedAfterAirDash_: -2
+  chargedAttackColliderActiveDuration_: 0.25
+  showChargedAttackColliderDebug_: 1
+  chargedAttackColliderDebugColor_: {r: 0.2, g: 0.8, b: 1, a: 1}
+  chargedAttackColliderDebugLineWidth_: 0.05
 --- !u!4 &1522286012
 Transform:
   m_ObjectHideFlags: 0
@@ -2409,24 +2401,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b9a626175d485e46a7ac55bb0c9aaa5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  maxHealth: 100
-  currentHealth: 0
-  showHealthBar: 1
-  healthBarAnchoredPosition: {x: 24, y: -24}
-  healthBarSize: {x: 260, y: 28}
-  healthBarBackColor: {r: 0.1, g: 0.1, b: 0.1, a: 0.75}
-  healthBarFillColor: {r: 0.85, g: 0.1, b: 0.1, a: 0.9}
-  healthBarTextColor: {r: 1, g: 1, b: 1, a: 1}
-  enableDebugInput: 1
-  debugDamageAmount: 10
-  debugHealAmount: 10
-  healthCanvas: {fileID: 1436609694}
-  healthBarRoot: {fileID: 1452962049}
-  healthBarBack: {fileID: 76316991}
-  healthBarFill: {fileID: 1139374274}
-  healthBarText: {fileID: 1168468727}
-  healthBarBackImage: {fileID: 76316992}
-  healthBarFillImage: {fileID: 1139374275}
+  maxHealth_: 100
+  currentHealth_: 0
+  showHealthBar_: 1
+  healthBarAnchoredPosition_: {x: 24, y: -24}
+  healthBarSize_: {x: 260, y: 28}
+  healthBarBackColor_: {r: 0.1, g: 0.1, b: 0.1, a: 0.75}
+  healthBarFillColor_: {r: 0.85, g: 0.1, b: 0.1, a: 0.9}
+  healthBarTextColor_: {r: 1, g: 1, b: 1, a: 1}
+  enableDebugInput_: 1
+  debugDamageAmount_: 10
+  debugHealAmount_: 10
 --- !u!134 &1562569021
 PhysicsMaterial:
   m_ObjectHideFlags: 0
@@ -3123,19 +3108,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1044b06cc46acaf468dc0180b3b30570, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerUpgradeUI
-  player: {fileID: 1522286012}
-  targetCamera: {fileID: 1396229556}
-  canvasRect: {fileID: 1425070195}
-  panel: {fileID: 2128148903}
-  panelCanvasGroup: {fileID: 2128148907}
-  topRightOffset: {x: 2.5, y: 1.5}
-  topLeftOffset: {x: -1.35, y: 1.75}
-  bottomRightOffset: {x: 1.35, y: -0.85}
-  bottomLeftOffset: {x: -1.35, y: -0.85}
-  screenPadding: 24
-  toggleKey: 49
-  alternateToggleKey: 257
-  isVisibleOnStart: 0
+  topRightOffset_: {x: 2.5, y: 1.5}
+  topLeftOffset_: {x: -1.35, y: 1.75}
+  bottomRightOffset_: {x: 1.35, y: -0.85}
+  bottomLeftOffset_: {x: -1.35, y: -0.85}
+  screenPadding_: 24
+  toggleKey_: 49
+  alternateToggleKey_: 257
+  isVisibleOnStart_: 0
 --- !u!114 &2128148905
 MonoBehaviour:
   m_ObjectHideFlags: 0

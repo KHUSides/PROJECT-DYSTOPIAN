@@ -4,73 +4,86 @@ using UnityEngine.UI;
 public class PlayerHealth : MonoBehaviour
 {
     [Header("Health")]
+    [UnityEngine.Serialization.FormerlySerializedAs("maxHealth_")]
     [SerializeField] private int maxHealth = 100;
+    [UnityEngine.Serialization.FormerlySerializedAs("currentHealth_")]
     [SerializeField] private int currentHealth = 0;
 
-    [Header("Temporary Canvas Health Bar")]
+    [Header("Canvas Health Bar")]
+    [UnityEngine.Serialization.FormerlySerializedAs("showHealthBar_")]
     [SerializeField] private bool showHealthBar = true;
+    [UnityEngine.Serialization.FormerlySerializedAs("healthBarAnchoredPosition_")]
     [SerializeField] private Vector2 healthBarAnchoredPosition = new Vector2(24f, -24f);
+    [UnityEngine.Serialization.FormerlySerializedAs("healthBarSize_")]
     [SerializeField] private Vector2 healthBarSize = new Vector2(260f, 28f);
+    [UnityEngine.Serialization.FormerlySerializedAs("healthBarBackColor_")]
     [SerializeField] private Color healthBarBackColor = new Color(0.1f, 0.1f, 0.1f, 0.75f);
+    [UnityEngine.Serialization.FormerlySerializedAs("healthBarFillColor_")]
     [SerializeField] private Color healthBarFillColor = new Color(0.85f, 0.1f, 0.1f, 0.9f);
+    [UnityEngine.Serialization.FormerlySerializedAs("healthBarTextColor_")]
     [SerializeField] private Color healthBarTextColor = Color.white;
 
     [Header("Debug Input")]
+    [UnityEngine.Serialization.FormerlySerializedAs("enableDebugInput_")]
     [SerializeField] private bool enableDebugInput = true;
+    [UnityEngine.Serialization.FormerlySerializedAs("debugDamageAmount_")]
     [SerializeField] private int debugDamageAmount = 10;
+    [UnityEngine.Serialization.FormerlySerializedAs("debugHealAmount_")]
     [SerializeField] private int debugHealAmount = 10;
 
-    [SerializeField] private Canvas healthCanvas;
-    [SerializeField] private RectTransform healthBarRoot;
-    [SerializeField] private RectTransform healthBarBack;
-    [SerializeField] private RectTransform healthBarFill;
-    [SerializeField] private Text healthBarText;
-    [SerializeField] private Image healthBarBackImage;
-    [SerializeField] private Image healthBarFillImage;
+    private RectTransform healthBarRoot;
+    private RectTransform healthBarBack;
+    private RectTransform healthBarFill;
+    private Text healthBarText;
+    private Image healthBarBackImage;
+    private Image healthBarFillImage;
 
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
     public float HealthRate => maxHealth <= 0 ? 0f : (float)currentHealth / maxHealth;
     public bool IsEmpty => currentHealth <= 0;
     public bool IsFull => currentHealth >= maxHealth;
-    public bool IsDead => IsFull;
 
-private void Awake()
+    private void Awake()
     {
-        maxHealth = Mathf.Max(1, maxHealth);
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-
-        CreateTemporaryHealthBar();
-        UpdateHealthBar();
+        ClampHealthValues();
     }
 
-private void Update()
+    private void Start()
     {
-        if (enableDebugInput)
-            HandleDebugInput();
-
-        UpdateHealthBarTransform();
+        ResolveHealthBar();
+        ApplyHealthBarSettings();
     }
 
-public void TakeDamage(int amount)
+    private void Update()
+    {
+        if (!enableDebugInput)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.Minus))
+            ReduceHealth(debugDamageAmount);
+
+        if (Input.GetKeyDown(KeyCode.Equals))
+            AddHealth(debugHealAmount);
+    }
+
+    public void TakeDamage(int amount)
     {
         ReduceHealth(amount);
     }
 
-public void Heal(int amount)
+    public void Heal(int amount)
     {
         AddHealth(amount);
     }
 
-public void AddHealth(int amount)
+    public void AddHealth(int amount)
     {
         if (amount <= 0)
             return;
 
         currentHealth = Mathf.Min(maxHealth, currentHealth + amount);
-        UpdateHealthBar();
-
-        Debug.Log($"[Health] Add {amount} / Value {currentHealth}/{maxHealth}");
+        ApplyHealthBarSettings();
     }
 
     public void ReduceHealth(int amount)
@@ -79,113 +92,44 @@ public void AddHealth(int amount)
             return;
 
         currentHealth = Mathf.Max(0, currentHealth - amount);
-        UpdateHealthBar();
-
-        Debug.Log($"[Health] Reduce {amount} / Value {currentHealth}/{maxHealth}");
+        ApplyHealthBarSettings();
     }
-
 
     public void SetHealth(int value)
     {
         currentHealth = Mathf.Clamp(value, 0, maxHealth);
-        UpdateHealthBar();
+        ApplyHealthBarSettings();
     }
 
-private void HandleDebugInput()
+    private void ResolveHealthBar()
     {
-        if (Input.GetKeyDown(KeyCode.Minus))
-            ReduceHealth(debugDamageAmount);
+        Transform healthBar = FindHealthBarInScene();
+        healthBarRoot = healthBar as RectTransform;
+        healthBarBack = healthBarRoot != null ? healthBarRoot.Find("Back") as RectTransform : null;
+        healthBarFill = healthBarBack != null ? healthBarBack.Find("Fill") as RectTransform : null;
 
-        if (Input.GetKeyDown(KeyCode.Equals))
-            AddHealth(debugHealAmount);
+        Transform textTransform = healthBarRoot != null ? healthBarRoot.Find("Text") : null;
+        healthBarText = textTransform != null ? textTransform.GetComponent<Text>() : null;
+        healthBarBackImage = healthBarBack != null ? healthBarBack.GetComponent<Image>() : null;
+        healthBarFillImage = healthBarFill != null ? healthBarFill.GetComponent<Image>() : null;
     }
 
-private void CreateTemporaryHealthBar()
+    private Transform FindHealthBarInScene()
     {
-        if (healthBarRoot != null)
+        Canvas[] canvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+
+        for (int i = 0; i < canvases.Length; i++)
         {
-            ResolveHealthBarReferencesFromHierarchy();
-            return;
+            Transform healthBar = canvases[i].transform.Find("HealthBar");
+
+            if (healthBar != null)
+                return healthBar;
         }
 
-        GameObject canvasObject = new GameObject("TemporaryHealthCanvas");
-        healthCanvas = canvasObject.AddComponent<Canvas>();
-        healthCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        healthCanvas.sortingOrder = 100;
-        canvasObject.AddComponent<CanvasScaler>();
-        canvasObject.AddComponent<GraphicRaycaster>();
-
-        GameObject rootObject = new GameObject("HealthBar");
-        rootObject.transform.SetParent(canvasObject.transform, false);
-        healthBarRoot = rootObject.AddComponent<RectTransform>();
-        healthBarRoot.anchorMin = new Vector2(0f, 1f);
-        healthBarRoot.anchorMax = new Vector2(0f, 1f);
-        healthBarRoot.pivot = new Vector2(0f, 1f);
-
-        GameObject backObject = new GameObject("Back");
-        backObject.transform.SetParent(rootObject.transform, false);
-        healthBarBack = backObject.AddComponent<RectTransform>();
-        healthBarBackImage = backObject.AddComponent<Image>();
-
-        GameObject fillObject = new GameObject("Fill");
-        fillObject.transform.SetParent(backObject.transform, false);
-        healthBarFill = fillObject.AddComponent<RectTransform>();
-        healthBarFillImage = fillObject.AddComponent<Image>();
-
-        GameObject textObject = new GameObject("Text");
-        textObject.transform.SetParent(rootObject.transform, false);
-        RectTransform textRect = textObject.AddComponent<RectTransform>();
-        healthBarText = textObject.AddComponent<Text>();
-        healthBarText.alignment = TextAnchor.MiddleCenter;
-        healthBarText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        healthBarText.fontSize = 14;
-
-        textRect.anchorMin = Vector2.zero;
-        textRect.anchorMax = Vector2.one;
-        textRect.offsetMin = Vector2.zero;
-        textRect.offsetMax = Vector2.zero;
+        return transform.Find("HealthCanvas/HealthBar");
     }
 
-private void ResolveHealthBarReferencesFromHierarchy()
-    {
-        if (healthCanvas == null)
-            healthCanvas = healthBarRoot.GetComponentInParent<Canvas>();
-
-        if (healthBarBack == null)
-        {
-            Transform back = healthBarRoot.Find("Back");
-            if (back != null)
-                healthBarBack = back as RectTransform;
-        }
-
-        if (healthBarFill == null && healthBarBack != null)
-        {
-            Transform fill = healthBarBack.Find("Fill");
-            if (fill != null)
-                healthBarFill = fill as RectTransform;
-        }
-
-        if (healthBarText == null)
-        {
-            Transform text = healthBarRoot.Find("Text");
-            if (text != null)
-                healthBarText = text.GetComponent<Text>();
-        }
-
-        if (healthBarBackImage == null && healthBarBack != null)
-            healthBarBackImage = healthBarBack.GetComponent<Image>();
-
-        if (healthBarFillImage == null && healthBarFill != null)
-            healthBarFillImage = healthBarFill.GetComponent<Image>();
-    }
-
-
-private Transform CreateBarPart(string partName, Color color, float zOffset)
-    {
-        return null;
-    }
-
-private void UpdateHealthBarTransform()
+    private void ApplyHealthBarSettings()
     {
         if (healthBarRoot == null)
             return;
@@ -193,22 +137,15 @@ private void UpdateHealthBarTransform()
         healthBarRoot.gameObject.SetActive(showHealthBar);
         healthBarRoot.anchoredPosition = healthBarAnchoredPosition;
         healthBarRoot.sizeDelta = healthBarSize;
+        StretchToParent(healthBarBack);
 
-        healthBarBack.anchorMin = Vector2.zero;
-        healthBarBack.anchorMax = Vector2.one;
-        healthBarBack.offsetMin = Vector2.zero;
-        healthBarBack.offsetMax = Vector2.zero;
-
-        healthBarFill.anchorMin = new Vector2(0f, 0f);
-        healthBarFill.anchorMax = new Vector2(Mathf.Clamp01(HealthRate), 1f);
-        healthBarFill.offsetMin = Vector2.zero;
-        healthBarFill.offsetMax = Vector2.zero;
-    }
-
-private void UpdateHealthBar()
-    {
-        if (healthBarRoot == null)
-            return;
+        if (healthBarFill != null)
+        {
+            healthBarFill.anchorMin = Vector2.zero;
+            healthBarFill.anchorMax = new Vector2(Mathf.Clamp01(HealthRate), 1f);
+            healthBarFill.offsetMin = Vector2.zero;
+            healthBarFill.offsetMax = Vector2.zero;
+        }
 
         if (healthBarBackImage != null)
             healthBarBackImage.color = healthBarBackColor;
@@ -219,18 +156,32 @@ private void UpdateHealthBar()
         if (healthBarText != null)
         {
             healthBarText.color = healthBarTextColor;
-            healthBarText.text = $"{currentHealth} / {maxHealth}";
+            healthBarText.text = currentHealth + " / " + maxHealth;
         }
+    }
 
-        UpdateHealthBarTransform();
+    private void StretchToParent(RectTransform rectTransform)
+    {
+        if (rectTransform == null)
+            return;
+
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.one;
+        rectTransform.offsetMin = Vector2.zero;
+        rectTransform.offsetMax = Vector2.zero;
+    }
+
+    private void ClampHealthValues()
+    {
+        maxHealth = Mathf.Max(1, maxHealth);
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
     }
 
     private void OnValidate()
     {
-        maxHealth = Mathf.Max(1, maxHealth);
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        ClampHealthValues();
 
         if (Application.isPlaying)
-            UpdateHealthBar();
+            ApplyHealthBarSettings();
     }
 }
