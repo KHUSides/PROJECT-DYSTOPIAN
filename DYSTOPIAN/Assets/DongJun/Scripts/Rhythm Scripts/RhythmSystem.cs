@@ -34,10 +34,14 @@ namespace Dystopian.Rhythm
         [Header("Input")]
         [SerializeField] private bool waitForStartInput = true;
         [SerializeField] private bool toggleChartWithStartKey = true;
-        [SerializeField] private KeyCode startChartKey = KeyCode.S;
+        [SerializeField] private KeyCode startChartKey = KeyCode.T;
         [SerializeField] private KeyCode singleNoteKey = KeyCode.A;
         [SerializeField] private KeyCode longNoteKey = KeyCode.D;
         [SerializeField] private bool enableFreeInputDuringAttackState = true;
+
+        [Header("Visibility")]
+        [SerializeField] private bool hideUiOnStart = true;
+        [SerializeField] private KeyCode toggleUiKey = KeyCode.R;
 
         [Header("Timing")]
         [SerializeField, Min(0.1f)] private float travelBeats = 4f;
@@ -49,7 +53,6 @@ namespace Dystopian.Rhythm
         [Header("Presentation")]
         [SerializeField] private RhythmLayout layout = new RhythmLayout();
         [SerializeField] private RhythmColors colors = new RhythmColors();
-        [SerializeField, Min(0f)] private float judgementTextSeconds = 0.55f;
         [SerializeField] private bool logJudgements;
 
         [Header("Combo")]
@@ -84,11 +87,11 @@ namespace Dystopian.Rhythm
         private readonly Queue<RhythmNoteView> notePool = new Queue<RhythmNoteView>();
 
         private AudioSource musicSource;
+        private Transform rhythmUiRoot;
         private CanvasScaler canvasScaler;
         private RectTransform noteLayer;
         private RectTransform playerJudgementLine;
         private RectTransform opponentJudgementLine;
-        private TextMeshProUGUI judgementText;
         private TextMeshProUGUI comboText;
 
         private float clockStartedAt;
@@ -103,7 +106,12 @@ namespace Dystopian.Rhythm
         private int activeAttackStates;
         private int combo;
         private int nextSpawnIndex;
-        private float hideJudgementAt;
+
+        public event Action PlayerSingleAccepted;
+        public event Action PlayerLongStarted;
+        public event Action PlayerLongEnded;
+        public event Action ChartStopped;
+        public event Action<RhythmJudgement, float> JudgementPerformed;
 
         private sealed class RuntimeNote
         {
@@ -142,6 +150,7 @@ namespace Dystopian.Rhythm
 
         public float CurrentBeat => (CurrentSongSeconds - firstBeatOffsetSeconds) * Bpm / 60f;
         public bool IsChartRunning => clockRunning;
+        public bool IsChartActive => clockRunning || pendingChartStart;
         public bool IsAttackStateActive => activeAttackStates > 0;
         public int CurrentCombo => combo;
         public float Bpm => Mathf.Max(1f, bpm);
@@ -188,6 +197,11 @@ namespace Dystopian.Rhythm
             WarmNotePool();
             RestartSong();
 
+            if (hideUiOnStart)
+            {
+                SetUiVisible(false);
+            }
+
             if (MusicClip != null)
             {
                 StartCoroutine(PrepareMusicForPlaybackCrtn());
@@ -197,6 +211,11 @@ namespace Dystopian.Rhythm
         // Uses one beat snapshot per frame so spawning, movement, and input stay synchronized.
         private void Update()
         {
+            if (Input.GetKeyDown(toggleUiKey))
+            {
+                ToggleUiVisibility();
+            }
+
             if (pendingMusicStart && musicReady && !musicPriming)
             {
                 PlayPreparedMusic();
@@ -230,7 +249,6 @@ namespace Dystopian.Rhythm
             SpawnDueNotes(beat);
             UpdateActiveNotes(beat);
             HandleRhythmInput(beat);
-            HideExpiredJudgement();
         }
 
         [ContextMenu("Restart Song")]
@@ -295,6 +313,20 @@ namespace Dystopian.Rhythm
             if (wasActive)
             {
                 onChartStopped.Invoke();
+                ChartStopped?.Invoke();
+            }
+        }
+
+        private void ToggleUiVisibility()
+        {
+            SetUiVisible(rhythmUiRoot != null && !rhythmUiRoot.gameObject.activeSelf);
+        }
+
+        private void SetUiVisible(bool visible)
+        {
+            if (rhythmUiRoot != null)
+            {
+                rhythmUiRoot.gameObject.SetActive(visible);
             }
         }
 
@@ -440,16 +472,13 @@ namespace Dystopian.Rhythm
         // Scene-owned UI is discovered once and never overwritten at runtime.
         private bool CacheSceneReferences()
         {
-            Transform rhythmRoot = transform.Find("Rhythm UI");
-            Transform panel = rhythmRoot != null ? rhythmRoot.Find("Track Panel") : null;
+            rhythmUiRoot = transform.Find("Rhythm UI");
+            Transform panel = rhythmUiRoot != null ? rhythmUiRoot.Find("Track Panel") : null;
 
-            canvasScaler = rhythmRoot != null ? rhythmRoot.GetComponent<CanvasScaler>() : null;
+            canvasScaler = rhythmUiRoot != null ? rhythmUiRoot.GetComponent<CanvasScaler>() : null;
             noteLayer = panel != null ? panel.Find("Pooled Notes") as RectTransform : null;
             playerJudgementLine = panel != null ? panel.Find("Player Judgement Line") as RectTransform : null;
             opponentJudgementLine = panel != null ? panel.Find("Opponent Judgement Line") as RectTransform : null;
-            judgementText = rhythmRoot != null
-                ? rhythmRoot.Find("Judgement Text")?.GetComponent<TextMeshProUGUI>()
-                : null;
             comboText = panel != null
                 ? panel.Find("Combo Text")?.GetComponent<TextMeshProUGUI>()
                 : null;
@@ -669,6 +698,7 @@ namespace Dystopian.Rhythm
                 note.holding_ = false;
                 note.resolved_ = true;
                 onChargeEnd.Invoke(note.data_);
+                PlayerLongEnded?.Invoke();
                 TryStartMusicFromPlayerJudgement();
                 ShowJudgement(
                     RhythmJudgement.Miss,
@@ -801,6 +831,7 @@ namespace Dystopian.Rhythm
             note.resolved_ = true;
             TryStartMusicFromPlayerJudgement();
             onPlayerSingle.Invoke(note.data_);
+            PlayerSingleAccepted?.Invoke();
             ShowJudgement(rating, deltaSeconds);
             DetachNoteView(note);
         }
@@ -824,6 +855,7 @@ namespace Dystopian.Rhythm
             note.holding_ = true;
             TryStartMusicFromPlayerJudgement();
             onChargeStart.Invoke(note.data_);
+            PlayerLongStarted?.Invoke();
             ShowJudgement(startRating, deltaSeconds);
         }
 
@@ -841,6 +873,7 @@ namespace Dystopian.Rhythm
                 beat - note.data_.Beat - note.data_.DurationBeats);
             RhythmJudgement endRating = EvaluateJudgement(deltaSeconds);
             onChargeEnd.Invoke(note.data_);
+            PlayerLongEnded?.Invoke();
             ShowJudgement(endRating, deltaSeconds);
             DetachNoteView(note);
         }
@@ -924,6 +957,7 @@ namespace Dystopian.Rhythm
         {
             UpdateCombo(rating);
             onJudged.Invoke(rating, deltaSeconds);
+            JudgementPerformed?.Invoke(rating, deltaSeconds);
 
             if (logJudgements)
             {
@@ -933,17 +967,6 @@ namespace Dystopian.Rhythm
                     this);
             }
 
-            if (judgementText == null)
-            {
-                return;
-            }
-
-            judgementText.text = rating == RhythmJudgement.Critical
-                ? "CRITICAL!"
-                : rating.ToString().ToUpperInvariant();
-            judgementText.color = GetJudgementColor(rating);
-            judgementText.gameObject.SetActive(true);
-            hideJudgementAt = Time.unscaledTime + judgementTextSeconds;
         }
 
         private void UpdateCombo(RhythmJudgement rating)
@@ -977,17 +1000,7 @@ namespace Dystopian.Rhythm
             comboText.gameObject.SetActive(showCombo && (!hideComboAtZero || combo > 0));
         }
 
-        private void HideExpiredJudgement()
-        {
-            if (judgementText != null &&
-                judgementText.gameObject.activeSelf &&
-                Time.unscaledTime >= hideJudgementAt)
-            {
-                judgementText.gameObject.SetActive(false);
-            }
-        }
-
-        private Color GetJudgementColor(RhythmJudgement rating)
+        public Color GetJudgementColor(RhythmJudgement rating)
         {
             switch (rating)
             {

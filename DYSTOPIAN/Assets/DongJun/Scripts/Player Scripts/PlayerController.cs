@@ -34,8 +34,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool allowJumpWhileCharging = false;
 
     [Header("Normal Attack")]
-    [UnityEngine.Serialization.FormerlySerializedAs("normalAttackCooldown_")]
-    [SerializeField] private float normalAttackCooldown = 0.25f;
     [UnityEngine.Serialization.FormerlySerializedAs("normalAttackColliderActiveDuration_")]
     [SerializeField] private float normalAttackColliderActiveDuration = 0.25f;
     [UnityEngine.Serialization.FormerlySerializedAs("showNormalAttackColliderDebug_")]
@@ -98,9 +96,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 facingDirection;
     private Vector2 lastHorizontalFacingDirection;
     private bool isCharging;
-    private bool chargeReleaseRequested;
     private float chargeTimer;
-    private float lastNormalAttackTime;
     private float normalAttackColliderDisableTime;
 
     private struct ChargedAttackHitbox
@@ -133,7 +129,6 @@ public class PlayerController : MonoBehaviour
         controller = GetComponent<CharacterController>();
         facingDirection = Vector2.right;
         lastHorizontalFacingDirection = Vector2.right;
-        lastNormalAttackTime = -999f;
         normalAttackColliderDisableTime = -999f;
         chargedAttackHitboxes = new ChargedAttackHitbox[ChargedAttackHitboxPoolSize];
     }
@@ -154,12 +149,7 @@ public class PlayerController : MonoBehaviour
         UpdateFacingDirection();
         UpdateHorizontalMovement();
         HandleJumpInput();
-        HandleNormalAttackInput();
         UpdateNormalAttackColliderState();
-        HandleChargeAttackInput();
-
-        if (chargeReleaseRequested)
-            ReleaseChargedAttack();
 
         ApplyMovement();
         UpdateChargedAttackHitboxPool();
@@ -232,12 +222,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void HandleNormalAttackInput()
+    // Attack input providers call this API after validating their own input rules.
+    public void PerformNormalAttack()
     {
-        if (!Input.GetKeyDown(KeyCode.A) || Time.time < lastNormalAttackTime + normalAttackCooldown)
-            return;
-
-        lastNormalAttackTime = Time.time;
         ActivateNormalAttackCollider(GetNormalAttackDirection());
     }
 
@@ -302,16 +289,25 @@ public class PlayerController : MonoBehaviour
         return normalAttackColliderRight;
     }
 
-    private void HandleChargeAttackInput()
+    public void BeginChargedAttack()
     {
-        if (Input.GetKeyDown(KeyCode.D) && !isCharging)
-        {
-            isCharging = true;
-            chargeTimer = 0f;
-        }
+        if (isCharging)
+            return;
 
-        if (Input.GetKeyUp(KeyCode.D))
-            chargeReleaseRequested = true;
+        isCharging = true;
+        chargeTimer = 0f;
+    }
+
+    public void ReleaseChargedAttack()
+    {
+        ExecuteChargedAttack();
+    }
+
+    public void CancelChargedAttack()
+    {
+        isCharging = false;
+        chargeTimer = 0f;
+        SetChargedAttackPreviewVisible(false);
     }
 
     private void UpdateChargeTimer()
@@ -320,10 +316,8 @@ public class PlayerController : MonoBehaviour
             chargeTimer = Mathf.Min(chargeTimer + Time.deltaTime, maxChargeTime);
     }
 
-    private void ReleaseChargedAttack()
+    private void ExecuteChargedAttack()
     {
-        chargeReleaseRequested = false;
-
         if (!isCharging)
             return;
 
@@ -675,7 +669,6 @@ public class PlayerController : MonoBehaviour
 
         activeNormalAttackCollider = null;
         isCharging = false;
-        chargeReleaseRequested = false;
         chargeTimer = 0f;
         normalAttackColliderDisableTime = -999f;
         horizontalVelocity = 0f;
