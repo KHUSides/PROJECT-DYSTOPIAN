@@ -416,7 +416,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65cfd2332ecc28541ac80a6d2d450736, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.StageFlowExternalBridge
-  manager_: {fileID: 0}
+  manager_: {fileID: 300000002}
   onRhythmStartRequested_:
     m_PersistentCalls:
       m_Calls: []
