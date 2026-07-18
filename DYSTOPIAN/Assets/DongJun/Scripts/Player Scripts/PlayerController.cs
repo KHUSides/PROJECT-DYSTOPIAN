@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -98,6 +99,14 @@ public class PlayerController : MonoBehaviour
     private bool isCharging;
     private float chargeTimer;
     private float normalAttackColliderDisableTime;
+
+    public event Action NormalAttackPerformed;
+
+    public float HorizontalSpeed => Mathf.Abs(horizontalVelocity);
+    public float VerticalSpeed => verticalVelocity;
+    public bool IsGrounded => controller != null && controller.isGrounded;
+    public bool IsCharging => isCharging;
+    public Vector2 FacingDirection => facingDirection;
 
     private struct ChargedAttackHitbox
     {
@@ -226,6 +235,7 @@ public class PlayerController : MonoBehaviour
     public void PerformNormalAttack()
     {
         ActivateNormalAttackCollider(GetNormalAttackDirection());
+        NormalAttackPerformed?.Invoke();
     }
 
     private Vector2 GetNormalAttackDirection()
