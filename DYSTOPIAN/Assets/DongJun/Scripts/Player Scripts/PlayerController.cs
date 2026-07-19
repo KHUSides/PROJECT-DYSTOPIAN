@@ -101,6 +101,8 @@ public class PlayerController : MonoBehaviour
     private float normalAttackColliderDisableTime;
 
     public event Action NormalAttackPerformed;
+    public event Action ChargedAttackPerformed;
+    public event Action JumpStarted;
 
     public float HorizontalSpeed => Mathf.Abs(horizontalVelocity);
     public float VerticalSpeed => verticalVelocity;
@@ -207,6 +209,7 @@ public class PlayerController : MonoBehaviour
             isJumping = true;
             isHoldingJump = true;
             jumpHoldTimer = 0f;
+            JumpStarted?.Invoke();
         }
 
         if (Input.GetKey(KeyCode.UpArrow) && isJumping && isHoldingJump)
@@ -349,6 +352,7 @@ public class PlayerController : MonoBehaviour
 
         controller.Move(dashDirection * safeDistance);
         ActivateChargedAttackHitbox(startPosition, transform.position, dashDirection);
+        ChargedAttackPerformed?.Invoke();
 
         if (wasAirborne || dashDirection.y > 0.01f)
             ApplyAirDashFallCorrection(dashDirection);
