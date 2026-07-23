@@ -47,7 +47,7 @@ namespace Dystopian.SuEun
             yield return null;
 
             // 이전 씬의 미사용 리소스 정리
-            yield return UnloadUnusedAssets();
+            // yield return UnloadUnusedAssets();
 
             // 목적지 씬 로딩
             yield return LoadTargetScene(targetScenePath);
@@ -122,7 +122,8 @@ namespace Dystopian.SuEun
             SetStatus("로딩 완료");
 
             // 100%와 완료 문구가 최소 한 프레임 표시됩니다.
-            yield return null;
+            // yield return null;
+            yield return new WaitForSeconds(1.5f);
 
             SceneTransition.Complete();
 
