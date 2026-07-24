@@ -5,6 +5,11 @@ using UnityEngine;
 // Routes rhythm events to the player attack API and owns optional fallback input.
 public sealed class PlayerRhythmAttackBridge : MonoBehaviour
 {
+    private const float ChargedAttackRepeatDelayBeats = 0.5f;
+
+    [Header("Charge Reinforce")]
+    [SerializeField] private bool enableChargedAttackRepeat;
+
     [Header("Fallback")]
     [Tooltip("Allows A/D attacks while the rhythm chart is stopped.")]
     [SerializeField] private bool allowAttacksWhileRhythmStopped;
@@ -14,6 +19,14 @@ public sealed class PlayerRhythmAttackBridge : MonoBehaviour
     private RhythmSystem rhythmSystem;
     private PlayerController playerController;
     private bool subscribed;
+    private bool appliedChargedAttackRepeatState;
+
+    public bool IsChargeReinforceEnabled => enableChargedAttackRepeat;
+
+    private void Awake()
+    {
+        appliedChargedAttackRepeatState = enableChargedAttackRepeat;
+    }
 
     private void OnEnable()
     {
@@ -42,11 +55,14 @@ public sealed class PlayerRhythmAttackBridge : MonoBehaviour
         if (playerController != null)
         {
             playerController.CancelChargedAttack();
+            playerController.CancelPendingChargedAttackRepeats();
         }
     }
 
     private void Update()
     {
+        ApplyChargedAttackRepeatState();
+
         if (!allowAttacksWhileRhythmStopped || rhythmSystem.IsChartActive)
         {
             return;
@@ -64,7 +80,7 @@ public sealed class PlayerRhythmAttackBridge : MonoBehaviour
 
         if (Input.GetKeyUp(fallbackChargedAttackKey))
         {
-            playerController.ReleaseChargedAttack();
+            ReleaseChargedAttack();
         }
     }
 
@@ -80,12 +96,46 @@ public sealed class PlayerRhythmAttackBridge : MonoBehaviour
 
     private void HandleLongEnded()
     {
-        playerController.ReleaseChargedAttack();
+        ReleaseChargedAttack();
+    }
+
+    private void ReleaseChargedAttack()
+    {
+        if (!enableChargedAttackRepeat)
+        {
+            playerController.ReleaseChargedAttack();
+            return;
+        }
+
+        float repeatDelaySeconds = ChargedAttackRepeatDelayBeats * 60f / rhythmSystem.Bpm;
+        playerController.ReleaseChargedAttackWithRepeat(repeatDelaySeconds);
+    }
+
+    public void SetChargeReinforceEnabled(bool enabled)
+    {
+        enableChargedAttackRepeat = enabled;
+        ApplyChargedAttackRepeatState();
+    }
+
+    public void ToggleChargeReinforce()
+    {
+        SetChargeReinforceEnabled(!enableChargedAttackRepeat);
+    }
+
+    private void ApplyChargedAttackRepeatState()
+    {
+        if (appliedChargedAttackRepeatState == enableChargedAttackRepeat)
+            return;
+
+        appliedChargedAttackRepeatState = enableChargedAttackRepeat;
+        if (!enableChargedAttackRepeat && playerController != null)
+            playerController.CancelPendingChargedAttackRepeats();
     }
 
     private void HandleChartStopped()
     {
         playerController.CancelChargedAttack();
+        playerController.CancelPendingChargedAttackRepeats();
     }
 
     private void Subscribe()

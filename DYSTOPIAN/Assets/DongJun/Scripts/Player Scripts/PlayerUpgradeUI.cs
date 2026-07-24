@@ -28,6 +28,12 @@ public class PlayerUpgradeUI : MonoBehaviour
     private RectTransform canvasRect;
     private RectTransform panel;
     private CanvasGroup panelCanvasGroup;
+    private UnityEngine.UI.Button chargedAttackRepeatButton;
+    private UnityEngine.UI.Button distanceChargeButton;
+    private PlayerRhythmAttackBridge rhythmAttackBridge;
+    private PlayerController playerController;
+    private TMPro.TextMeshProUGUI chargeReinforceStatusText;
+    private TMPro.TextMeshProUGUI attackReinforceStatusText;
     private bool isVisible;
 
     private void Awake()
@@ -38,7 +44,9 @@ public class PlayerUpgradeUI : MonoBehaviour
     private void Start()
     {
         ResolveReferences();
+        ConnectUpgradeButtons();
         SetVisible(isVisible);
+        UpdateReinforceStatus();
     }
 
     private void Update()
@@ -82,8 +90,71 @@ public class PlayerUpgradeUI : MonoBehaviour
         canvasRect = canvas != null ? canvas.transform as RectTransform : null;
         targetCamera = Camera.main;
 
-        PlayerController playerController = FindFirstObjectByType<PlayerController>();
+        Transform statusRoot = canvas != null ? canvas.transform.Find("ReinforceStatus") : null;
+        chargeReinforceStatusText = statusRoot != null
+            ? statusRoot.Find("Charge Reinforce Status")?.GetComponent<TMPro.TextMeshProUGUI>()
+            : null;
+        attackReinforceStatusText = statusRoot != null
+            ? statusRoot.Find("Attack Reinforce Status")?.GetComponent<TMPro.TextMeshProUGUI>()
+            : null;
+
+        playerController = FindFirstObjectByType<PlayerController>();
         player = playerController != null ? playerController.transform : null;
+    }
+
+    private void ConnectUpgradeButtons()
+    {
+        chargedAttackRepeatButton = transform.Find("UpgradeButton_1")?.GetComponent<UnityEngine.UI.Button>();
+        distanceChargeButton = transform.Find("UpgradeButton_2")?.GetComponent<UnityEngine.UI.Button>();
+        rhythmAttackBridge = FindFirstObjectByType<PlayerRhythmAttackBridge>();
+
+        if (chargedAttackRepeatButton != null && rhythmAttackBridge != null)
+            chargedAttackRepeatButton.onClick.AddListener(ToggleChargedAttackRepeat);
+        else
+            Debug.LogError("[PlayerUpgradeUI] UpgradeButton_1 and PlayerRhythmAttackBridge are required.", this);
+
+        if (distanceChargeButton != null && playerController != null)
+            distanceChargeButton.onClick.AddListener(ToggleDistanceChargeUpgrade);
+        else
+            Debug.LogError("[PlayerUpgradeUI] UpgradeButton_2 and PlayerController are required.", this);
+    }
+
+    private void ToggleChargedAttackRepeat()
+    {
+        rhythmAttackBridge.ToggleChargeReinforce();
+        UpdateReinforceStatus();
+    }
+
+    private void ToggleDistanceChargeUpgrade()
+    {
+        playerController.ToggleAttackReinforce();
+        UpdateReinforceStatus();
+    }
+
+    private void UpdateReinforceStatus()
+    {
+        SetReinforceStatus(
+            chargeReinforceStatusText,
+            "Charge Reinforce",
+            rhythmAttackBridge != null && rhythmAttackBridge.IsChargeReinforceEnabled);
+        SetReinforceStatus(
+            attackReinforceStatusText,
+            "Attack Reinforce",
+            playerController != null && playerController.IsAttackReinforceEnabled);
+    }
+
+    private static void SetReinforceStatus(
+        TMPro.TextMeshProUGUI statusText,
+        string label,
+        bool enabled)
+    {
+        if (statusText == null)
+            return;
+
+        statusText.text = label + ": " + (enabled ? "ON" : "OFF");
+        statusText.color = enabled
+            ? new Color(0.35f, 1f, 0.55f, 1f)
+            : new Color(0.7f, 0.72f, 0.76f, 1f);
     }
 
     private void UpdatePanelPosition()
@@ -149,5 +220,14 @@ public class PlayerUpgradeUI : MonoBehaviour
         canvasPosition.x = Mathf.Clamp(canvasPosition.x, minX, maxX);
         canvasPosition.y = Mathf.Clamp(canvasPosition.y, minY, maxY);
         return canvasPosition;
+    }
+
+    private void OnDestroy()
+    {
+        if (chargedAttackRepeatButton != null)
+            chargedAttackRepeatButton.onClick.RemoveListener(ToggleChargedAttackRepeat);
+
+        if (distanceChargeButton != null)
+            distanceChargeButton.onClick.RemoveListener(ToggleDistanceChargeUpgrade);
     }
 }

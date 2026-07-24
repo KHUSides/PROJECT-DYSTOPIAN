@@ -301,17 +301,26 @@ MonoBehaviour:
   lockedZ: 0
   moveSpeed: 8
   chargeMoveSpeed: 1.5
-  gravity: -45
+  gravity: -24
   groundedStickVelocity: -2
-  initialJumpVelocity: 10
-  jumpHoldAcceleration: 20
-  maxJumpHoldTime: 0.3
-  maxUpwardVelocity: 17.5
+  initialJumpVelocity: 5.5
+  jumpHoldAcceleration: 18
+  maxJumpHoldTime: 0.22
+  maxUpwardVelocity: 9.5
   allowJumpWhileCharging: 0
   normalAttackColliderActiveDuration: 0.25
+  normalAttackDamage: 10
+  normalAttackDamageMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   showNormalAttackColliderDebug: 1
   normalAttackColliderDebugColor: {r: 1, g: 0.1, b: 0.1, a: 1}
   normalAttackColliderDebugLineWidth: 0.04
+  enableDistanceChargeUpgrade: 0
+  distanceForFullCharge: 20
+  empoweredAttackAdditionalDamage: 10
+  empoweredNormalAttackDebugColor: {r: 1, g: 0.85, b: 0.05, a: 1}
+  showDistanceChargeReadyDebug: 1
   dashObstacleMask:
     serializedVersion: 2
     m_Bits: 128
@@ -326,6 +335,7 @@ MonoBehaviour:
   chargedAttackColliderActiveDuration: 0.25
   showChargedAttackColliderDebug: 1
   chargedAttackColliderDebugColor: {r: 0.2, g: 0.8, b: 1, a: 1}
+  chargedAttackRepeatColliderDebugColor: {r: 1, g: 0.15, b: 0.65, a: 1}
   chargedAttackColliderDebugLineWidth: 0.05
 --- !u!143 &2336815315612820770
 CharacterController:
