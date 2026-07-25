@@ -4,7 +4,6 @@ using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(TextMeshPro))]
-// Displays rhythm judgements as a short-lived world-space label above its parent.
 public sealed class PlayerRhythmJudgementView : MonoBehaviour
 {
     [Header("Presentation")]
@@ -48,9 +47,7 @@ public sealed class PlayerRhythmJudgementView : MonoBehaviour
     private void LateUpdate()
     {
         if (label.enabled && Time.unscaledTime >= hideAt)
-        {
             Hide();
-        }
     }
 
     private void Show(RhythmJudgement rating, float _)
@@ -64,17 +61,13 @@ public sealed class PlayerRhythmJudgementView : MonoBehaviour
     private void Hide()
     {
         if (label != null)
-        {
             label.enabled = false;
-        }
     }
 
     private void Subscribe()
     {
         if (subscribed || rhythmSystem == null)
-        {
             return;
-        }
 
         rhythmSystem.JudgementPerformed += Show;
         subscribed = true;
@@ -83,9 +76,7 @@ public sealed class PlayerRhythmJudgementView : MonoBehaviour
     private void Unsubscribe()
     {
         if (!subscribed || rhythmSystem == null)
-        {
             return;
-        }
 
         rhythmSystem.JudgementPerformed -= Show;
         subscribed = false;

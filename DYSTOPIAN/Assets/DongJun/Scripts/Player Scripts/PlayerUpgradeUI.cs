@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+[DisallowMultipleComponent]
+[RequireComponent(typeof(UnityEngine.CanvasGroup))]
 public class PlayerUpgradeUI : MonoBehaviour
 {
     [Header("Follow Positions")]
@@ -39,6 +41,12 @@ public class PlayerUpgradeUI : MonoBehaviour
     private void Awake()
     {
         isVisible = isVisibleOnStart;
+        panel = transform as RectTransform;
+        panelCanvasGroup = GetComponent<CanvasGroup>();
+        positionCandidates[0] = topRightOffset;
+        positionCandidates[1] = topLeftOffset;
+        positionCandidates[2] = bottomRightOffset;
+        positionCandidates[3] = bottomLeftOffset;
     }
 
     private void Start()
@@ -80,12 +88,6 @@ public class PlayerUpgradeUI : MonoBehaviour
 
     private void ResolveReferences()
     {
-        panel = transform as RectTransform;
-        panelCanvasGroup = GetComponent<CanvasGroup>();
-
-        if (panelCanvasGroup == null)
-            panelCanvasGroup = gameObject.AddComponent<CanvasGroup>();
-
         Canvas canvas = GetComponentInParent<Canvas>();
         canvasRect = canvas != null ? canvas.transform as RectTransform : null;
         targetCamera = Camera.main;
@@ -161,11 +163,6 @@ public class PlayerUpgradeUI : MonoBehaviour
     {
         if (player == null || targetCamera == null || canvasRect == null || panel == null)
             return;
-
-        positionCandidates[0] = topRightOffset;
-        positionCandidates[1] = topLeftOffset;
-        positionCandidates[2] = bottomRightOffset;
-        positionCandidates[3] = bottomLeftOffset;
 
         Vector2 fallbackPosition = Vector2.zero;
 

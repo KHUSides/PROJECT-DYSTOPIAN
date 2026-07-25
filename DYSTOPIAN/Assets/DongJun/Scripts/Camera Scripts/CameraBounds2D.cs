@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class CameraBounds2D : MonoBehaviour
 {
     [Header("Manual Bounds")]
@@ -17,16 +18,7 @@ public class CameraBounds2D : MonoBehaviour
     [SerializeField] private Color lineColor = new Color(0f, 1f, 1f, 1f);
 
     public Vector2 Size => size;
-
-    public Vector2 Center
-    {
-        get
-        {
-            Vector3 position = transform.position;
-            return new Vector2(position.x, position.y);
-        }
-    }
-
+    public Vector2 Center => new Vector2(transform.position.x, transform.position.y);
     public Vector2 Min => Center - size * 0.5f;
     public Vector2 Max => Center + size * 0.5f;
 
@@ -34,12 +26,10 @@ public class CameraBounds2D : MonoBehaviour
     {
         Vector2 center = (min + max) * 0.5f;
         Vector2 newSize = max - min;
-
         transform.position = new Vector3(center.x, center.y, transform.position.z);
         size = new Vector2(
             Mathf.Max(0.01f, newSize.x),
-            Mathf.Max(0.01f, newSize.y)
-        );
+            Mathf.Max(0.01f, newSize.y));
     }
 
     [ContextMenu("Fit Bounds To Colliders")]
@@ -47,7 +37,7 @@ public class CameraBounds2D : MonoBehaviour
     {
         if (fitColliders == null || fitColliders.Length == 0)
         {
-            Debug.LogWarning("[CameraBounds2D] Fit Colliders가 비어 있다.");
+            Debug.LogWarning("[CameraBounds2D] Fit Colliders is empty.", this);
             return;
         }
 
@@ -63,42 +53,33 @@ public class CameraBounds2D : MonoBehaviour
             {
                 combinedBounds = targetCollider.bounds;
                 hasBounds = true;
+                continue;
             }
-            else
-            {
-                combinedBounds.Encapsulate(targetCollider.bounds);
-            }
+
+            combinedBounds.Encapsulate(targetCollider.bounds);
         }
 
         if (!hasBounds)
         {
-            Debug.LogWarning("[CameraBounds2D] 유효한 Collider가 없다.");
+            Debug.LogWarning("[CameraBounds2D] No valid colliders were found.", this);
             return;
         }
 
         Vector2 min = new Vector2(combinedBounds.min.x, combinedBounds.min.y);
         Vector2 max = new Vector2(combinedBounds.max.x, combinedBounds.max.y);
-
         if (useOverrideTopY)
             max.y = overrideTopY;
 
-        min -= padding;
-        max += padding;
-
-        SetFromMinMax(min, max);
-
+        SetFromMinMax(min - padding, max + padding);
         Debug.Log(
-            $"[CameraBounds2D] Fitted Bounds - " +
-            $"Min: {Min}, Max: {Max}, Size: {Size}"
-        );
+            $"[CameraBounds2D] Fitted Bounds - Min: {Min}, Max: {Max}, Size: {Size}",
+            this);
     }
 
     private void OnValidate()
     {
         if (autoFitOnValidate)
-        {
             FitBoundsToColliders();
-        }
     }
 
     private void OnDrawGizmos()
@@ -108,25 +89,19 @@ public class CameraBounds2D : MonoBehaviour
 
         Gizmos.color = fillColor;
         Gizmos.DrawCube(center, drawSize);
-
         Gizmos.color = lineColor;
         Gizmos.DrawWireCube(center, drawSize);
 
 #if UNITY_EDITOR
         UnityEditor.Handles.color = lineColor;
-
         Vector2 min = Min;
         Vector2 max = Max;
-
         UnityEditor.Handles.Label(
             new Vector3(min.x, max.y, 0f),
-            $"Min X: {min.x:0.##}\nMax Y: {max.y:0.##}"
-        );
-
+            $"Min X: {min.x:0.##}\nMax Y: {max.y:0.##}");
         UnityEditor.Handles.Label(
             new Vector3(max.x, min.y, 0f),
-            $"Max X: {max.x:0.##}\nMin Y: {min.y:0.##}"
-        );
+            $"Max X: {max.x:0.##}\nMin Y: {min.y:0.##}");
 #endif
     }
 }

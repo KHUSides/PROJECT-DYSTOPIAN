@@ -15,99 +15,110 @@ public sealed class PixelArtCameraRenderer : MonoBehaviour
     [SerializeField] private Material displayMaterial;
 
     private Camera sourceCamera;
+    private UniversalAdditionalCameraData sourceCameraData;
     private RenderTexture lowResolutionTarget;
+    private RenderTexture originalTargetTexture;
     private GameObject outputCanvasRoot;
-
-    private Camera displayCamera;
+    private Canvas outputCanvas;
     private RawImage outputImage;
+    private GameObject displayCameraRoot;
+    private Camera displayCamera;
     private int activeWidth;
     private int activeHeight;
-
-    public int ActiveWidth => activeWidth;
-    public int ActiveHeight => activeHeight;
-    public RenderTexture LowResolutionTarget => lowResolutionTarget;
+    private bool originalAllowMsaa;
+    private bool originalAllowDynamicResolution;
+    private AntialiasingMode originalAntialiasing;
+    private bool originalPostProcessing;
+    private bool originalDithering;
+    private bool sourceSettingsCached;
 
     private void Awake()
     {
         sourceCamera = GetComponent<Camera>();
+        sourceCameraData = GetComponent<UniversalAdditionalCameraData>();
     }
 
     private void OnEnable()
     {
-        sourceCamera = GetComponent<Camera>();
+        if (!Application.isPlaying)
+            return;
 
-        if (Application.isPlaying)
-        {
-            ConfigureCameraForHardPixels();
-            RebuildOutput();
-        }
-    }
-
-    private void Start()
-    {
-        if (Application.isPlaying && lowResolutionTarget == null)
-        {
-            ConfigureCameraForHardPixels();
-            RebuildOutput();
-        }
+        CacheSourceCameraSettings();
+        ConfigureSourceCamera();
+        EnsureDisplayCamera();
+        EnsureOutputCanvas();
+        RebuildOutput();
     }
 
     private void LateUpdate()
     {
         if (!Application.isPlaying)
-        {
             return;
-        }
 
+        EnsureDisplayCamera();
         EnsureResolutionMatchesScreen();
 
         if (snapCameraToPixelGrid && sourceCamera.orthographic)
-        {
             SnapCameraPosition();
-        }
     }
 
-    private void ConfigureCameraForHardPixels()
+    private void CacheSourceCameraSettings()
+    {
+        if (sourceSettingsCached)
+            return;
+
+        originalTargetTexture = sourceCamera.targetTexture;
+        originalAllowMsaa = sourceCamera.allowMSAA;
+        originalAllowDynamicResolution = sourceCamera.allowDynamicResolution;
+
+        if (sourceCameraData != null)
+        {
+            originalAntialiasing = sourceCameraData.antialiasing;
+            originalPostProcessing = sourceCameraData.renderPostProcessing;
+            originalDithering = sourceCameraData.dithering;
+        }
+
+        sourceSettingsCached = true;
+    }
+
+    private void ConfigureSourceCamera()
     {
         sourceCamera.allowMSAA = false;
         sourceCamera.allowDynamicResolution = false;
 
-        UniversalAdditionalCameraData cameraData =
-            GetComponent<UniversalAdditionalCameraData>();
+        if (sourceCameraData == null)
+            return;
 
-        if (cameraData != null)
-        {
-            cameraData.antialiasing = AntialiasingMode.None;
-            cameraData.renderPostProcessing = false;
-            cameraData.dithering = false;
-        }
+        sourceCameraData.antialiasing = AntialiasingMode.None;
+        sourceCameraData.renderPostProcessing = false;
+        sourceCameraData.dithering = false;
     }
 
     private void EnsureResolutionMatchesScreen()
     {
-        int screenHeight = Mathf.Max(1, Screen.height);
-        int desiredHeight = Mathf.Max(1, internalHeight);
-        int desiredWidth = Mathf.Max(
-            1,
-            Mathf.RoundToInt(desiredHeight * (Screen.width / (float)screenHeight)));
+        CalculateTargetResolution(out int desiredWidth, out int desiredHeight);
 
-        if (desiredWidth != activeWidth
-            || desiredHeight != activeHeight
-            || lowResolutionTarget == null)
+        if (desiredWidth != activeWidth ||
+            desiredHeight != activeHeight ||
+            lowResolutionTarget == null)
         {
             RebuildOutput();
         }
     }
 
+    private void CalculateTargetResolution(out int width, out int height)
+    {
+        int screenHeight = Mathf.Max(1, Screen.height);
+        height = Mathf.Max(1, internalHeight);
+        width = Mathf.Max(
+            1,
+            Mathf.RoundToInt(height * (Screen.width / (float)screenHeight)));
+    }
+
     private void RebuildOutput()
     {
         ReleaseRenderTexture();
-
-        int screenHeight = Mathf.Max(1, Screen.height);
-        activeHeight = Mathf.Max(1, internalHeight);
-        activeWidth = Mathf.Max(
-            1,
-            Mathf.RoundToInt(activeHeight * (Screen.width / (float)screenHeight)));
+        CalculateTargetResolution(out activeWidth, out activeHeight);
 
         lowResolutionTarget = new RenderTexture(
             activeWidth,
@@ -128,72 +139,75 @@ public sealed class PixelArtCameraRenderer : MonoBehaviour
 
         lowResolutionTarget.Create();
         sourceCamera.targetTexture = lowResolutionTarget;
-        EnsureOutputCanvas();
-
+        outputCanvasRoot.SetActive(true);
         outputImage.texture = lowResolutionTarget;
         outputImage.material = displayMaterial;
     }
 
+    private void EnsureDisplayCamera()
+    {
+        if (displayCameraRoot == null || displayCamera == null)
+        {
+            displayCameraRoot = new GameObject(
+                "__PIXEL_ART_DISPLAY_CAMERA",
+                typeof(Camera),
+                typeof(UniversalAdditionalCameraData));
+            displayCameraRoot.hideFlags = HideFlags.DontSave;
+
+            displayCamera = displayCameraRoot.GetComponent<Camera>();
+            displayCamera.clearFlags = CameraClearFlags.Nothing;
+            displayCamera.backgroundColor = Color.clear;
+            displayCamera.cullingMask = 0;
+            displayCamera.depth = sourceCamera.depth + 100f;
+            displayCamera.orthographic = true;
+            displayCamera.allowHDR = false;
+            displayCamera.allowMSAA = false;
+            displayCamera.allowDynamicResolution = false;
+            displayCamera.useOcclusionCulling = false;
+
+            UniversalAdditionalCameraData displayCameraData =
+                displayCameraRoot.GetComponent<UniversalAdditionalCameraData>();
+            displayCameraData.renderShadows = false;
+            displayCameraData.renderPostProcessing = false;
+            displayCameraData.antialiasing = AntialiasingMode.None;
+            displayCameraData.dithering = false;
+        }
+
+        displayCamera.targetTexture = null;
+        displayCamera.targetDisplay = sourceCamera.targetDisplay;
+        displayCamera.depth = sourceCamera.depth + 100f;
+        displayCamera.enabled = true;
+
+        if (!displayCameraRoot.activeSelf)
+            displayCameraRoot.SetActive(true);
+    }
+
     private void EnsureOutputCanvas()
     {
-        if (outputCanvasRoot != null
-            && outputImage != null
-            && displayCamera != null)
+        if (outputCanvasRoot != null && outputImage != null)
         {
-            displayCamera.targetDisplay = sourceCamera.targetDisplay;
+            outputCanvas.targetDisplay = sourceCamera.targetDisplay;
             return;
         }
 
         outputCanvasRoot = new GameObject(
             "__PIXEL_ART_OUTPUT",
             typeof(RectTransform),
-            typeof(Canvas),
-            typeof(CanvasScaler));
-
+            typeof(Canvas));
         outputCanvasRoot.hideFlags = HideFlags.DontSave;
 
-        GameObject displayCameraObject = new GameObject(
-            "DisplayCamera",
-            typeof(Camera));
-
-        displayCameraObject.hideFlags = HideFlags.DontSave;
-        displayCameraObject.transform.SetParent(outputCanvasRoot.transform, false);
-
-        displayCamera = displayCameraObject.GetComponent<Camera>();
-        displayCamera.clearFlags = CameraClearFlags.SolidColor;
-        displayCamera.backgroundColor = Color.black;
-        displayCamera.cullingMask = 0;
-        displayCamera.depth = -1000f;
-        displayCamera.targetDisplay = sourceCamera.targetDisplay;
-        displayCamera.targetTexture = null;
-        displayCamera.allowHDR = false;
-        displayCamera.allowMSAA = false;
-        displayCamera.allowDynamicResolution = false;
-        displayCamera.useOcclusionCulling = false;
-        displayCamera.orthographic = true;
-
-        UniversalAdditionalCameraData displayCameraData =
-            displayCamera.GetUniversalAdditionalCameraData();
-        displayCameraData.antialiasing = AntialiasingMode.None;
-        displayCameraData.renderPostProcessing = false;
-        displayCameraData.dithering = false;
-
-        Canvas canvas = outputCanvasRoot.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.overrideSorting = true;
-        canvas.sortingOrder = short.MinValue;
-        canvas.pixelPerfect = true;
-
-        CanvasScaler scaler = outputCanvasRoot.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ConstantPixelSize;
-        scaler.scaleFactor = 1f;
+        outputCanvas = outputCanvasRoot.GetComponent<Canvas>();
+        outputCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        outputCanvas.overrideSorting = true;
+        outputCanvas.sortingOrder = short.MinValue;
+        outputCanvas.pixelPerfect = true;
+        outputCanvas.targetDisplay = sourceCamera.targetDisplay;
 
         GameObject imageObject = new GameObject(
             "NearestNeighbourDisplay",
             typeof(RectTransform),
             typeof(CanvasRenderer),
             typeof(RawImage));
-
         imageObject.transform.SetParent(outputCanvasRoot.transform, false);
 
         RectTransform imageTransform = imageObject.GetComponent<RectTransform>();
@@ -210,7 +224,7 @@ public sealed class PixelArtCameraRenderer : MonoBehaviour
     private void SnapCameraPosition()
     {
         float unitsPerPixel =
-            (sourceCamera.orthographicSize * 2f) / Mathf.Max(1, activeHeight);
+            sourceCamera.orthographicSize * 2f / Mathf.Max(1, activeHeight);
 
         Vector3 position = transform.position;
         position.x = Mathf.Round(position.x / unitsPerPixel) * unitsPerPixel;
@@ -220,59 +234,76 @@ public sealed class PixelArtCameraRenderer : MonoBehaviour
 
     private void OnDisable()
     {
-        Cleanup();
+        ReleaseRenderTexture();
+        RestoreSourceCameraSettings();
+
+        if (outputCanvasRoot != null)
+            outputCanvasRoot.SetActive(false);
+
+        if (displayCameraRoot != null)
+            displayCameraRoot.SetActive(false);
     }
 
     private void OnDestroy()
     {
-        Cleanup();
+        ReleaseRenderTexture();
+        RestoreSourceCameraSettings();
+
+        DestroyRuntimeObject(outputCanvasRoot);
+        DestroyRuntimeObject(displayCameraRoot);
     }
 
-    private void Cleanup()
+    private static void DestroyRuntimeObject(GameObject target)
     {
-        ReleaseRenderTexture();
+        if (target == null)
+            return;
 
-        if (outputCanvasRoot != null)
+        if (Application.isPlaying)
+            Destroy(target);
+        else
+            DestroyImmediate(target);
+    }
+
+    private void RestoreSourceCameraSettings()
+    {
+        if (!sourceSettingsCached)
+            return;
+
+        sourceCamera.targetTexture = originalTargetTexture;
+        sourceCamera.allowMSAA = originalAllowMsaa;
+        sourceCamera.allowDynamicResolution = originalAllowDynamicResolution;
+
+        if (sourceCameraData != null)
         {
-            if (Application.isPlaying)
-            {
-                Destroy(outputCanvasRoot);
-            }
-            else
-            {
-                DestroyImmediate(outputCanvasRoot);
-            }
+            sourceCameraData.antialiasing = originalAntialiasing;
+            sourceCameraData.renderPostProcessing = originalPostProcessing;
+            sourceCameraData.dithering = originalDithering;
         }
 
-        outputCanvasRoot = null;
-        outputImage = null;
-        displayCamera = null;
+        sourceSettingsCached = false;
     }
 
     private void ReleaseRenderTexture()
     {
-        if (sourceCamera != null
-            && sourceCamera.targetTexture == lowResolutionTarget)
+        if (sourceCamera != null &&
+            sourceCamera.targetTexture == lowResolutionTarget)
         {
-            sourceCamera.targetTexture = null;
+            sourceCamera.targetTexture = originalTargetTexture;
         }
 
         if (lowResolutionTarget == null)
-        {
             return;
-        }
 
         lowResolutionTarget.Release();
 
         if (Application.isPlaying)
-        {
             Destroy(lowResolutionTarget);
-        }
         else
-        {
             DestroyImmediate(lowResolutionTarget);
-        }
 
         lowResolutionTarget = null;
+
+        if (outputImage != null)
+            outputImage.texture = null;
     }
 }

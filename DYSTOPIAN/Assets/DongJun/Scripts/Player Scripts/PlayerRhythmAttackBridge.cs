@@ -2,7 +2,6 @@ using Dystopian.Rhythm;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-// Routes rhythm events to the player attack API and owns optional fallback input.
 public sealed class PlayerRhythmAttackBridge : MonoBehaviour
 {
     private const float ChargedAttackRepeatDelayBeats = 0.5f;
@@ -19,14 +18,8 @@ public sealed class PlayerRhythmAttackBridge : MonoBehaviour
     private RhythmSystem rhythmSystem;
     private PlayerController playerController;
     private bool subscribed;
-    private bool appliedChargedAttackRepeatState;
 
     public bool IsChargeReinforceEnabled => enableChargedAttackRepeat;
-
-    private void Awake()
-    {
-        appliedChargedAttackRepeatState = enableChargedAttackRepeat;
-    }
 
     private void OnEnable()
     {
@@ -61,8 +54,6 @@ public sealed class PlayerRhythmAttackBridge : MonoBehaviour
 
     private void Update()
     {
-        ApplyChargedAttackRepeatState();
-
         if (!allowAttacksWhileRhythmStopped || rhythmSystem.IsChartActive)
         {
             return;
@@ -113,23 +104,17 @@ public sealed class PlayerRhythmAttackBridge : MonoBehaviour
 
     public void SetChargeReinforceEnabled(bool enabled)
     {
+        if (enableChargedAttackRepeat == enabled)
+            return;
+
         enableChargedAttackRepeat = enabled;
-        ApplyChargedAttackRepeatState();
+        if (!enableChargedAttackRepeat && playerController != null)
+            playerController.CancelPendingChargedAttackRepeats();
     }
 
     public void ToggleChargeReinforce()
     {
         SetChargeReinforceEnabled(!enableChargedAttackRepeat);
-    }
-
-    private void ApplyChargedAttackRepeatState()
-    {
-        if (appliedChargedAttackRepeatState == enableChargedAttackRepeat)
-            return;
-
-        appliedChargedAttackRepeatState = enableChargedAttackRepeat;
-        if (!enableChargedAttackRepeat && playerController != null)
-            playerController.CancelPendingChargedAttackRepeats();
     }
 
     private void HandleChartStopped()

@@ -28,6 +28,7 @@ public sealed class PlayerAnimationController : MonoBehaviour
     private Animator animator;
     private Transform visualRoot;
     private bool useFirstAttack = true;
+    private int appliedFacingSign;
 
     private void Start()
     {
@@ -43,7 +44,6 @@ public sealed class PlayerAnimationController : MonoBehaviour
         }
 
         visualRoot = animator.transform;
-        animator.applyRootMotion = false;
         Subscribe();
         UpdateFacing();
     }
@@ -87,7 +87,7 @@ public sealed class PlayerAnimationController : MonoBehaviour
         animator.SetTrigger(JumpStartedHash);
     }
 
-    // Charged attack preparation takes priority over airborne locomotion.
+    // Keeps charge preparation above locomotion states, including airborne states.
     private void EnforceChargedAttackAnimation()
     {
         if (!playerController.IsCharging)
@@ -116,7 +116,12 @@ public sealed class PlayerAnimationController : MonoBehaviour
         if (visualRoot == null)
             return;
 
-        float yaw = playerController.FacingDirection.x < 0f ? facingLeftYaw : facingRightYaw;
+        int facingSign = playerController.FacingDirection.x < 0f ? -1 : 1;
+        if (facingSign == appliedFacingSign)
+            return;
+
+        appliedFacingSign = facingSign;
+        float yaw = facingSign < 0 ? facingLeftYaw : facingRightYaw;
         visualRoot.localRotation = Quaternion.Euler(0f, yaw, 0f);
     }
 
