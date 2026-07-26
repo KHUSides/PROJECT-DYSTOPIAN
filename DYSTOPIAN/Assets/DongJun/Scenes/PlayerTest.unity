@@ -2985,29 +2985,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6661327818108816490, guid: baadaa96a4de96346bafab3a1961f2fc, type: 3}
-      propertyPath: gravity
-      value: -24
+    - target: {fileID: 9000000000000000103, guid: baadaa96a4de96346bafab3a1961f2fc, type: 3}
+      propertyPath: imageScale.x
+      value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 6661327818108816490, guid: baadaa96a4de96346bafab3a1961f2fc, type: 3}
-      propertyPath: maxUpwardVelocity
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 6661327818108816490, guid: baadaa96a4de96346bafab3a1961f2fc, type: 3}
-      propertyPath: initialJumpVelocity
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 6661327818108816490, guid: baadaa96a4de96346bafab3a1961f2fc, type: 3}
-      propertyPath: jumpHoldAcceleration
-      value: 22
+    - target: {fileID: 9000000000000000103, guid: baadaa96a4de96346bafab3a1961f2fc, type: 3}
+      propertyPath: imageScale.y
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2260717085515224823, guid: baadaa96a4de96346bafab3a1961f2fc, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: baadaa96a4de96346bafab3a1961f2fc, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
