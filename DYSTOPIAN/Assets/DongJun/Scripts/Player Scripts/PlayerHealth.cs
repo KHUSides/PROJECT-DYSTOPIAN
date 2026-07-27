@@ -61,38 +61,26 @@ public class PlayerHealth : MonoBehaviour
             return;
 
         if (Input.GetKeyDown(KeyCode.Minus))
-            ReduceHealth(debugDamageAmount);
+            TakeDamage(debugDamageAmount);
 
         if (Input.GetKeyDown(KeyCode.Equals))
-            AddHealth(debugHealAmount);
+            Heal(debugHealAmount);
     }
 
     public void TakeDamage(int amount)
     {
-        ReduceHealth(amount);
+        if (amount <= 0)
+            return;
+
+        ChangeHealth(-amount);
     }
 
     public void Heal(int amount)
     {
-        AddHealth(amount);
-    }
-
-    public void AddHealth(int amount)
-    {
         if (amount <= 0)
             return;
 
-        currentHealth = Mathf.Min(maxHealth, currentHealth + amount);
-        ApplyHealthBarSettings();
-    }
-
-    public void ReduceHealth(int amount)
-    {
-        if (amount <= 0)
-            return;
-
-        currentHealth = Mathf.Max(0, currentHealth - amount);
-        ApplyHealthBarSettings();
+        ChangeHealth(amount);
     }
 
     public void SetHealth(int value)
@@ -116,6 +104,10 @@ public class PlayerHealth : MonoBehaviour
 
     private Transform FindHealthBarInScene()
     {
+        Transform localHealthBar = transform.Find("HealthCanvas/HealthBar");
+        if (localHealthBar != null)
+            return localHealthBar;
+
         Canvas[] canvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
 
         for (int i = 0; i < canvases.Length; i++)
@@ -126,7 +118,16 @@ public class PlayerHealth : MonoBehaviour
                 return healthBar;
         }
 
-        return transform.Find("HealthCanvas/HealthBar");
+        return null;
+    }
+
+    private void ChangeHealth(int amount)
+    {
+        if (amount == 0)
+            return;
+
+        currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
+        ApplyHealthBarSettings();
     }
 
     private void ApplyHealthBarSettings()
@@ -160,7 +161,7 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    private void StretchToParent(RectTransform rectTransform)
+    private static void StretchToParent(RectTransform rectTransform)
     {
         if (rectTransform == null)
             return;

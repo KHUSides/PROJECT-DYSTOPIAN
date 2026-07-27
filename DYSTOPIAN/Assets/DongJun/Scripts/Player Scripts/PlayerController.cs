@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
-    private const int ChargedAttackHitboxPoolSize = 6;
+    private const int ChargedAttackHitboxPoolSize = 12;
 
     [Header("Side View Plane")]
     [UnityEngine.Serialization.FormerlySerializedAs("lockedZ_")]
@@ -18,31 +19,40 @@ public class PlayerController : MonoBehaviour
 
     [Header("Gravity")]
     [UnityEngine.Serialization.FormerlySerializedAs("gravity_")]
-    [SerializeField] private float gravity = -45f;
+    [SerializeField] private float gravity = -24f;
     [UnityEngine.Serialization.FormerlySerializedAs("groundedStickVelocity_")]
     [SerializeField] private float groundedStickVelocity = -2f;
 
     [Header("Jump")]
     [UnityEngine.Serialization.FormerlySerializedAs("initialJumpVelocity_")]
-    [SerializeField] private float initialJumpVelocity = 10f;
+    [SerializeField] private float initialJumpVelocity = 5.5f;
     [UnityEngine.Serialization.FormerlySerializedAs("jumpHoldAcceleration_")]
-    [SerializeField] private float jumpHoldAcceleration = 20f;
+    [SerializeField] private float jumpHoldAcceleration = 18f;
     [UnityEngine.Serialization.FormerlySerializedAs("maxJumpHoldTime_")]
-    [SerializeField] private float maxJumpHoldTime = 0.3f;
+    [SerializeField] private float maxJumpHoldTime = 0.22f;
     [UnityEngine.Serialization.FormerlySerializedAs("maxUpwardVelocity_")]
-    [SerializeField] private float maxUpwardVelocity = 17.5f;
+    [SerializeField] private float maxUpwardVelocity = 9.5f;
     [UnityEngine.Serialization.FormerlySerializedAs("allowJumpWhileCharging_")]
     [SerializeField] private bool allowJumpWhileCharging = false;
 
     [Header("Normal Attack")]
     [UnityEngine.Serialization.FormerlySerializedAs("normalAttackColliderActiveDuration_")]
     [SerializeField] private float normalAttackColliderActiveDuration = 0.25f;
+    [SerializeField, Min(1)] private int normalAttackDamage = 10;
+    [SerializeField] private LayerMask normalAttackDamageMask = ~0;
     [UnityEngine.Serialization.FormerlySerializedAs("showNormalAttackColliderDebug_")]
     [SerializeField] private bool showNormalAttackColliderDebug = true;
     [UnityEngine.Serialization.FormerlySerializedAs("normalAttackColliderDebugColor_")]
     [SerializeField] private Color normalAttackColliderDebugColor = new Color(1f, 0.1f, 0.1f, 1f);
     [UnityEngine.Serialization.FormerlySerializedAs("normalAttackColliderDebugLineWidth_")]
     [SerializeField] private float normalAttackColliderDebugLineWidth = 0.04f;
+
+    [Header("Attack Reinforce")]
+    [SerializeField] private bool enableDistanceChargeUpgrade;
+    [SerializeField, Min(0.01f)] private float distanceForFullCharge = 20f;
+    [SerializeField, Min(1)] private int empoweredAttackAdditionalDamage = 10;
+    [SerializeField] private Color empoweredNormalAttackDebugColor = new Color(1f, 0.85f, 0.05f, 1f);
+    [SerializeField] private bool showDistanceChargeReadyDebug = true;
 
     [Header("Charged Attack")]
     [UnityEngine.Serialization.FormerlySerializedAs("dashObstacleMask_")]
@@ -69,6 +79,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool showChargedAttackColliderDebug = true;
     [UnityEngine.Serialization.FormerlySerializedAs("chargedAttackColliderDebugColor_")]
     [SerializeField] private Color chargedAttackColliderDebugColor = new Color(0.2f, 0.8f, 1f, 1f);
+    [SerializeField] private Color chargedAttackRepeatColliderDebugColor = new Color(1f, 0.15f, 0.65f, 1f);
     [UnityEngine.Serialization.FormerlySerializedAs("chargedAttackColliderDebugLineWidth_")]
     [SerializeField] private float chargedAttackColliderDebugLineWidth = 0.05f;
 
@@ -82,6 +93,9 @@ public class PlayerController : MonoBehaviour
     private LineRenderer normalAttackDebugRight;
     private LineRenderer normalAttackDebugUp;
     private LineRenderer normalAttackDebugDown;
+    private LineRenderer distanceChargeReadyDebugLine;
+    private Collider[] normalAttackHitResults;
+    private HashSet<Dystopian.EnemyTest.IDamageable> damagedNormalAttackTargets;
     private Collider chargedAttackRangeCollider;
     private LineRenderer chargedAttackDebugLine;
     private ChargedAttackHitbox[] chargedAttackHitboxes;
@@ -96,9 +110,17 @@ public class PlayerController : MonoBehaviour
     private float jumpHoldTimer;
     private Vector2 facingDirection;
     private Vector2 lastHorizontalFacingDirection;
+    private Vector2 arrowInputDirection;
+    private int arrowInputFrame = -1;
     private bool isCharging;
     private float chargeTimer;
     private float normalAttackColliderDisableTime;
+    private float distanceChargePercent;
+    private Vector3 lastDistanceChargePosition;
+    private int activeNormalAttackDamage;
+    private Color activeNormalAttackDebugColor;
+    private Material runtimeDebugMaterial;
+    private GameObject chargedAttackHitboxPoolRoot;
 
     public event Action NormalAttackPerformed;
     public event Action ChargedAttackPerformed;
@@ -108,6 +130,8 @@ public class PlayerController : MonoBehaviour
     public float VerticalSpeed => verticalVelocity;
     public bool IsGrounded => controller != null && controller.isGrounded;
     public bool IsCharging => isCharging;
+    public bool IsAttackReinforceEnabled => enableDistanceChargeUpgrade;
+    public float AttackReinforceChargePercent => distanceChargePercent;
     public Vector2 FacingDirection => facingDirection;
 
     private struct ChargedAttackHitbox
@@ -115,11 +139,18 @@ public class PlayerController : MonoBehaviour
         private GameObject gameObject_;
         private BoxCollider collider_;
         private LineRenderer debugLine_;
+        private float activationTime_;
         private float disableTime_;
 
         public GameObject GameObject => gameObject_;
         public BoxCollider Collider => collider_;
         public LineRenderer DebugLine => debugLine_;
+        public bool IsPending => activationTime_ > 0f;
+        public float ActivationTime
+        {
+            get => activationTime_;
+            set => activationTime_ = value;
+        }
         public float DisableTime
         {
             get => disableTime_;
@@ -131,6 +162,7 @@ public class PlayerController : MonoBehaviour
             gameObject_ = gameObject;
             collider_ = collider;
             debugLine_ = debugLine;
+            activationTime_ = 0f;
             disableTime_ = 0f;
         }
     }
@@ -140,8 +172,12 @@ public class PlayerController : MonoBehaviour
         controller = GetComponent<CharacterController>();
         facingDirection = Vector2.right;
         lastHorizontalFacingDirection = Vector2.right;
-        normalAttackColliderDisableTime = -999f;
+        normalAttackColliderDisableTime = 0f;
+        normalAttackHitResults = new Collider[16];
+        damagedNormalAttackTargets = new HashSet<Dystopian.EnemyTest.IDamageable>();
         chargedAttackHitboxes = new ChargedAttackHitbox[ChargedAttackHitboxPoolSize];
+        lastDistanceChargePosition = transform.position;
+        activeNormalAttackDebugColor = normalAttackColliderDebugColor;
     }
 
     private void Start()
@@ -151,6 +187,7 @@ public class PlayerController : MonoBehaviour
         CreateChargedAttackHitboxPool();
         SetNormalAttackCollidersEnabled(false);
         SetChargedAttackPreviewVisible(false);
+        CreateDistanceChargeReadyDebugLine();
         LockSidePlane();
     }
 
@@ -165,6 +202,7 @@ public class PlayerController : MonoBehaviour
         ApplyMovement();
         UpdateChargedAttackHitboxPool();
         LockSidePlane();
+        UpdateDistanceCharge();
     }
 
     private void LateUpdate()
@@ -174,11 +212,26 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 GetArrowAimDirection()
     {
+        if (arrowInputFrame == Time.frameCount)
+            return arrowInputDirection;
+
+        arrowInputFrame = Time.frameCount;
         bool left = Input.GetKey(KeyCode.LeftArrow);
         bool right = Input.GetKey(KeyCode.RightArrow);
         bool up = Input.GetKey(KeyCode.UpArrow);
         bool down = Input.GetKey(KeyCode.DownArrow);
-        return new Vector2(left == right ? 0f : left ? -1f : 1f, up == down ? 0f : up ? 1f : -1f);
+        bool leftPressed = Input.GetKeyDown(KeyCode.LeftArrow);
+        bool rightPressed = Input.GetKeyDown(KeyCode.RightArrow);
+
+        if (leftPressed != rightPressed)
+            lastHorizontalFacingDirection = leftPressed ? Vector2.left : Vector2.right;
+
+        float horizontal = left && right
+            ? lastHorizontalFacingDirection.x
+            : left ? -1f : right ? 1f : 0f;
+        float vertical = up == down ? 0f : up ? 1f : -1f;
+        arrowInputDirection = new Vector2(horizontal, vertical);
+        return arrowInputDirection;
     }
 
     private void UpdateFacingDirection()
@@ -237,8 +290,36 @@ public class PlayerController : MonoBehaviour
     // Attack input providers call this API after validating their own input rules.
     public void PerformNormalAttack()
     {
+        bool isEmpowered = enableDistanceChargeUpgrade && distanceChargePercent >= 100f;
+        activeNormalAttackDamage = Mathf.Max(
+            1,
+            normalAttackDamage + (isEmpowered ? empoweredAttackAdditionalDamage : 0));
+        activeNormalAttackDebugColor = isEmpowered
+            ? empoweredNormalAttackDebugColor
+            : normalAttackColliderDebugColor;
+        damagedNormalAttackTargets.Clear();
+
         ActivateNormalAttackCollider(GetNormalAttackDirection());
+        if (isEmpowered)
+        {
+            distanceChargePercent = 0f;
+            UpdateDistanceChargeReadyDebug();
+        }
+
         NormalAttackPerformed?.Invoke();
+    }
+
+    public void SetAttackReinforceEnabled(bool enabled)
+    {
+        enableDistanceChargeUpgrade = enabled;
+        distanceChargePercent = 0f;
+        lastDistanceChargePosition = transform.position;
+        UpdateDistanceChargeReadyDebug();
+    }
+
+    public void ToggleAttackReinforce()
+    {
+        SetAttackReinforceEnabled(!enableDistanceChargeUpgrade);
     }
 
     private Vector2 GetNormalAttackDirection()
@@ -277,15 +358,78 @@ public class PlayerController : MonoBehaviour
 
         SetNormalAttackColliderEnabled(activeNormalAttackCollider, true);
         normalAttackColliderDisableTime = Time.time + Mathf.Max(0f, normalAttackColliderActiveDuration);
+        DamageTargetsInActiveNormalAttack();
     }
 
     private void UpdateNormalAttackColliderState()
     {
-        if (activeNormalAttackCollider == null || Time.time < normalAttackColliderDisableTime)
+        if (activeNormalAttackCollider == null)
+            return;
+
+        if (Time.time < normalAttackColliderDisableTime)
             return;
 
         SetNormalAttackColliderEnabled(activeNormalAttackCollider, false);
         activeNormalAttackCollider = null;
+        damagedNormalAttackTargets.Clear();
+    }
+
+    private void DamageTargetsInActiveNormalAttack()
+    {
+        BoxCollider attackCollider = activeNormalAttackCollider as BoxCollider;
+        if (attackCollider == null || normalAttackHitResults == null)
+            return;
+
+        Vector3 scale = attackCollider.transform.lossyScale;
+        Vector3 halfExtents = Vector3.Scale(
+            attackCollider.size * 0.5f,
+            new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z)));
+        int hitCount = Physics.OverlapBoxNonAlloc(
+            attackCollider.transform.TransformPoint(attackCollider.center),
+            halfExtents,
+            normalAttackHitResults,
+            attackCollider.transform.rotation,
+            normalAttackDamageMask,
+            QueryTriggerInteraction.Collide);
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            Collider hit = normalAttackHitResults[i];
+            normalAttackHitResults[i] = null;
+            if (hit == null)
+                continue;
+
+            Dystopian.EnemyTest.IDamageable target =
+                hit.GetComponentInParent<Dystopian.EnemyTest.IDamageable>();
+            if (target == null || !target.IsAlive || !damagedNormalAttackTargets.Add(target))
+                continue;
+
+            Vector3 hitPoint = hit.ClosestPoint(activeNormalAttackCollider.bounds.center);
+            target.TakeDamage(new Dystopian.EnemyTest.DamageInfo(
+                activeNormalAttackDamage,
+                hitPoint,
+                gameObject));
+        }
+    }
+
+    private void UpdateDistanceCharge()
+    {
+        Vector3 currentPosition = transform.position;
+        Vector2 previousPlanarPosition = new Vector2(lastDistanceChargePosition.x, lastDistanceChargePosition.y);
+        Vector2 currentPlanarPosition = new Vector2(currentPosition.x, currentPosition.y);
+        lastDistanceChargePosition = currentPosition;
+
+        if (!enableDistanceChargeUpgrade || distanceChargePercent >= 100f)
+            return;
+
+        float previousChargePercent = distanceChargePercent;
+        float movedDistance = Vector2.Distance(previousPlanarPosition, currentPlanarPosition);
+        distanceChargePercent = Mathf.Min(
+            100f,
+            distanceChargePercent + movedDistance / Mathf.Max(0.01f, distanceForFullCharge) * 100f);
+
+        if (previousChargePercent < 100f && distanceChargePercent >= 100f)
+            UpdateDistanceChargeReadyDebug();
     }
 
     private Collider GetNormalAttackCollider(Vector2 direction)
@@ -313,7 +457,24 @@ public class PlayerController : MonoBehaviour
 
     public void ReleaseChargedAttack()
     {
-        ExecuteChargedAttack();
+        ExecuteChargedAttack(-1f);
+    }
+
+    public void ReleaseChargedAttackWithRepeat(float repeatDelaySeconds)
+    {
+        ExecuteChargedAttack(Mathf.Max(0f, repeatDelaySeconds));
+    }
+
+    public void CancelPendingChargedAttackRepeats()
+    {
+        if (chargedAttackHitboxes == null)
+            return;
+
+        for (int i = 0; i < chargedAttackHitboxes.Length; i++)
+        {
+            if (chargedAttackHitboxes[i].IsPending)
+                DisableChargedAttackHitbox(i);
+        }
     }
 
     public void CancelChargedAttack()
@@ -329,7 +490,7 @@ public class PlayerController : MonoBehaviour
             chargeTimer = Mathf.Min(chargeTimer + Time.deltaTime, maxChargeTime);
     }
 
-    private void ExecuteChargedAttack()
+    private void ExecuteChargedAttack(float repeatDelaySeconds)
     {
         if (!isCharging)
             return;
@@ -351,7 +512,10 @@ public class PlayerController : MonoBehaviour
         Vector3 startPosition = transform.position;
 
         controller.Move(dashDirection * safeDistance);
-        ActivateChargedAttackHitbox(startPosition, transform.position, dashDirection);
+        int hitboxIndex = ActivateChargedAttackHitbox(startPosition, transform.position, dashDirection);
+        if (hitboxIndex >= 0 && repeatDelaySeconds >= 0f)
+            ScheduleChargedAttackRepeat(hitboxIndex, repeatDelaySeconds);
+
         ChargedAttackPerformed?.Invoke();
 
         if (wasAirborne || dashDirection.y > 0.01f)
@@ -374,30 +538,66 @@ public class PlayerController : MonoBehaviour
         SetChargedAttackPreviewVisible(true);
     }
 
-    private void ActivateChargedAttackHitbox(Vector3 startPosition, Vector3 endPosition, Vector3 dashDirection)
+    private int ActivateChargedAttackHitbox(Vector3 startPosition, Vector3 endPosition, Vector3 dashDirection)
     {
         int hitboxIndex = GetAvailableChargedAttackHitboxIndex();
+        if (hitboxIndex < 0)
+            return -1;
+
         ChargedAttackHitbox hitbox = chargedAttackHitboxes[hitboxIndex];
 
         hitbox.GameObject.SetActive(true);
         hitbox.Collider.enabled = true;
+        hitbox.ActivationTime = 0f;
         hitbox.DisableTime = Time.time + Mathf.Max(0.01f, chargedAttackColliderActiveDuration);
 
         ApplyChargedAttackShape(hitbox.Collider, startPosition, endPosition, dashDirection);
         UpdateColliderDebugLine(hitbox.Collider, hitbox.DebugLine, chargedAttackColliderDebugColor, chargedAttackColliderDebugLineWidth);
         hitbox.DebugLine.enabled = showChargedAttackColliderDebug;
         chargedAttackHitboxes[hitboxIndex] = hitbox;
+        return hitboxIndex;
+    }
+
+    private void ScheduleChargedAttackRepeat(int sourceIndex, float delaySeconds)
+    {
+        int repeatIndex = GetAvailableChargedAttackHitboxIndex();
+        if (repeatIndex < 0)
+            return;
+
+        ChargedAttackHitbox source = chargedAttackHitboxes[sourceIndex];
+        ChargedAttackHitbox repeat = chargedAttackHitboxes[repeatIndex];
+
+        repeat.GameObject.transform.SetPositionAndRotation(
+            source.GameObject.transform.position,
+            source.GameObject.transform.rotation);
+        repeat.GameObject.transform.localScale = source.GameObject.transform.localScale;
+        repeat.Collider.center = source.Collider.center;
+        repeat.Collider.size = source.Collider.size;
+        repeat.Collider.enabled = false;
+        repeat.DebugLine.enabled = false;
+        repeat.ActivationTime = Time.unscaledTime + delaySeconds;
+        repeat.DisableTime = 0f;
+
+        UpdateColliderDebugLine(
+            repeat.Collider,
+            repeat.DebugLine,
+            chargedAttackRepeatColliderDebugColor,
+            chargedAttackColliderDebugLineWidth);
+        chargedAttackHitboxes[repeatIndex] = repeat;
     }
 
     private int GetAvailableChargedAttackHitboxIndex()
     {
         for (int i = 0; i < chargedAttackHitboxes.Length; i++)
         {
-            if (!chargedAttackHitboxes[i].GameObject.activeSelf)
+            GameObject hitboxObject = chargedAttackHitboxes[i].GameObject;
+            if (hitboxObject != null &&
+                !hitboxObject.activeSelf &&
+                !chargedAttackHitboxes[i].IsPending)
                 return i;
         }
 
-        return 0;
+        return -1;
     }
 
     private void ApplyChargedAttackShape(Collider targetCollider, Vector3 startPosition, Vector3 endPosition, Vector3 dashDirection)
@@ -506,10 +706,16 @@ public class PlayerController : MonoBehaviour
 
     private void CreateChargedAttackHitboxPool()
     {
+        if (chargedAttackRangeCollider == null)
+            return;
+
+        chargedAttackHitboxPoolRoot = new GameObject("ChargedAttackHitboxPool");
+
         for (int i = 0; i < chargedAttackHitboxes.Length; i++)
         {
             GameObject hitboxObject = new GameObject("ChargedAttackHitbox_" + i);
-            hitboxObject.layer = chargedAttackRangeCollider != null ? chargedAttackRangeCollider.gameObject.layer : gameObject.layer;
+            hitboxObject.layer = chargedAttackRangeCollider.gameObject.layer;
+            hitboxObject.transform.SetParent(chargedAttackHitboxPoolRoot.transform, false);
 
             BoxCollider hitboxCollider = hitboxObject.AddComponent<BoxCollider>();
             hitboxCollider.isTrigger = true;
@@ -523,9 +729,29 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateChargedAttackHitboxPool()
     {
+        if (chargedAttackHitboxes == null)
+            return;
+
         for (int i = 0; i < chargedAttackHitboxes.Length; i++)
         {
             ChargedAttackHitbox hitbox = chargedAttackHitboxes[i];
+
+            if (hitbox.GameObject == null)
+                continue;
+
+            if (hitbox.IsPending)
+            {
+                if (Time.unscaledTime < hitbox.ActivationTime)
+                    continue;
+
+                hitbox.GameObject.SetActive(true);
+                hitbox.Collider.enabled = true;
+                hitbox.DebugLine.enabled = showChargedAttackColliderDebug;
+                hitbox.ActivationTime = 0f;
+                hitbox.DisableTime = Time.time + Mathf.Max(0.01f, chargedAttackColliderActiveDuration);
+                chargedAttackHitboxes[i] = hitbox;
+                continue;
+            }
 
             if (hitbox.GameObject == null || !hitbox.GameObject.activeSelf || Time.time < hitbox.DisableTime)
                 continue;
@@ -548,6 +774,7 @@ public class PlayerController : MonoBehaviour
             hitbox.DebugLine.enabled = false;
 
         hitbox.GameObject.SetActive(false);
+        hitbox.ActivationTime = 0f;
         hitbox.DisableTime = 0f;
         chargedAttackHitboxes[index] = hitbox;
     }
@@ -570,7 +797,7 @@ public class PlayerController : MonoBehaviour
             return;
 
         if (enabled)
-            UpdateColliderDebugLine(targetCollider, debugLine, normalAttackColliderDebugColor, normalAttackColliderDebugLineWidth);
+            UpdateColliderDebugLine(targetCollider, debugLine, activeNormalAttackDebugColor, normalAttackColliderDebugLineWidth);
 
         debugLine.enabled = enabled && showNormalAttackColliderDebug;
     }
@@ -622,10 +849,61 @@ public class PlayerController : MonoBehaviour
         lineRenderer.receiveShadows = false;
 
         if (lineRenderer.sharedMaterial == null)
-            lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            lineRenderer.sharedMaterial = GetRuntimeDebugMaterial();
 
         lineRenderer.enabled = false;
         return lineRenderer;
+    }
+
+    private void CreateDistanceChargeReadyDebugLine()
+    {
+        Transform existing = transform.Find("DistanceChargeReadyDebug");
+        GameObject lineObject = existing != null
+            ? existing.gameObject
+            : new GameObject("DistanceChargeReadyDebug");
+        lineObject.transform.SetParent(transform, false);
+
+        distanceChargeReadyDebugLine = lineObject.GetComponent<LineRenderer>();
+        if (distanceChargeReadyDebugLine == null)
+            distanceChargeReadyDebugLine = lineObject.AddComponent<LineRenderer>();
+
+        distanceChargeReadyDebugLine.useWorldSpace = false;
+        distanceChargeReadyDebugLine.loop = true;
+        distanceChargeReadyDebugLine.positionCount = 4;
+        distanceChargeReadyDebugLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        distanceChargeReadyDebugLine.receiveShadows = false;
+
+        if (distanceChargeReadyDebugLine.sharedMaterial == null)
+            distanceChargeReadyDebugLine.sharedMaterial = GetRuntimeDebugMaterial();
+
+        UpdateDistanceChargeReadyDebug();
+    }
+
+    private void UpdateDistanceChargeReadyDebug()
+    {
+        if (distanceChargeReadyDebugLine == null || controller == null)
+            return;
+
+        bool isReady = showDistanceChargeReadyDebug &&
+            enableDistanceChargeUpgrade &&
+            distanceChargePercent >= 100f;
+        distanceChargeReadyDebugLine.enabled = isReady;
+        if (!isReady)
+            return;
+
+        Vector3 center = controller.center;
+        float halfWidth = controller.radius + 0.15f;
+        float halfHeight = controller.height * 0.5f + 0.15f;
+        float debugZ = center.z - controller.radius - 0.03f;
+
+        distanceChargeReadyDebugLine.SetPosition(0, new Vector3(center.x - halfWidth, center.y - halfHeight, debugZ));
+        distanceChargeReadyDebugLine.SetPosition(1, new Vector3(center.x - halfWidth, center.y + halfHeight, debugZ));
+        distanceChargeReadyDebugLine.SetPosition(2, new Vector3(center.x + halfWidth, center.y + halfHeight, debugZ));
+        distanceChargeReadyDebugLine.SetPosition(3, new Vector3(center.x + halfWidth, center.y - halfHeight, debugZ));
+        distanceChargeReadyDebugLine.startColor = empoweredNormalAttackDebugColor;
+        distanceChargeReadyDebugLine.endColor = empoweredNormalAttackDebugColor;
+        distanceChargeReadyDebugLine.startWidth = normalAttackColliderDebugLineWidth;
+        distanceChargeReadyDebugLine.endWidth = normalAttackColliderDebugLineWidth;
     }
 
     private void UpdateColliderDebugLine(Collider targetCollider, LineRenderer lineRenderer, Color color, float width)
@@ -663,9 +941,20 @@ public class PlayerController : MonoBehaviour
         bottom = center - transform.up * halfHeightWithoutCaps;
     }
 
+    private Material GetRuntimeDebugMaterial()
+    {
+        if (runtimeDebugMaterial == null)
+            runtimeDebugMaterial = new Material(Shader.Find("Sprites/Default"));
+
+        return runtimeDebugMaterial;
+    }
+
     private void LockSidePlane()
     {
         Vector3 position = transform.position;
+        if (Mathf.Approximately(position.z, lockedZ))
+            return;
+
         position.z = lockedZ;
         transform.position = position;
     }
@@ -675,6 +964,9 @@ public class PlayerController : MonoBehaviour
         SetNormalAttackCollidersEnabled(false);
         SetChargedAttackPreviewVisible(false);
 
+        if (distanceChargeReadyDebugLine != null)
+            distanceChargeReadyDebugLine.enabled = false;
+
         if (chargedAttackHitboxes != null)
         {
             for (int i = 0; i < chargedAttackHitboxes.Length; i++)
@@ -682,14 +974,28 @@ public class PlayerController : MonoBehaviour
         }
 
         activeNormalAttackCollider = null;
+        damagedNormalAttackTargets?.Clear();
+        activeNormalAttackDamage = 0;
+        activeNormalAttackDebugColor = normalAttackColliderDebugColor;
+        distanceChargePercent = 0f;
+        lastDistanceChargePosition = transform.position;
         isCharging = false;
         chargeTimer = 0f;
-        normalAttackColliderDisableTime = -999f;
+        normalAttackColliderDisableTime = 0f;
         horizontalVelocity = 0f;
         verticalVelocity = 0f;
         airDashFloatTimer = 0f;
         isJumping = false;
         isHoldingJump = false;
         jumpHoldTimer = 0f;
+    }
+
+    private void OnDestroy()
+    {
+        if (chargedAttackHitboxPoolRoot != null)
+            Destroy(chargedAttackHitboxPoolRoot);
+
+        if (runtimeDebugMaterial != null)
+            Destroy(runtimeDebugMaterial);
     }
 }
