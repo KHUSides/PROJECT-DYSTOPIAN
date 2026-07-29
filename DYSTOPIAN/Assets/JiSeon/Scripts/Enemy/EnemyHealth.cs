@@ -36,6 +36,7 @@ namespace Dystopian.EnemyTest
         public int MaxHealth => maxHealth;
         public bool IsAlive => !isDead && currentHealth > 0;
 
+        public event Action<EnemyHealth> Damaged;
         public event Action<EnemyHealth> Died;
 
         private void Awake()
@@ -65,6 +66,8 @@ namespace Dystopian.EnemyTest
             {
                 Debug.Log($"[Enemy Health] {name} took {amount} damage. HP: {currentHealth}/{maxHealth}", this);
             }
+
+            Damaged?.Invoke(this);
 
             if (currentHealth <= 0)
             {

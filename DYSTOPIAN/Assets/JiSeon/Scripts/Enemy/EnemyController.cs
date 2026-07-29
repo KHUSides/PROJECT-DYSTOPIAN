@@ -11,7 +11,6 @@ namespace Dystopian.EnemyTest
             Idle,
             Wander,
             Chase,
-            AttackReady,
             Dead
         }
 
@@ -57,11 +56,33 @@ namespace Dystopian.EnemyTest
         private float verticalVelocity;
         private int moveSign = 1;
         private int facingSign = 1;
+        private float movementLockedUntil = -999f;
+        private bool externalMovementLock;
 
         public bool IsDead => currentState == EnemyState.Dead;
+        public bool IsStrictlyChasing => currentState == EnemyState.Chase;
+        public bool IsChasingTarget => currentState == EnemyState.Chase;
+        public bool IsMovementLocked => externalMovementLock || Time.time < movementLockedUntil;
         public string CurrentStateName => currentState.ToString();
         public float DetectionRange => detectionRange;
         public float AttackRange => attackRange;
+        public Transform CurrentTarget => target;
+        public int FacingSign => facingSign;
+
+        public void LockMovement(float seconds)
+        {
+            if (seconds <= 0f)
+            {
+                return;
+            }
+
+            movementLockedUntil = Mathf.Max(movementLockedUntil, Time.time + seconds);
+        }
+
+        public void SetExternalMovementLock(bool locked)
+        {
+            externalMovementLock = locked;
+        }
 
         private void Reset()
         {
@@ -137,6 +158,11 @@ namespace Dystopian.EnemyTest
             }
 
             float horizontalSpeed = UpdateStateAndGetHorizontalSpeed();
+            if (IsMovementLocked)
+            {
+                horizontalSpeed = 0f;
+            }
+
             ApplyGravity();
             Move(horizontalSpeed);
             LockSideViewPlane();
@@ -161,11 +187,6 @@ namespace Dystopian.EnemyTest
             }
 
             FaceTarget();
-
-            if (distanceToTarget <= attackRange)
-            {
-                return EnemyState.AttackReady;
-            }
 
             return EnemyState.Chase;
         }
@@ -210,16 +231,17 @@ namespace Dystopian.EnemyTest
                     int chaseSign = target.position.x < transform.position.x ? -1 : 1;
                     facingSign = chaseSign;
 
+                    if (Mathf.Abs(target.position.x - transform.position.x) <= attackRange)
+                    {
+                        return 0f;
+                    }
+
                     if (!CanMove(chaseSign))
                     {
                         return 0f;
                     }
 
                     return chaseSign * chaseSpeed;
-
-                case EnemyState.AttackReady:
-                    FaceTarget();
-                    return 0f;
 
                 default:
                     return 0f;
@@ -403,11 +425,11 @@ namespace Dystopian.EnemyTest
                 return;
             }
 
-            if (currentState != EnemyState.AttackReady)
+            if (currentState != EnemyState.Chase)
             {
                 if (logStateChanges)
                 {
-                    Debug.Log($"[Enemy AI] {name} received {eventType}, but target is not in attack range.", this);
+                    Debug.Log($"[Enemy AI] {name} received {eventType}, but target is not being chased.", this);
                 }
                 return;
             }

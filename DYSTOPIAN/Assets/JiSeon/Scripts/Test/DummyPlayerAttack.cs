@@ -102,6 +102,11 @@ namespace Dystopian.EnemyTest
                     continue;
                 }
 
+                if (hit.transform.IsChildOf(transform))
+                {
+                    continue;
+                }
+
                 IDamageable damageable = hit.GetComponentInParent<IDamageable>();
                 if (damageable == null || !damageable.IsAlive || damagedTargets.Contains(damageable))
                 {
