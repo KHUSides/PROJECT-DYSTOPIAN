@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Dystopian.Combat;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -75,6 +76,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxFallSpeedAfterAirDash = -2f;
     [UnityEngine.Serialization.FormerlySerializedAs("chargedAttackColliderActiveDuration_")]
     [SerializeField] private float chargedAttackColliderActiveDuration = 0.25f;
+    [SerializeField, Min(1)] private int chargedAttackDamage = 20;
+    [SerializeField] private LayerMask chargedAttackDamageMask = ~0;
     [UnityEngine.Serialization.FormerlySerializedAs("showChargedAttackColliderDebug_")]
     [SerializeField] private bool showChargedAttackColliderDebug = true;
     [UnityEngine.Serialization.FormerlySerializedAs("chargedAttackColliderDebugColor_")]
@@ -94,8 +97,12 @@ public class PlayerController : MonoBehaviour
     private LineRenderer normalAttackDebugUp;
     private LineRenderer normalAttackDebugDown;
     private LineRenderer distanceChargeReadyDebugLine;
-    private Collider[] normalAttackHitResults;
-    private HashSet<Dystopian.EnemyTest.IDamageable> damagedNormalAttackTargets;
+    private Collider[] attackHitResults;
+    private Collider[] dashOverlapResults;
+    private Collider[] ignoredDashColliders;
+    private RaycastHit[] dashHitResults;
+    private HashSet<IDamageable> damagedNormalAttackTargets;
+    private HashSet<IDamageable> damagedChargedAttackTargets;
     private Collider chargedAttackRangeCollider;
     private LineRenderer chargedAttackDebugLine;
     private ChargedAttackHitbox[] chargedAttackHitboxes;
@@ -124,6 +131,8 @@ public class PlayerController : MonoBehaviour
 
     public event Action NormalAttackPerformed;
     public event Action ChargedAttackPerformed;
+    public event Action ReinforcedAttackPerformed;
+    public event Action TargetDefeated;
     public event Action JumpStarted;
 
     public float HorizontalSpeed => Mathf.Abs(horizontalVelocity);
@@ -141,11 +150,17 @@ public class PlayerController : MonoBehaviour
         private LineRenderer debugLine_;
         private float activationTime_;
         private float disableTime_;
+        private bool isReinforced_;
 
         public GameObject GameObject => gameObject_;
         public BoxCollider Collider => collider_;
         public LineRenderer DebugLine => debugLine_;
         public bool IsPending => activationTime_ > 0f;
+        public bool IsReinforced
+        {
+            get => isReinforced_;
+            set => isReinforced_ = value;
+        }
         public float ActivationTime
         {
             get => activationTime_;
@@ -164,6 +179,7 @@ public class PlayerController : MonoBehaviour
             debugLine_ = debugLine;
             activationTime_ = 0f;
             disableTime_ = 0f;
+            isReinforced_ = false;
         }
     }
 
@@ -173,8 +189,12 @@ public class PlayerController : MonoBehaviour
         facingDirection = Vector2.right;
         lastHorizontalFacingDirection = Vector2.right;
         normalAttackColliderDisableTime = 0f;
-        normalAttackHitResults = new Collider[16];
-        damagedNormalAttackTargets = new HashSet<Dystopian.EnemyTest.IDamageable>();
+        attackHitResults = new Collider[32];
+        dashOverlapResults = new Collider[32];
+        ignoredDashColliders = new Collider[32];
+        dashHitResults = new RaycastHit[32];
+        damagedNormalAttackTargets = new HashSet<IDamageable>();
+        damagedChargedAttackTargets = new HashSet<IDamageable>();
         chargedAttackHitboxes = new ChargedAttackHitbox[ChargedAttackHitboxPoolSize];
         lastDistanceChargePosition = transform.position;
         activeNormalAttackDebugColor = normalAttackColliderDebugColor;
@@ -304,6 +324,7 @@ public class PlayerController : MonoBehaviour
         {
             distanceChargePercent = 0f;
             UpdateDistanceChargeReadyDebug();
+            ReinforcedAttackPerformed?.Invoke();
         }
 
         NormalAttackPerformed?.Invoke();
@@ -377,7 +398,7 @@ public class PlayerController : MonoBehaviour
     private void DamageTargetsInActiveNormalAttack()
     {
         BoxCollider attackCollider = activeNormalAttackCollider as BoxCollider;
-        if (attackCollider == null || normalAttackHitResults == null)
+        if (attackCollider == null || attackHitResults == null)
             return;
 
         Vector3 scale = attackCollider.transform.lossyScale;
@@ -387,29 +408,73 @@ public class PlayerController : MonoBehaviour
         int hitCount = Physics.OverlapBoxNonAlloc(
             attackCollider.transform.TransformPoint(attackCollider.center),
             halfExtents,
-            normalAttackHitResults,
+            attackHitResults,
             attackCollider.transform.rotation,
             normalAttackDamageMask,
             QueryTriggerInteraction.Collide);
 
         for (int i = 0; i < hitCount; i++)
         {
-            Collider hit = normalAttackHitResults[i];
-            normalAttackHitResults[i] = null;
+            Collider hit = attackHitResults[i];
+            attackHitResults[i] = null;
             if (hit == null)
                 continue;
 
-            Dystopian.EnemyTest.IDamageable target =
-                hit.GetComponentInParent<Dystopian.EnemyTest.IDamageable>();
+            IDamageable target = hit.GetComponentInParent<IDamageable>();
             if (target == null || !target.IsAlive || !damagedNormalAttackTargets.Add(target))
                 continue;
 
             Vector3 hitPoint = hit.ClosestPoint(activeNormalAttackCollider.bounds.center);
-            target.TakeDamage(new Dystopian.EnemyTest.DamageInfo(
+            ApplyDamage(target, new DamageInfo(
                 activeNormalAttackDamage,
                 hitPoint,
                 gameObject));
         }
+    }
+
+    private void DamageTargetsInChargedAttack(BoxCollider attackCollider)
+    {
+        if (attackCollider == null || attackHitResults == null)
+            return;
+
+        damagedChargedAttackTargets.Clear();
+        Vector3 scale = attackCollider.transform.lossyScale;
+        Vector3 halfExtents = Vector3.Scale(
+            attackCollider.size * 0.5f,
+            new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z)));
+        int hitCount = Physics.OverlapBoxNonAlloc(
+            attackCollider.transform.TransformPoint(attackCollider.center),
+            halfExtents,
+            attackHitResults,
+            attackCollider.transform.rotation,
+            chargedAttackDamageMask,
+            QueryTriggerInteraction.Collide);
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            Collider hit = attackHitResults[i];
+            attackHitResults[i] = null;
+            if (hit == null)
+                continue;
+
+            IDamageable target = hit.GetComponentInParent<IDamageable>();
+            if (target == null || !target.IsAlive || !damagedChargedAttackTargets.Add(target))
+                continue;
+
+            ApplyDamage(target, new DamageInfo(
+                chargedAttackDamage,
+                hit.ClosestPoint(attackCollider.bounds.center),
+                gameObject));
+        }
+    }
+
+    private void ApplyDamage(IDamageable target, DamageInfo damageInfo)
+    {
+        bool wasAlive = target.IsAlive;
+        target.TakeDamage(damageInfo);
+
+        if (wasAlive && !target.IsAlive)
+            TargetDefeated?.Invoke();
     }
 
     private void UpdateDistanceCharge()
@@ -511,7 +576,7 @@ public class PlayerController : MonoBehaviour
         bool wasAirborne = !controller.isGrounded;
         Vector3 startPosition = transform.position;
 
-        controller.Move(dashDirection * safeDistance);
+        MoveThroughDamageables(dashDirection, safeDistance);
         int hitboxIndex = ActivateChargedAttackHitbox(startPosition, transform.position, dashDirection);
         if (hitboxIndex >= 0 && repeatDelaySeconds >= 0f)
             ScheduleChargedAttackRepeat(hitboxIndex, repeatDelaySeconds);
@@ -550,8 +615,10 @@ public class PlayerController : MonoBehaviour
         hitbox.Collider.enabled = true;
         hitbox.ActivationTime = 0f;
         hitbox.DisableTime = Time.time + Mathf.Max(0.01f, chargedAttackColliderActiveDuration);
+        hitbox.IsReinforced = false;
 
         ApplyChargedAttackShape(hitbox.Collider, startPosition, endPosition, dashDirection);
+        DamageTargetsInChargedAttack(hitbox.Collider);
         UpdateColliderDebugLine(hitbox.Collider, hitbox.DebugLine, chargedAttackColliderDebugColor, chargedAttackColliderDebugLineWidth);
         hitbox.DebugLine.enabled = showChargedAttackColliderDebug;
         chargedAttackHitboxes[hitboxIndex] = hitbox;
@@ -577,6 +644,7 @@ public class PlayerController : MonoBehaviour
         repeat.DebugLine.enabled = false;
         repeat.ActivationTime = Time.unscaledTime + delaySeconds;
         repeat.DisableTime = 0f;
+        repeat.IsReinforced = true;
 
         UpdateColliderDebugLine(
             repeat.Collider,
@@ -621,11 +689,112 @@ public class PlayerController : MonoBehaviour
     {
         direction.Normalize();
         GetControllerCapsuleWorldPoints(out Vector3 bottom, out Vector3 top, out float radius);
+        int hitCount = Physics.CapsuleCastNonAlloc(
+            bottom,
+            top,
+            radius,
+            direction,
+            dashHitResults,
+            requestedDistance + dashWallBuffer,
+            dashObstacleMask,
+            QueryTriggerInteraction.Ignore);
+        float nearestObstacleDistance = float.PositiveInfinity;
 
-        if (!Physics.CapsuleCast(bottom, top, radius, direction, out RaycastHit hit, requestedDistance + dashWallBuffer, dashObstacleMask, QueryTriggerInteraction.Ignore))
-            return requestedDistance;
+        for (int i = 0; i < hitCount; i++)
+        {
+            RaycastHit hit = dashHitResults[i];
+            dashHitResults[i] = default;
+            if (hit.collider == null || IsDamageableCollider(hit.collider))
+                continue;
 
-        return Mathf.Max(0f, hit.distance - dashWallBuffer);
+            nearestObstacleDistance = Mathf.Min(nearestObstacleDistance, hit.distance);
+        }
+
+        return float.IsPositiveInfinity(nearestObstacleDistance)
+            ? requestedDistance
+            : Mathf.Max(0f, nearestObstacleDistance - dashWallBuffer);
+    }
+
+    private void MoveThroughDamageables(Vector3 direction, float distance)
+    {
+        int ignoredCount = IgnoreDamageableCollisionsAlongDash(direction, distance);
+        try
+        {
+            controller.Move(direction * distance);
+        }
+        finally
+        {
+            for (int i = 0; i < ignoredCount; i++)
+            {
+                Collider ignoredCollider = ignoredDashColliders[i];
+                ignoredDashColliders[i] = null;
+                if (ignoredCollider != null)
+                    Physics.IgnoreCollision(controller, ignoredCollider, false);
+            }
+        }
+    }
+
+    private int IgnoreDamageableCollisionsAlongDash(Vector3 direction, float distance)
+    {
+        GetControllerCapsuleWorldPoints(out Vector3 bottom, out Vector3 top, out float radius);
+        int ignoredCount = 0;
+        int overlapCount = Physics.OverlapCapsuleNonAlloc(
+            bottom,
+            top,
+            radius,
+            dashOverlapResults,
+            ~0,
+            QueryTriggerInteraction.Ignore);
+
+        for (int i = 0; i < overlapCount; i++)
+        {
+            Collider overlap = dashOverlapResults[i];
+            dashOverlapResults[i] = null;
+            ignoredCount = TryIgnoreDamageableCollision(overlap, ignoredCount);
+        }
+
+        int hitCount = Physics.CapsuleCastNonAlloc(
+            bottom,
+            top,
+            radius,
+            direction,
+            dashHitResults,
+            distance + controller.skinWidth,
+            ~0,
+            QueryTriggerInteraction.Ignore);
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            Collider hitCollider = dashHitResults[i].collider;
+            dashHitResults[i] = default;
+            ignoredCount = TryIgnoreDamageableCollision(hitCollider, ignoredCount);
+        }
+
+        return ignoredCount;
+    }
+
+    private int TryIgnoreDamageableCollision(Collider targetCollider, int ignoredCount)
+    {
+        if (targetCollider == null || targetCollider == controller || !IsDamageableCollider(targetCollider))
+            return ignoredCount;
+
+        for (int i = 0; i < ignoredCount; i++)
+        {
+            if (ignoredDashColliders[i] == targetCollider)
+                return ignoredCount;
+        }
+
+        if (ignoredCount >= ignoredDashColliders.Length)
+            return ignoredCount;
+
+        Physics.IgnoreCollision(controller, targetCollider, true);
+        ignoredDashColliders[ignoredCount] = targetCollider;
+        return ignoredCount + 1;
+    }
+
+    private static bool IsDamageableCollider(Collider targetCollider)
+    {
+        return targetCollider.GetComponentInParent<IDamageable>() != null;
     }
 
     private void ApplyAirDashFallCorrection(Vector3 dashDirection)
@@ -749,7 +918,10 @@ public class PlayerController : MonoBehaviour
                 hitbox.DebugLine.enabled = showChargedAttackColliderDebug;
                 hitbox.ActivationTime = 0f;
                 hitbox.DisableTime = Time.time + Mathf.Max(0.01f, chargedAttackColliderActiveDuration);
+                DamageTargetsInChargedAttack(hitbox.Collider);
                 chargedAttackHitboxes[i] = hitbox;
+                if (hitbox.IsReinforced)
+                    ReinforcedAttackPerformed?.Invoke();
                 continue;
             }
 
@@ -776,6 +948,7 @@ public class PlayerController : MonoBehaviour
         hitbox.GameObject.SetActive(false);
         hitbox.ActivationTime = 0f;
         hitbox.DisableTime = 0f;
+        hitbox.IsReinforced = false;
         chargedAttackHitboxes[index] = hitbox;
     }
 

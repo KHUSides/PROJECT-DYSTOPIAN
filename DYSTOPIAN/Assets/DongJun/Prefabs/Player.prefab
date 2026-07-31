@@ -193,6 +193,8 @@ GameObject:
   - component: {fileID: 2336815315612820770}
   - component: {fileID: 6537631758504979667}
   - component: {fileID: 2195358636141113237}
+  - component: {fileID: 8753106420975318642}
+  - component: {fileID: 3516458871340446438}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -265,6 +267,10 @@ MonoBehaviour:
   airDashGravityMultiplier: 0.35
   maxFallSpeedAfterAirDash: -2
   chargedAttackColliderActiveDuration: 0.25
+  chargedAttackDamage: 20
+  chargedAttackDamageMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   showChargedAttackColliderDebug: 1
   chargedAttackColliderDebugColor: {r: 0.2, g: 0.8, b: 1, a: 1}
   chargedAttackRepeatColliderDebugColor: {r: 1, g: 0.15, b: 0.65, a: 1}
@@ -331,6 +337,41 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimationController
   facingRightYaw: 90
   facingLeftYaw: -90
+--- !u!114 &8753106420975318642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3308381390464599992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c639f74e182436afb0c5d6e7f8091a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCameraShake
+  defeatedDuration: 0.18
+  defeatedStrength: {x: 0.24, y: 0.16}
+  defeatedVibrato: 100
+  defeatedRandomness: 90
+  defeatedFadeOut: 1
+  reinforcedDuration: 0.1
+  reinforcedStrength: {x: 0.08, y: 0.05}
+  reinforcedVibrato: 50
+  reinforcedRandomness: 70
+  reinforcedFadeOut: 1
+--- !u!114 &3516458871340446438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3308381390464599992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75497ed61612fa74cbc1c49ba1c426a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Dystopian.ObjectPixel.IsolatedPixelTarget
+  pixelLayer: 30
 --- !u!1 &4998769750700242966
 GameObject:
   m_ObjectHideFlags: 0

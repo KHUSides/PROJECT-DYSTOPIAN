@@ -26,10 +26,13 @@ public class SideViewCameraFollow : MonoBehaviour
 
     private Camera cam;
     private Vector3 velocity;
+    private Vector3 followPosition;
+    private Vector3 shakeOffset;
 
     private void Awake()
     {
         cam = GetComponent<Camera>();
+        followPosition = transform.position;
 
         if (!forceOrthographic)
             return;
@@ -45,14 +48,14 @@ public class SideViewCameraFollow : MonoBehaviour
 
         Vector3 desiredPosition = target.position + offset;
         if (!followY)
-            desiredPosition.y = transform.position.y;
+            desiredPosition.y = followPosition.y;
 
         desiredPosition.z = offset.z;
         if (ShouldClampToBounds())
             desiredPosition = ClampCameraPositionToBounds(desiredPosition);
 
         Vector3 smoothedPosition = Vector3.SmoothDamp(
-            transform.position,
+            followPosition,
             desiredPosition,
             ref velocity,
             smoothTime);
@@ -61,7 +64,8 @@ public class SideViewCameraFollow : MonoBehaviour
         if (ShouldClampToBounds())
             smoothedPosition = ClampCameraPositionToBounds(smoothedPosition);
 
-        transform.position = smoothedPosition;
+        followPosition = smoothedPosition;
+        transform.position = followPosition + shakeOffset;
     }
 
     public void SetBounds(CameraBounds2D newBounds)
@@ -72,6 +76,11 @@ public class SideViewCameraFollow : MonoBehaviour
     public void SetTarget(Transform newTarget)
     {
         target = newTarget;
+    }
+
+    public void SetShakeOffset(Vector3 newShakeOffset)
+    {
+        shakeOffset = newShakeOffset;
     }
 
     private bool ShouldClampToBounds()
