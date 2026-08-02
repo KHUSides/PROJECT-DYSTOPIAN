@@ -194,7 +194,6 @@ GameObject:
   - component: {fileID: 6537631758504979667}
   - component: {fileID: 2195358636141113237}
   - component: {fileID: 8753106420975318642}
-  - component: {fileID: 3516458871340446438}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -359,19 +358,6 @@ MonoBehaviour:
   reinforcedVibrato: 50
   reinforcedRandomness: 70
   reinforcedFadeOut: 1
---- !u!114 &3516458871340446438
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3308381390464599992}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75497ed61612fa74cbc1c49ba1c426a8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Dystopian.ObjectPixel.IsolatedPixelTarget
-  pixelLayer: 30
 --- !u!1 &4998769750700242966
 GameObject:
   m_ObjectHideFlags: 0
@@ -865,10 +851,31 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 79426d0fd75eb7e4093b63cccab007eb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5004307832604708860}
   m_SourcePrefab: {fileID: 100100000, guid: 79426d0fd75eb7e4093b63cccab007eb, type: 3}
 --- !u!4 &5109233068173749239 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 79426d0fd75eb7e4093b63cccab007eb, type: 3}
   m_PrefabInstance: {fileID: 4714456385278020636}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &5596976853443981645 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 79426d0fd75eb7e4093b63cccab007eb, type: 3}
+  m_PrefabInstance: {fileID: 4714456385278020636}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5004307832604708860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5596976853443981645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75497ed61612fa74cbc1c49ba1c426a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Dystopian.ObjectPixel.IsolatedPixelTarget
+  pixelLayer: 30

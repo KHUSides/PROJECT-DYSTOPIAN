@@ -3015,10 +3015,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5087683723041930137, guid: 6a3439915556efc4f876c770428bdfd2, type: 3}
-      propertyPath: enableChargedAttackRepeat
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8174069462952358784, guid: 6a3439915556efc4f876c770428bdfd2, type: 3}
       propertyPath: m_Name
       value: Rhythm System
