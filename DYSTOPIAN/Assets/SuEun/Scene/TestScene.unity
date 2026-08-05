@@ -4120,7 +4120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.SuEun.StageFlow.StageEnemy
   battleZone_: {fileID: 1269945216}
-  disableOnDefeated_: 1
+  disableOnDefeated_: 0
 --- !u!114 &917745659 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8116362303019412826, guid: 3e4ffc2ca03db764881927b3ea59554a, type: 3}

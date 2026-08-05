@@ -1,3 +1,4 @@
+using Dystopian.EnemyTest;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,9 +13,12 @@ namespace Dystopian.SuEun.StageFlow
         [SerializeField] private Image fillImage_;
 
         private IHealthSource HealthSource => healthSource_ as IHealthSource;
+        private BossHealth bossHealth_;
 
         private void Awake()
         {
+            bossHealth_ = healthSource_ as BossHealth;
+
             if (panel_ != null)
                 panel_.SetActive(false);
         }
@@ -29,6 +33,9 @@ namespace Dystopian.SuEun.StageFlow
 
             if (HealthSource != null)
                 HealthSource.HealthChanged += UpdateFill;
+
+            if (bossHealth_ != null)
+                bossHealth_.HealthChanged += HandleBossHealthChanged;
         }
 
         private void OnDisable()
@@ -41,6 +48,9 @@ namespace Dystopian.SuEun.StageFlow
 
             if (HealthSource != null)
                 HealthSource.HealthChanged -= UpdateFill;
+
+            if (bossHealth_ != null)
+                bossHealth_.HealthChanged -= HandleBossHealthChanged;
         }
 
         private void HandleBattleStarted(BattleZone zone)
@@ -48,8 +58,7 @@ namespace Dystopian.SuEun.StageFlow
             if (panel_ != null)
                 panel_.SetActive(true);
 
-            if (HealthSource != null)
-                UpdateFill(HealthSource.CurrentHealth, HealthSource.MaxHealth);
+            UpdateFillFromHealthSource();
         }
 
         private void HandleBattleCleared(BattleZone zone)
@@ -64,6 +73,24 @@ namespace Dystopian.SuEun.StageFlow
                 fillImage_.fillAmount = maxHealth > 0
                     ? Mathf.Clamp01(currentHealth / (float)maxHealth)
                     : 0f;
+        }
+
+        private void HandleBossHealthChanged(BossHealth health)
+        {
+            if (health != null)
+                UpdateFill(health.CurrentHealth, health.MaxHealth);
+        }
+
+        private void UpdateFillFromHealthSource()
+        {
+            if (HealthSource != null)
+            {
+                UpdateFill(HealthSource.CurrentHealth, HealthSource.MaxHealth);
+                return;
+            }
+
+            if (bossHealth_ != null)
+                UpdateFill(bossHealth_.CurrentHealth, bossHealth_.MaxHealth);
         }
     }
 }
