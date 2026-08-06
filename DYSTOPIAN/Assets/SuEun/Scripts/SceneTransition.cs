@@ -13,10 +13,26 @@ namespace Dystopian.SuEun
         private static string pendingScenePath_;
         private static bool isTransitioning_;
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetState()
+        {
+            pendingScenePath_ = null;
+            isTransitioning_ = false;
+        }
+
         public static bool TryLoad(string targetScenePath)
         {
             if (isTransitioning_)
-                return false;
+            {
+                // LoadingScene이 아닌데 잠금이 남아 있다면 이전 전환이 비정상적으로
+                // 끝난 경우입니다. 다음 씬 전환을 막지 않도록 상태를 복구합니다.
+                if (SceneManager.GetActiveScene().name == "LoadingScene")
+                    return false;
+
+                Debug.LogWarning("[SceneTransition] 이전 전환 잠금을 복구합니다.");
+                pendingScenePath_ = null;
+                isTransitioning_ = false;
+            }
 
             if (string.IsNullOrWhiteSpace(targetScenePath) ||
                 !Application.CanStreamedLevelBeLoaded(targetScenePath))
