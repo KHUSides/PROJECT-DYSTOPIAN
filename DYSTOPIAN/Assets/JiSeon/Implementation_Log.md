@@ -934,6 +934,158 @@ Unity 에디터:
 
 ---
 
+## 2026-08-06 - 4주차 NPC 상호작용 / 대화 시스템 구현
+
+### 구현 완료 범위
+
+4주차 목표인 NPC 및 안정화 범위 중 NPC 독립 동작에 필요한 기본 시스템을 구현했습니다.
+
+완료 기준:
+
+- NPC가 플레이어 접근을 감지합니다.
+- 플레이어가 상호작용 키를 누르면 대화가 시작됩니다.
+- 대화 중 플레이어 조작이 제한됩니다.
+- 대화 종료 시 플레이어 조작이 복구됩니다.
+- 조건별 대화 분기와 튜토리얼 진행 상태를 처리할 수 있습니다.
+- 대화 완료 시 다른 파트에서 연결할 수 있는 이벤트 호출 지점을 제공합니다.
+- Enemy / Boss 시스템과 별개로 NPC 대화 이벤트가 독립적으로 동작합니다.
+
+### 테스트 씬
+
+- `Assets/JiSeon/Scenes/NPC_Test.unity`
+
+구성 요소:
+
+- `Main Camera`
+- `Directional Light`
+- 사이드뷰 테스트 맵
+- `Player`
+- `Rhythm System`
+- `NpcDialogueManager`
+- `TutorialNPC`
+- `EventSystem`
+
+`Player`와 `Rhythm System`은 `MerlinBoss_Test.unity`에서 사용하던 테스트 구성을 복사해 배치했습니다. 기존 임시 `DummyPlayer`는 NPC 테스트 씬에서 제거했습니다.
+
+### 생성 프리팹
+
+- NPC 대화 매니저: `Assets/JiSeon/Prefabs/NPCs/NpcDialogueManager.prefab`
+- 튜토리얼 NPC: `Assets/JiSeon/Prefabs/NPCs/TutorialNPC.prefab`
+
+`TutorialNPC.prefab`은 Synty 원본 캐릭터 프리팹을 직접 수정하지 않고, NPC 프리팹 내부에 인스턴스로 포함해 테스트용 외형으로 사용합니다.
+
+사용한 외형 원본:
+
+- `Assets/Synty/PolygonDungeon/Prefabs/Characters/SM_Chr_Hero_Knight_Female_01.prefab`
+
+### 주요 구현 스크립트
+
+- `Assets/JiSeon/Scripts/NPC/NpcInteractable.cs`
+  - 플레이어 접근 감지
+  - 상호작용 키 입력 처리
+  - NPC 머리 위 `E : 대화` 프롬프트 표시
+  - 조건에 맞는 대화 분기 선택
+  - NPC가 플레이어 방향을 바라보도록 처리
+
+- `Assets/JiSeon/Scripts/NPC/NpcDialogueManager.cs`
+  - 대화 시작 / 종료 처리
+  - 임시 대화 UI 자동 생성
+  - Space / Enter / E 입력으로 다음 대사 진행
+  - Escape 입력으로 대화 취소
+  - 마지막 대사에서 E 입력으로 대화가 끝난 직후 같은 프레임에 대화가 다시 시작되지 않도록 처리
+  - 대화 중 플레이어 조작 잠금 / 종료 후 복구
+  - 대화 시작 / 종료 이벤트 제공
+
+- `Assets/JiSeon/Scripts/NPC/NpcDialogueData.cs`
+  - 대사 라인 데이터
+  - 대화 분기 데이터
+  - Flag / TutorialStep 기반 조건 검사
+  - 대화 완료 시 Flag 변경, TutorialStep 변경, UnityEvent 호출 처리
+
+- `Assets/JiSeon/Scripts/NPC/NpcDialogueState.cs`
+  - NPC 대화용 전역 상태 저장
+  - 문자열 Flag 저장
+  - 튜토리얼 진행도 저장
+  - 상태 변경 이벤트 제공
+
+- `Assets/JiSeon/Scripts/NPC/NpcPlayerControlLock.cs`
+  - 대화 중 플레이어 조작 제한
+  - 원본 플레이어 스크립트를 수정하지 않고 외부에서 컴포넌트를 임시 비활성화
+  - 현재 기본 비활성화 대상:
+    - `PlayerController`
+    - `PlayerRhythmAttackBridge`
+    - `DummyPlayerController`
+    - `DummyPlayerAttack`
+
+- `Assets/JiSeon/Scripts/NPC/NpcDialogueEventBridge.cs`
+  - Inspector / UnityEvent에서 호출 가능한 NPC 이벤트 브릿지
+  - Flag 설정, 튜토리얼 단계 변경, 디버그 이벤트 로그 호출 가능
+
+- `Assets/JiSeon/Scripts/Editor/NpcTestAssetBuilder.cs`
+  - NPC 프리팹 / 테스트 씬 자동 생성용 에디터 빌더
+  - 메뉴 경로: `Dystopian/NPC/Rebuild NPC Test Assets`
+  - `NPC_Test.unity` 재생성 시 `MerlinBoss_Test.unity`의 `Player`와 `Rhythm System`을 함께 복사합니다.
+  - 보스 테스트 씬에서 Player 구성을 찾지 못할 때만 `DummyPlayer`를 fallback으로 생성합니다.
+
+### TutorialNPC 현재 대화 분기
+
+`TutorialNPC.prefab`에는 조건별 대화 테스트를 위해 3개 분기가 들어 있습니다.
+
+| 분기 | 조건 | 완료 결과 |
+|---|---|---|
+| `first_talk` | `TutorialStep <= 0` | `tutorial_npc_met = true`, `TutorialStep = 1` |
+| `tutorial_step_1_rhythm_hint` | `tutorial_npc_met = true`, `TutorialStep = 1` | `TutorialStep` 1 증가 |
+| `tutorial_step_2_repeat` | `TutorialStep >= 2` | 반복 안내 대화 |
+
+분기 선택 방식:
+
+- `NpcInteractable`에 들어 있는 대화 분기 배열을 위에서부터 검사합니다.
+- 조건을 처음 만족한 분기를 실행합니다.
+- 구체적인 조건 분기를 위쪽에 두고, 기본 대화를 아래쪽에 두는 방식으로 사용합니다.
+
+### 다른 파트 연결용 문서
+
+- `Assets/JiSeon/NPC_Integration_Guide.md`
+
+문서에 정리한 내용:
+
+- 씬에 배치해야 하는 NPC 프리팹
+- NPC 대화 매니저 사용 방식
+- 플레이어 쪽 요구사항
+- 조건별 대화 구조
+- 다른 파트에서 호출 가능한 API
+- UnityEvent에서 호출 가능한 이벤트 브릿지 메서드
+- 현재 검증 상태
+
+### 검증 상태
+
+빌드:
+
+- `dotnet build DYSTOPIAN/Assembly-CSharp.csproj`
+- 결과: 경고 0개 / 오류 0개
+- `dotnet build DYSTOPIAN/Assembly-CSharp-Editor.csproj`
+- 결과: 경고 0개 / 오류 0개
+
+Unity:
+
+- `NPC_Test.unity` 생성 확인
+- `NPC_Test.unity`에 보스 테스트 씬 기준 `Player` 배치 확인
+- `NPC_Test.unity`에 보스 테스트 씬 기준 `Rhythm System` 배치 확인
+- 기존 임시 `DummyPlayer`가 제거된 상태를 확인했습니다.
+- `TutorialNPC.prefab` 생성 확인
+- `NpcDialogueManager.prefab` 생성 확인
+- Play Mode에서 플레이어가 NPC 범위 안에 있을 때 프롬프트가 활성화되는 것을 확인했습니다.
+- NPC 대화 시작 시 `NpcDialogueManager.IsDialogueActive = true`가 되는 것을 확인했습니다.
+- 마지막 대사 종료 직후 같은 프레임에 NPC 상호작용이 다시 실행되지 않는 것을 확인했습니다.
+- 대화 시작 시 `PlayerController.enabled = false`로 플레이어 조작이 잠기는 것을 확인했습니다.
+- 대화 종료 후 `PlayerController.enabled = true`로 플레이어 조작이 복구되는 것을 확인했습니다.
+- 첫 대화 완료 후 `tutorial_npc_met = true`, `TutorialStep = 1`이 되는 것을 확인했습니다.
+- 두 번째 대화 완료 후 `TutorialStep = 2`가 되는 것을 확인했습니다.
+- 세 번째 대화부터 `tutorial_step_2_repeat` 분기로 진입하는 것을 확인했습니다.
+- Unity 콘솔 기준 에러 0개를 확인했습니다.
+
+---
+
 ## 현재 테스트 방법
 
 ### Enemy 테스트
@@ -971,6 +1123,23 @@ Unity 에디터:
 10. 창 투척 중 다음 단일 노트가 가까이 붙어 있어도 창 투척 모션 / 투사체가 캔슬되지 않는지 확인합니다.
 11. 플레이어 공격 입력으로 보스 HP가 감소하는지 확인합니다.
 
+### NPC 테스트
+
+테스트 씬:
+
+- `Assets/JiSeon/Scenes/NPC_Test.unity`
+
+기본 흐름:
+
+1. 씬을 실행합니다.
+2. 플레이어를 방향키로 움직여 `TutorialNPC` 근처로 이동합니다.
+3. NPC 머리 위에 `E : 대화` 프롬프트가 표시되는지 확인합니다.
+4. `E`를 눌러 대화를 시작합니다.
+5. 대화 중 플레이어가 움직이지 않는지 확인합니다.
+6. `Space`, `Enter`, 또는 `E`로 다음 대사를 넘깁니다.
+7. 마지막 대사 이후 대화창이 닫히고 플레이어 조작이 복구되는지 확인합니다.
+8. 다시 말을 걸었을 때 조건별 대화가 다음 분기로 넘어가는지 확인합니다.
+
 ### 입력
 
 | 입력 | 동작 |
@@ -979,6 +1148,9 @@ Unity 에디터:
 | UpArrow | 플레이어 점프 |
 | A | 플레이어 단일 노트 입력 |
 | D 누름 / 뗌 | 플레이어 롱 노트 시작 / 종료 입력 |
+| E | NPC 대화 시작 / 다음 대사 |
+| Space / Enter | NPC 다음 대사 |
+| Escape | NPC 대화 취소 |
 | R | 리듬 UI 표시 / 숨김 |
 | T | 리듬 차트 시작 / 정지 |
 
@@ -999,7 +1171,8 @@ Unity 에디터:
 
 - 원본 Player / Rhythm 스크립트는 직접 수정하지 않습니다.
 - Enemy / Boss 쪽에서 필요한 연결은 JiSeon 폴더의 Bridge / Adapter 스크립트로 처리합니다.
-- 다른 파트 코드가 아직 안정화되지 않은 상황을 고려해, Enemy / Boss 자체 기능은 최대한 독립적으로 유지합니다.
+- NPC는 원본 Player / UI 스크립트를 직접 수정하지 않고, `NpcDialogueManager`와 `NpcPlayerControlLock`을 통해 독립적으로 동작합니다.
+- 다른 파트 코드가 아직 안정화되지 않은 상황을 고려해, Enemy / Boss / NPC 자체 기능은 최대한 독립적으로 유지합니다.
 
 ---
 
@@ -1010,4 +1183,4 @@ Unity 에디터:
 - 실제 UI가 준비되면 `EnemyDebugOverlay`의 임시 STATE / HP 표시는 교체하거나 비활성화하면 됩니다.
 - 실제 멀린 전용 캐릭터 프리팹이 완성되면 `MerlinBoss.prefab`의 `Merlin_TempVisual`을 교체하면 됩니다.
 - 멀린 실제 캐릭터 프리팹으로 교체할 경우 `MerlinHeldSpearPoseController`의 손 위치 보정 값은 새 리그 기준으로 다시 확인해야 합니다.
-- NPC 실제 기능은 아직 구현 범위에 들어가지 않았습니다.
+- 실제 UI 파트의 대화창이 완성되면 `NpcDialogueManager`의 임시 UI 참조를 정식 UI로 교체하면 됩니다.
