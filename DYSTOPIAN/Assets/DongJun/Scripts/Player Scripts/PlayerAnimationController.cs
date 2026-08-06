@@ -23,12 +23,20 @@ public sealed class PlayerAnimationController : MonoBehaviour
     [SerializeField] private float facingRightYaw = 90f;
     [SerializeField] private float facingLeftYaw = -90f;
 
+    [Header("Frame Rate")]
+    [SerializeField] private bool limitAnimationFrameRate = true;
+    [SerializeField, Range(1f, 60f)] private float animationFrameRate = 12f;
+
     private PlayerController playerController;
     private RhythmSystem rhythmSystem;
     private Animator animator;
     private Transform visualRoot;
     private bool useFirstAttack = true;
     private int appliedFacingSign;
+    private float normalAnimatorSpeed = 1f;
+    private float animationUpdateTimer;
+    private bool animatorInitialized;
+    private bool frameRateLimitApplied;
 
     private void Start()
     {
@@ -43,6 +51,9 @@ public sealed class PlayerAnimationController : MonoBehaviour
             return;
         }
 
+        normalAnimatorSpeed = animator.speed;
+        animatorInitialized = true;
+        SetFrameRateLimit(limitAnimationFrameRate);
         visualRoot = animator.transform;
         Subscribe();
         UpdateFacing();
@@ -51,6 +62,9 @@ public sealed class PlayerAnimationController : MonoBehaviour
     private void OnEnable()
     {
         Subscribe();
+
+        if (animatorInitialized)
+            SetFrameRateLimit(limitAnimationFrameRate);
     }
 
     private void Update()
@@ -65,7 +79,51 @@ public sealed class PlayerAnimationController : MonoBehaviour
 
     private void LateUpdate()
     {
+        UpdateAnimationFrame();
         UpdateFacing();
+    }
+
+    private void UpdateAnimationFrame()
+    {
+        if (!animatorInitialized)
+            return;
+
+        if (frameRateLimitApplied != limitAnimationFrameRate)
+            SetFrameRateLimit(limitAnimationFrameRate);
+
+        if (!frameRateLimitApplied)
+            return;
+
+        float frameInterval = 1f / Mathf.Max(1f, animationFrameRate);
+        animationUpdateTimer += Time.deltaTime;
+        if (animationUpdateTimer < frameInterval)
+            return;
+
+        float animationDeltaTime = animationUpdateTimer;
+        animationUpdateTimer %= frameInterval;
+        animator.speed = normalAnimatorSpeed;
+        animator.Update(animationDeltaTime);
+        animator.speed = 0f;
+    }
+
+    private void SetFrameRateLimit(bool shouldLimit)
+    {
+        if (animator == null || frameRateLimitApplied == shouldLimit)
+            return;
+
+        if (shouldLimit)
+        {
+            normalAnimatorSpeed = animator.speed > 0f ? animator.speed : normalAnimatorSpeed;
+            animator.speed = 0f;
+            animationUpdateTimer = 0f;
+        }
+        else
+        {
+            animator.speed = normalAnimatorSpeed;
+            animationUpdateTimer = 0f;
+        }
+
+        frameRateLimitApplied = shouldLimit;
     }
 
     private void HandleNormalAttack()
@@ -127,6 +185,8 @@ public sealed class PlayerAnimationController : MonoBehaviour
 
     private void OnDisable()
     {
+        SetFrameRateLimit(false);
+
         if (playerController != null)
         {
             playerController.NormalAttackPerformed -= HandleNormalAttack;

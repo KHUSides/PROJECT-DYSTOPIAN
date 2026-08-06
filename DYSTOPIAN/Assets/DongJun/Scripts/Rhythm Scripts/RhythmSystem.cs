@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -60,6 +61,7 @@ namespace Dystopian.Rhythm
         [SerializeField] private bool hideComboAtZero;
         [SerializeField] private bool resetComboOnBadOrMiss = true;
         [SerializeField] private string comboFormat = "{0}";
+        [SerializeField] private RhythmComboAnimationSettings comboAnimation = new RhythmComboAnimationSettings();
 
         [Header("Player Events")]
         [SerializeField] private UnityEvent onChartStarted = new UnityEvent();
@@ -93,6 +95,23 @@ namespace Dystopian.Rhythm
         private RectTransform playerJudgementLine;
         private RectTransform opponentJudgementLine;
         private TextMeshProUGUI comboText;
+        private RectTransform comboRect;
+        private Vector2 comboBaseAnchoredPosition;
+        private Vector3 comboBaseLocalScale;
+        private Sequence comboTween;
+        private TextMeshProUGUI[] comboSmearTexts = Array.Empty<TextMeshProUGUI>();
+        private Tween comboTierShakeTween;
+        private Sequence comboBlurTween;
+        private Material comboMaterial;
+        private Vector3 comboTierShakeOffset;
+        private Vector3 comboBreakShakeOffset;
+        private float comboIncreaseOffsetY;
+        private float comboBaseOutlineSoftness;
+        private float comboBaseFaceDilate;
+        private int activeComboShakeTier;
+
+        private static readonly int OutlineSoftnessId = Shader.PropertyToID("_OutlineSoftness");
+        private static readonly int FaceDilateId = Shader.PropertyToID("_FaceDilate");
 
         private float clockStartedAt;
         private double dspSongStartTime;
@@ -207,6 +226,15 @@ namespace Dystopian.Rhythm
                 StartCoroutine(PrepareMusicForPlaybackCrtn());
             }
         }
+
+        private void OnDisable()
+        {
+            StopComboAnimation();
+            StopComboTierShake();
+            UpdateComboText();
+            StopComboBlurAnimation();
+        }
+
 
         // Uses one beat snapshot per frame so spawning, movement, and input stay synchronized.
         private void Update()
@@ -385,8 +413,24 @@ namespace Dystopian.Rhythm
 
         public void SetCombo(int value)
         {
+            int previousCombo = combo;
             combo = Mathf.Max(0, value);
-            UpdateComboText();
+            RefreshComboTierShake();
+
+            if (comboAnimation.Enabled && combo > previousCombo)
+            {
+                PlayComboIncreaseAnimation();
+            }
+            else if (comboAnimation.Enabled && previousCombo > 0 && combo == 0)
+            {
+                PlayComboBreakAnimation(previousCombo);
+            }
+            else
+            {
+                StopComboAnimation();
+                UpdateComboText();
+            }
+
             onComboChanged.Invoke(combo);
         }
 
@@ -406,7 +450,7 @@ namespace Dystopian.Rhythm
             activeNotes.Clear();
             nextSpawnIndex = 0;
             activeAttackStates = 0;
-            SetCombo(0);
+            SetComboImmediate(0);
             musicStarted = false;
             pendingMusicStart = false;
             pendingChartStart = false;
@@ -482,6 +526,15 @@ namespace Dystopian.Rhythm
             comboText = panel != null
                 ? panel.Find("Combo Text")?.GetComponent<TextMeshProUGUI>()
                 : null;
+            comboRect = comboText != null ? comboText.rectTransform : null;
+            if (comboRect != null)
+            {
+                comboBaseAnchoredPosition = comboRect.anchoredPosition;
+                comboBaseLocalScale = comboRect.localScale;
+            }
+            CacheComboMaterial();
+            CreateComboSmearPool();
+
 
             bool hasRequiredReferences = noteLayer != null &&
                 playerJudgementLine != null &&
@@ -988,16 +1041,411 @@ namespace Dystopian.Rhythm
                 return;
             }
 
+            SetComboText(combo);
+            UpdateComboVisibility();
+        }
+
+
+        private void SetComboImmediate(int value)
+        {
+            combo = Mathf.Max(0, value);
+            RefreshComboTierShake();
+            StopComboAnimation();
+            UpdateComboText();
+            onComboChanged.Invoke(combo);
+        }
+
+        private void PlayComboIncreaseAnimation()
+        {
+            StopComboAnimation();
+            UpdateComboVisibility();
+            SetComboText(combo);
+
+            comboTween = DOTween.Sequence()
+                .SetUpdate(comboAnimation.UseUnscaledTime);
+
+            if (comboAnimation.IncreaseDistance > 0f)
+            {
+                float halfDuration = comboAnimation.IncreaseDuration * 0.5f;
+                comboTween
+                    .Append(DOTween.To(
+                        () => comboIncreaseOffsetY,
+                        value =>
+                        {
+                            comboIncreaseOffsetY = value;
+                            ApplyComboPosition();
+                        },
+                        comboAnimation.IncreaseDistance,
+                        halfDuration).SetEase(Ease.OutQuad))
+                    .Append(DOTween.To(
+                        () => comboIncreaseOffsetY,
+                        value =>
+                        {
+                            comboIncreaseOffsetY = value;
+                            ApplyComboPosition();
+                        },
+                        0f,
+                        halfDuration).SetEase(Ease.InQuad));
+                AnimateComboSmear();
+            }
+            else
+            {
+                comboTween.AppendInterval(comboAnimation.IncreaseDuration);
+            }
+
+            comboTween.OnComplete(() =>
+            {
+                comboTween = null;
+                RestoreComboTransform();
+                HideComboSmear();
+                UpdateComboText();
+            });
+        }
+
+        private void PlayComboBreakAnimation(int brokenCombo)
+        {
+            StopComboAnimation();
+            UpdateComboVisibility();
+            SetComboText(brokenCombo);
+
+            comboTween = DOTween.Sequence()
+                .SetUpdate(comboAnimation.UseUnscaledTime);
+
+            if (comboAnimation.BreakStrength > 0f)
+            {
+                comboTween.Append(DOTween.Shake(
+                    () => comboBreakShakeOffset,
+                    value =>
+                    {
+                        comboBreakShakeOffset = value;
+                        ApplyComboPosition();
+                    },
+                    comboAnimation.BreakDuration,
+                    new Vector3(
+                        comboAnimation.BreakStrength,
+                        comboAnimation.BreakStrength,
+                        0f),
+                    comboAnimation.BreakVibrato,
+                    comboAnimation.BreakRandomness,
+                    true,
+                    ShakeRandomnessMode.Full));
+            }
+            else
+            {
+                comboTween.AppendInterval(comboAnimation.BreakDuration);
+            }
+
+            comboTween.InsertCallback(
+                comboAnimation.BreakDuration * 0.35f,
+                () => SetComboText(combo));
+            comboTween.OnComplete(() =>
+            {
+                comboTween = null;
+                RestoreComboTransform();
+                UpdateComboText();
+            });
+        }
+
+
+
+        private void SetComboText(int value)
+        {
+            string nextText;
             try
             {
-                comboText.text = string.Format(CultureInfo.InvariantCulture, comboFormat, combo);
+                nextText = string.Format(CultureInfo.InvariantCulture, comboFormat, value);
             }
             catch (FormatException)
             {
-                comboText.text = combo.ToString(CultureInfo.InvariantCulture);
+                nextText = value.ToString(CultureInfo.InvariantCulture);
             }
 
+            bool changed = comboText.text != nextText;
+            comboText.text = nextText;
+            if (changed && Application.isPlaying)
+            {
+                PlayComboBlurAnimation();
+            }
+        }
+
+        private void UpdateComboVisibility()
+        {
             comboText.gameObject.SetActive(showCombo && (!hideComboAtZero || combo > 0));
+        }
+
+
+
+        private void CacheComboMaterial()
+        {
+            if (comboText == null)
+            {
+                return;
+            }
+
+            comboMaterial = comboText.fontMaterial;
+            if (comboMaterial.HasProperty(OutlineSoftnessId))
+            {
+                comboBaseOutlineSoftness = comboMaterial.GetFloat(OutlineSoftnessId);
+            }
+            if (comboMaterial.HasProperty(FaceDilateId))
+            {
+                comboBaseFaceDilate = comboMaterial.GetFloat(FaceDilateId);
+            }
+        }
+
+        private void PlayComboBlurAnimation()
+        {
+            if (comboMaterial == null)
+            {
+                return;
+            }
+
+            StopComboBlurAnimation();
+
+            bool hasSoftness = comboMaterial.HasProperty(OutlineSoftnessId);
+            bool hasFaceDilate = comboMaterial.HasProperty(FaceDilateId);
+            if (!hasSoftness && !hasFaceDilate)
+            {
+                return;
+            }
+
+            if (hasSoftness)
+            {
+                comboMaterial.SetFloat(OutlineSoftnessId, comboAnimation.BlurSoftness);
+            }
+            if (hasFaceDilate)
+            {
+                comboMaterial.SetFloat(FaceDilateId, comboAnimation.BlurFaceDilate);
+            }
+
+            comboBlurTween = DOTween.Sequence()
+                .SetUpdate(comboAnimation.UseUnscaledTime);
+
+            if (hasSoftness)
+            {
+                comboBlurTween.Join(DOTween.To(
+                    () => comboMaterial.GetFloat(OutlineSoftnessId),
+                    value => comboMaterial.SetFloat(OutlineSoftnessId, value),
+                    comboBaseOutlineSoftness,
+                    comboAnimation.BlurDuration));
+            }
+            if (hasFaceDilate)
+            {
+                comboBlurTween.Join(DOTween.To(
+                    () => comboMaterial.GetFloat(FaceDilateId),
+                    value => comboMaterial.SetFloat(FaceDilateId, value),
+                    comboBaseFaceDilate,
+                    comboAnimation.BlurDuration));
+            }
+
+            comboBlurTween.SetEase(Ease.OutQuad);
+            comboBlurTween.OnComplete(() => comboBlurTween = null);
+        }
+
+        private void StopComboBlurAnimation()
+        {
+            comboBlurTween?.Kill();
+            comboBlurTween = null;
+
+            if (comboMaterial == null)
+            {
+                return;
+            }
+
+            if (comboMaterial.HasProperty(OutlineSoftnessId))
+            {
+                comboMaterial.SetFloat(OutlineSoftnessId, comboBaseOutlineSoftness);
+            }
+            if (comboMaterial.HasProperty(FaceDilateId))
+            {
+                comboMaterial.SetFloat(FaceDilateId, comboBaseFaceDilate);
+            }
+        }
+
+        private void RefreshComboTierShake()
+        {
+            int tier = GetComboShakeTier();
+            if (tier == activeComboShakeTier)
+            {
+                return;
+            }
+
+            StopComboTierShake();
+            activeComboShakeTier = tier;
+            if (tier == 0)
+            {
+                return;
+            }
+
+            float strength = GetComboShakeStrength(tier);
+            comboTierShakeTween = DOTween.Shake(
+                    () => comboTierShakeOffset,
+                    value =>
+                    {
+                        comboTierShakeOffset = value;
+                        ApplyComboPosition();
+                    },
+                    comboAnimation.ShakeCycleDuration,
+                    new Vector3(strength, strength, 0f),
+                    comboAnimation.ShakeVibrato,
+                    comboAnimation.ShakeRandomness,
+                    false,
+                    ShakeRandomnessMode.Full)
+                .SetUpdate(comboAnimation.UseUnscaledTime)
+                .SetLoops(-1, LoopType.Restart);
+        }
+
+        private int GetComboShakeTier()
+        {
+            if (combo >= 30)
+            {
+                return 3;
+            }
+            if (combo >= 20)
+            {
+                return 2;
+            }
+            return combo >= 10 ? 1 : 0;
+        }
+
+        private float GetComboShakeStrength(int tier)
+        {
+            switch (tier)
+            {
+                case 3:
+                    return comboAnimation.ShakeStrength30;
+                case 2:
+                    return comboAnimation.ShakeStrength20;
+                default:
+                    return comboAnimation.ShakeStrength10;
+            }
+        }
+
+        private void StopComboTierShake()
+        {
+            comboTierShakeTween?.Kill();
+            comboTierShakeTween = null;
+            comboTierShakeOffset = Vector3.zero;
+            activeComboShakeTier = 0;
+            ApplyComboPosition();
+        }
+
+        private void ApplyComboPosition()
+        {
+            if (comboRect == null)
+            {
+                return;
+            }
+
+            comboRect.anchoredPosition = comboBaseAnchoredPosition +
+                new Vector2(
+                    comboTierShakeOffset.x + comboBreakShakeOffset.x,
+                    comboIncreaseOffsetY + comboTierShakeOffset.y + comboBreakShakeOffset.y);
+        }
+
+        private void CreateComboSmearPool()
+        {
+            if (comboText == null || !comboAnimation.SmearEnabled)
+            {
+                comboSmearTexts = Array.Empty<TextMeshProUGUI>();
+                return;
+            }
+
+            comboSmearTexts = new TextMeshProUGUI[comboAnimation.SmearCopies];
+            for (int i = 0; i < comboSmearTexts.Length; i++)
+            {
+                TextMeshProUGUI smearText = Instantiate(comboText, comboText.transform.parent);
+                smearText.name = "Combo Smear " + (i + 1);
+                smearText.raycastTarget = false;
+                smearText.gameObject.SetActive(false);
+                smearText.rectTransform.SetSiblingIndex(comboText.rectTransform.GetSiblingIndex());
+                comboSmearTexts[i] = smearText;
+            }
+        }
+
+        private void AnimateComboSmear()
+        {
+            if (comboSmearTexts.Length == 0 || comboTween == null)
+            {
+                return;
+            }
+
+            Color sourceColor = comboText.color;
+            float duration = comboAnimation.IncreaseDuration;
+
+            for (int i = 0; i < comboSmearTexts.Length; i++)
+            {
+                TextMeshProUGUI smearText = comboSmearTexts[i];
+                float ratio = comboSmearTexts.Length == 1
+                    ? 0.5f
+                    : i / (comboSmearTexts.Length - 1f);
+                float centerWeight = 1f - Mathf.Abs(ratio - 0.5f);
+                float alpha = sourceColor.a * comboAnimation.SmearAlpha * centerWeight;
+                float startY = comboBaseAnchoredPosition.y +
+                    Mathf.Lerp(-comboAnimation.SmearDistance, comboAnimation.SmearDistance, ratio);
+                Vector3 stretchedScale = new Vector3(
+                    comboBaseLocalScale.x,
+                    comboBaseLocalScale.y * comboAnimation.SmearStretch,
+                    comboBaseLocalScale.z);
+
+                smearText.text = comboText.text;
+                smearText.color = new Color(sourceColor.r, sourceColor.g, sourceColor.b, alpha);
+                smearText.rectTransform.anchoredPosition =
+                    new Vector2(comboBaseAnchoredPosition.x, startY);
+                smearText.rectTransform.localScale = stretchedScale;
+                smearText.gameObject.SetActive(true);
+                smearText.ForceMeshUpdate();
+
+                comboTween.Insert(
+                    0f,
+                    smearText.rectTransform
+                        .DOAnchorPosY(
+                            startY + comboAnimation.IncreaseDistance * 0.35f,
+                            duration)
+                        .SetEase(Ease.OutQuad));
+                comboTween.Insert(
+                    0f,
+                    smearText.rectTransform
+                        .DOScaleY(comboBaseLocalScale.y, duration)
+                        .SetEase(Ease.OutQuad));
+                comboTween.Insert(
+                    0f,
+                    smearText
+                        .DOFade(0f, duration)
+                        .SetDelay(duration * 0.15f)
+                        .SetEase(Ease.InQuad));
+            }
+        }
+
+        private void HideComboSmear()
+        {
+            for (int i = 0; i < comboSmearTexts.Length; i++)
+            {
+                TextMeshProUGUI smearText = comboSmearTexts[i];
+                if (smearText == null)
+                {
+                    continue;
+                }
+
+                smearText.rectTransform.anchoredPosition = comboBaseAnchoredPosition;
+                smearText.rectTransform.localScale = comboBaseLocalScale;
+                smearText.gameObject.SetActive(false);
+            }
+        }
+
+        private void StopComboAnimation()
+        {
+            comboTween?.Kill();
+            comboTween = null;
+            RestoreComboTransform();
+            HideComboSmear();
+        }
+
+        private void RestoreComboTransform()
+        {
+            comboIncreaseOffsetY = 0f;
+            comboBreakShakeOffset = Vector3.zero;
+            ApplyComboPosition();
         }
 
         public Color GetJudgementColor(RhythmJudgement rating)

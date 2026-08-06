@@ -336,6 +336,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimationController
   facingRightYaw: 90
   facingLeftYaw: -90
+  limitAnimationFrameRate: 1
+  animationFrameRate: 24
 --- !u!114 &8753106420975318642
 MonoBehaviour:
   m_ObjectHideFlags: 0

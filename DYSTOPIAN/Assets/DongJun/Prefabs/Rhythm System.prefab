@@ -1290,6 +1290,29 @@ MonoBehaviour:
   hideComboAtZero: 0
   resetComboOnBadOrMiss: 1
   comboFormat: '{0}'
+  comboAnimation:
+    enabled_: 1
+    increaseDuration_: 0.07
+    increaseDistance_: 12
+    smearEnabled_: 1
+    smearCopies_: 3
+    smearDistance_: 20
+    smearStretch_: 1.35
+    smearAlpha_: 0.257
+    shakeStrength10_: 0.25
+    shakeStrength20_: 1
+    shakeStrength30_: 2
+    shakeCycleDuration_: 0.14
+    shakeVibrato_: 50
+    shakeRandomness_: 116
+    blurDuration_: 0.2
+    blurSoftness_: 0.45
+    blurFaceDilate_: -0.33
+    breakDuration_: 0.12
+    breakStrength_: 15
+    breakVibrato_: 75
+    breakRandomness_: 134
+    useUnscaledTime_: 1
   onChartStarted:
     m_PersistentCalls:
       m_Calls: []
