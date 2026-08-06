@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,9 @@ using UnityEngine.UI;
 public sealed class PauseMenuController : MonoBehaviour
 {
     private static PauseMenuController instance;
+
+    public static bool IsGameplayPaused { get; private set; }
+    public static event Action<bool> GameplayPauseChanged;
 
     private GameObject overlay;
     private CanvasGroup dimGroup;
@@ -63,6 +67,7 @@ public sealed class PauseMenuController : MonoBehaviour
             instance = null;
 
         SceneManager.sceneLoaded -= OnSceneLoaded;
+        SetGameplayPaused(false);
         Time.timeScale = 1f;
     }
 
@@ -81,6 +86,7 @@ public sealed class PauseMenuController : MonoBehaviour
         {
             isOpen = false;
             overlay.SetActive(false);
+            SetGameplayPaused(false);
             Time.timeScale = 1f;
         }
 
@@ -222,6 +228,7 @@ private GameObject CreateFallbackPauseButton()
         foreach (var button in fallbackButtons)
             if (button != null) button.SetActive(false);
 
+        SetGameplayPaused(true);
         Time.timeScale = 0f;
         transition = StartCoroutine(Animate(true));
     }
@@ -249,6 +256,7 @@ private GameObject CreateFallbackPauseButton()
 
     private void QuitGame()
     {
+        SetGameplayPaused(false);
         Time.timeScale = 1f;
         Application.Quit();
     }
@@ -292,6 +300,7 @@ private IEnumerator Animate(bool opening)
             overlay.SetActive(false);
             isOpen = false;
             Time.timeScale = 1f;
+            SetGameplayPaused(false);
             foreach (var button in scenePauseButtons)
                 if (button != null) button.gameObject.SetActive(true);
             foreach (var button in fallbackButtons)
@@ -299,6 +308,15 @@ private IEnumerator Animate(bool opening)
         }
 
         transition = null;
+    }
+
+    private static void SetGameplayPaused(bool paused)
+    {
+        if (IsGameplayPaused == paused)
+            return;
+
+        IsGameplayPaused = paused;
+        GameplayPauseChanged?.Invoke(paused);
     }
 
 private IEnumerator MoveButton(RectTransform button, Vector2 from, Vector2 to, float duration, bool fadeIn)

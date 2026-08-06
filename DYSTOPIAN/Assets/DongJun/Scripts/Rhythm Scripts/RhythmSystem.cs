@@ -122,6 +122,10 @@ namespace Dystopian.Rhythm
         private bool musicReady;
         private bool musicPriming;
         private bool pendingMusicStart;
+        private bool chartPaused;
+        private float pausedSongSeconds;
+        private bool pausedMusicPlayback;
+        private bool pausedScheduledMusic;
         private int activeAttackStates;
         private int combo;
         private int nextSpawnIndex;
@@ -157,6 +161,11 @@ namespace Dystopian.Rhythm
                     return -EffectiveStartDelaySeconds;
                 }
 
+                if (chartPaused)
+                {
+                    return pausedSongSeconds;
+                }
+
                 if (useDspScheduling && dspClockActive)
                 {
                     return (float)(AudioSettings.dspTime - dspSongStartTime);
@@ -169,7 +178,8 @@ namespace Dystopian.Rhythm
 
         public float CurrentBeat => (CurrentSongSeconds - firstBeatOffsetSeconds) * Bpm / 60f;
         public bool IsChartRunning => clockRunning;
-        public bool IsChartActive => clockRunning || pendingChartStart;
+        public bool IsChartActive => (clockRunning || pendingChartStart) && !chartPaused;
+        public bool IsChartPaused => chartPaused;
         public bool IsAttackStateActive => activeAttackStates > 0;
         public int CurrentCombo => combo;
         public float Bpm => Mathf.Max(1f, bpm);
@@ -227,8 +237,14 @@ namespace Dystopian.Rhythm
             }
         }
 
+        private void OnEnable()
+        {
+            PauseMenuController.GameplayPauseChanged += HandleGameplayPauseChanged;
+        }
+
         private void OnDisable()
         {
+            PauseMenuController.GameplayPauseChanged -= HandleGameplayPauseChanged;
             StopComboAnimation();
             StopComboTierShake();
             UpdateComboText();
@@ -239,6 +255,11 @@ namespace Dystopian.Rhythm
         // Uses one beat snapshot per frame so spawning, movement, and input stay synchronized.
         private void Update()
         {
+            if (chartPaused || PauseMenuController.IsGameplayPaused)
+            {
+                return;
+            }
+
             if (Input.GetKeyDown(toggleUiKey))
             {
                 ToggleUiVisibility();
@@ -297,7 +318,7 @@ namespace Dystopian.Rhythm
         [ContextMenu("Start Chart")]
         public void StartChart()
         {
-            if (!Application.isPlaying || clockRunning || pendingChartStart)
+            if (!Application.isPlaying || PauseMenuController.IsGameplayPaused || clockRunning || pendingChartStart)
             {
                 return;
             }
@@ -343,6 +364,67 @@ namespace Dystopian.Rhythm
                 onChartStopped.Invoke();
                 ChartStopped?.Invoke();
             }
+        }
+
+        public void PauseChart()
+        {
+            if (!clockRunning || chartPaused)
+            {
+                return;
+            }
+
+            pausedSongSeconds = CurrentSongSeconds;
+            chartPaused = true;
+            pausedMusicPlayback = musicSource != null && musicSource.isPlaying;
+            pausedScheduledMusic = musicStarted && !pausedMusicPlayback && pausedSongSeconds < 0f;
+
+            if (pausedMusicPlayback)
+            {
+                musicSource.Pause();
+            }
+            else if (pausedScheduledMusic)
+            {
+                musicSource.Stop();
+            }
+        }
+
+        public void ResumeChart()
+        {
+            if (!chartPaused)
+            {
+                return;
+            }
+
+            if (useDspScheduling && dspClockActive)
+            {
+                dspSongStartTime = AudioSettings.dspTime - pausedSongSeconds;
+            }
+            else
+            {
+                float currentTime = useUnscaledClockWithoutMusic ? Time.unscaledTime : Time.time;
+                clockStartedAt = currentTime - pausedSongSeconds - EffectiveStartDelaySeconds;
+            }
+
+            if (pausedMusicPlayback)
+            {
+                musicSource.UnPause();
+            }
+            else if (pausedScheduledMusic)
+            {
+                musicSource.time = 0f;
+                if (useDspScheduling && dspClockActive)
+                {
+                    musicSource.PlayScheduled(dspSongStartTime);
+                }
+                else
+                {
+                    musicSource.PlayDelayed(Mathf.Max(0f, -pausedSongSeconds));
+                }
+            }
+
+            pausedMusicPlayback = false;
+            pausedScheduledMusic = false;
+            chartPaused = false;
         }
 
         private void ToggleUiVisibility()
@@ -453,6 +535,9 @@ namespace Dystopian.Rhythm
             SetComboImmediate(0);
             musicStarted = false;
             pendingMusicStart = false;
+            chartPaused = false;
+            pausedMusicPlayback = false;
+            pausedScheduledMusic = false;
             pendingChartStart = false;
             dspClockActive = false;
             clockRunning = false;
@@ -463,6 +548,18 @@ namespace Dystopian.Rhythm
             }
 
             musicSource.Stop();
+        }
+
+        private void HandleGameplayPauseChanged(bool paused)
+        {
+            if (paused)
+            {
+                PauseChart();
+            }
+            else
+            {
+                ResumeChart();
+            }
         }
 
         private IEnumerator PrepareMusicForPlaybackCrtn()

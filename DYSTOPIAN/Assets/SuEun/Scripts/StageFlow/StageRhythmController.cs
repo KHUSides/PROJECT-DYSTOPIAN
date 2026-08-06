@@ -81,7 +81,7 @@ namespace Dystopian.SuEun.StageFlow
             for (int number = 3; number >= 1; number--)
             {
                 countdownNumber_ = number;
-                yield return new WaitForSecondsRealtime(countdownStepSeconds_);
+                yield return new WaitForSeconds(countdownStepSeconds_);
             }
 
             countdownNumber_ = 0;

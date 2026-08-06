@@ -128,6 +128,7 @@ public class PlayerController : MonoBehaviour
     private Color activeNormalAttackDebugColor;
     private Material runtimeDebugMaterial;
     private GameObject chargedAttackHitboxPoolRoot;
+    private bool gameplayPaused;
 
     public event Action NormalAttackPerformed;
     public event Action ChargedAttackPerformed;
@@ -198,6 +199,13 @@ public class PlayerController : MonoBehaviour
         chargedAttackHitboxes = new ChargedAttackHitbox[ChargedAttackHitboxPoolSize];
         lastDistanceChargePosition = transform.position;
         activeNormalAttackDebugColor = normalAttackColliderDebugColor;
+        gameplayPaused = PauseMenuController.IsGameplayPaused;
+    }
+
+    private void OnEnable()
+    {
+        PauseMenuController.GameplayPauseChanged += HandleGameplayPauseChanged;
+        gameplayPaused = PauseMenuController.IsGameplayPaused;
     }
 
     private void Start()
@@ -213,6 +221,9 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (gameplayPaused)
+            return;
+
         UpdateChargeTimer();
         UpdateFacingDirection();
         UpdateHorizontalMovement();
@@ -227,6 +238,9 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (gameplayPaused)
+            return;
+
         UpdateChargedAttackPreview();
     }
 
@@ -310,6 +324,9 @@ public class PlayerController : MonoBehaviour
     // Attack input providers call this API after validating their own input rules.
     public void PerformNormalAttack()
     {
+        if (gameplayPaused)
+            return;
+
         bool isEmpowered = enableDistanceChargeUpgrade && distanceChargePercent >= 100f;
         activeNormalAttackDamage = Mathf.Max(
             1,
@@ -513,6 +530,9 @@ public class PlayerController : MonoBehaviour
 
     public void BeginChargedAttack()
     {
+        if (gameplayPaused)
+            return;
+
         if (isCharging)
             return;
 
@@ -522,11 +542,17 @@ public class PlayerController : MonoBehaviour
 
     public void ReleaseChargedAttack()
     {
+        if (gameplayPaused)
+            return;
+
         ExecuteChargedAttack(-1f);
     }
 
     public void ReleaseChargedAttackWithRepeat(float repeatDelaySeconds)
     {
+        if (gameplayPaused)
+            return;
+
         ExecuteChargedAttack(Mathf.Max(0f, repeatDelaySeconds));
     }
 
@@ -1134,6 +1160,8 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable()
     {
+        PauseMenuController.GameplayPauseChanged -= HandleGameplayPauseChanged;
+
         SetNormalAttackCollidersEnabled(false);
         SetChargedAttackPreviewVisible(false);
 
@@ -1161,6 +1189,11 @@ public class PlayerController : MonoBehaviour
         isJumping = false;
         isHoldingJump = false;
         jumpHoldTimer = 0f;
+    }
+
+    private void HandleGameplayPauseChanged(bool paused)
+    {
+        gameplayPaused = paused;
     }
 
     private void OnDestroy()

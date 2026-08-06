@@ -37,6 +37,7 @@ public sealed class PlayerAnimationController : MonoBehaviour
     private float animationUpdateTimer;
     private bool animatorInitialized;
     private bool frameRateLimitApplied;
+    private bool gameplayPaused;
 
     private void Start()
     {
@@ -53,6 +54,7 @@ public sealed class PlayerAnimationController : MonoBehaviour
 
         normalAnimatorSpeed = animator.speed;
         animatorInitialized = true;
+        gameplayPaused = PauseMenuController.IsGameplayPaused;
         SetFrameRateLimit(limitAnimationFrameRate);
         visualRoot = animator.transform;
         Subscribe();
@@ -61,6 +63,8 @@ public sealed class PlayerAnimationController : MonoBehaviour
 
     private void OnEnable()
     {
+        PauseMenuController.GameplayPauseChanged += HandleGameplayPauseChanged;
+        gameplayPaused = PauseMenuController.IsGameplayPaused;
         Subscribe();
 
         if (animatorInitialized)
@@ -69,6 +73,9 @@ public sealed class PlayerAnimationController : MonoBehaviour
 
     private void Update()
     {
+        if (gameplayPaused)
+            return;
+
         animator.SetFloat(SpeedHash, playerController.HorizontalSpeed);
         animator.SetFloat(VerticalSpeedHash, playerController.VerticalSpeed);
         animator.SetBool(GroundedHash, playerController.IsGrounded);
@@ -79,6 +86,9 @@ public sealed class PlayerAnimationController : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (gameplayPaused)
+            return;
+
         UpdateAnimationFrame();
         UpdateFacing();
     }
@@ -185,6 +195,7 @@ public sealed class PlayerAnimationController : MonoBehaviour
 
     private void OnDisable()
     {
+        PauseMenuController.GameplayPauseChanged -= HandleGameplayPauseChanged;
         SetFrameRateLimit(false);
 
         if (playerController != null)
@@ -206,5 +217,11 @@ public sealed class PlayerAnimationController : MonoBehaviour
         playerController.ChargedAttackPerformed += HandleChargedAttack;
         playerController.JumpStarted -= HandleJumpStarted;
         playerController.JumpStarted += HandleJumpStarted;
+    }
+
+    private void HandleGameplayPauseChanged(bool paused)
+    {
+        gameplayPaused = paused;
+        animationUpdateTimer = 0f;
     }
 }
