@@ -267,7 +267,10 @@ private IEnumerator Animate(bool opening)
             SetButton(resumeButton, collapsed, 0f);
             SetButton(quitButton, collapsed, 0f);
 
-            yield return MoveButton(pauseButton, pauseStart, pauseFinalPosition, 0.20f, true);
+            var dim = FadeDim(0f, 1f, 0.20f);
+            var pause = MoveButton(pauseButton, pauseStart, pauseFinalPosition, 0.20f, true);
+            while (dim.MoveNext() | pause.MoveNext())
+                yield return null;
 
             var settings = MoveButton(settingsButton, collapsed, settingsFinalPosition, 0.16f, true);
             var resume = MoveButton(resumeButton, collapsed, resumeFinalPosition, 0.16f, true);
@@ -277,10 +280,11 @@ private IEnumerator Animate(bool opening)
         }
         else
         {
+            var dim = FadeDim(1f, 0f, 0.14f);
             var settings = MoveButton(settingsButton, settingsFinalPosition, collapsed, 0.14f, false);
             var resume = MoveButton(resumeButton, resumeFinalPosition, collapsed, 0.14f, false);
             var quit = MoveButton(quitButton, quitFinalPosition, collapsed, 0.14f, false);
-            while (settings.MoveNext() | resume.MoveNext() | quit.MoveNext())
+            while (dim.MoveNext() | settings.MoveNext() | resume.MoveNext() | quit.MoveNext())
                 yield return null;
 
             yield return MoveButton(pauseButton, pauseFinalPosition, pauseStart, 0.18f, false);
@@ -311,9 +315,22 @@ private IEnumerator MoveButton(RectTransform button, Vector2 from, Vector2 to, f
             button.localScale = Vector3.one * Mathf.Lerp(fadeIn ? 0.72f : 1f, fadeIn ? 1f : 0.72f, t);
             if (graphic != null)
                 graphic.color = new Color(1f, 1f, 1f, fadeIn ? t : 1f - t);
-            dimGroup.alpha = fadeIn ? Mathf.Lerp(0f, 1f, t) : Mathf.Lerp(1f, 0f, t);
             yield return null;
         }
+    }
+
+    private IEnumerator FadeDim(float from, float to, float duration)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            dimGroup.alpha = Mathf.Lerp(from, to, Mathf.Clamp01(elapsed / duration));
+            yield return null;
+        }
+
+        dimGroup.alpha = to;
     }
 
 private static void SetButton(RectTransform button, Vector2 position, float alpha)

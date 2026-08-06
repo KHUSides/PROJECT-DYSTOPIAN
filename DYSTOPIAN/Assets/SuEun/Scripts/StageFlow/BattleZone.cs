@@ -84,8 +84,8 @@ namespace Dystopian.SuEun.StageFlow
                 bounds.center,
                 bounds.extents,
                 transform.rotation,
-                activatorLayers_,
-                QueryTriggerInteraction.Ignore
+                activatorLayers_.value == 0 ? Physics.AllLayers : activatorLayers_,
+                QueryTriggerInteraction.Collide
             );
 
             foreach (Collider overlap in overlaps)
@@ -120,15 +120,25 @@ namespace Dystopian.SuEun.StageFlow
             if (activator == null)
                 return false;
 
-            if (activatorLayers_.value != 0)
+            // CharacterController and hitbox colliders can live on child objects.  Resolve
+            // their hierarchy so a Player-layer root is still accepted by this zone.
+            for (Transform current = activator.transform; current != null; current = current.parent)
             {
-                int activatorLayerMask = 1 << activator.layer;
+                GameObject candidate = current.gameObject;
 
-                if ((activatorLayers_.value & activatorLayerMask) == 0)
-                    return false;
+                if (activatorLayers_.value != 0)
+                {
+                    int activatorLayerMask = 1 << candidate.layer;
+
+                    if ((activatorLayers_.value & activatorLayerMask) == 0)
+                        continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(requiredTag_) || candidate.CompareTag(requiredTag_))
+                    return true;
             }
 
-            return string.IsNullOrWhiteSpace(requiredTag_) || activator.CompareTag(requiredTag_);
+            return false;
         }
 
         [ContextMenu("Start Battle")]
