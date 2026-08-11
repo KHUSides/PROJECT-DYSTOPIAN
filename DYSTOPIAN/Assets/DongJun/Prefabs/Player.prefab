@@ -788,7 +788,7 @@ GameObject:
   - component: {fileID: 9000000000000000102}
   - component: {fileID: 9000000000000000103}
   m_Layer: 0
-  m_Name: Rhythm Judgement Text
+  m_Name: Rhythm Judgement
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
