@@ -3019,6 +3019,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rhythm System
       objectReference: {fileID: 0}
+    - target: {fileID: 8925638959839033616, guid: 6a3439915556efc4f876c770428bdfd2, type: 3}
+      propertyPath: cmChart
+      value: 
+      objectReference: {fileID: 6727790516650051051, guid: a3620979a966bd24c88810b96e78bd82, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
