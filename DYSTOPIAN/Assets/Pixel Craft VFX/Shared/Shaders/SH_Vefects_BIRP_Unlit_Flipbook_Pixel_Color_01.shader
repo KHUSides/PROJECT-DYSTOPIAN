@@ -18,6 +18,38 @@ Shader "Vefects/SH_Vefects_BIRP_Unlit_Flipbook_Pixel_Color_01"
 		[HideInInspector] __dirty( "", Int ) = 1
 	}
 
+	// URP implementation. The original Built-in subshader remains below as a fallback.
+	SubShader
+	{
+		Tags
+		{
+			"RenderPipeline" = "UniversalPipeline"
+			"RenderType" = "Transparent"
+			"Queue" = "Transparent"
+			"IsEmissive" = "true"
+		}
+		Cull [_Cull]
+		ZWrite [_ZWrite]
+		ZTest [_ZTest]
+		Blend [_Src] [_Dst]
+
+		Pass
+		{
+			Name "UniversalForward"
+			Tags { "LightMode" = "UniversalForward" }
+
+			HLSLPROGRAM
+			#pragma target 3.0
+			#pragma vertex VefectsVert
+			#pragma fragment VefectsFrag
+			#pragma multi_compile_instancing
+			#define VEFECTS_COLOR_TEXTURE 1
+			#define VEFECTS_ADVANCED 0
+			#include "SH_Vefects_URP_Common.hlsl"
+			ENDHLSL
+		}
+	}
+
 	SubShader
 	{
 		Tags{ "RenderType" = "Transparent"  "Queue" = "Transparent+0" "IsEmissive" = "true"  }
