@@ -42,13 +42,20 @@ namespace Dystopian.Rhythm
         public RhythmNoteType Type { get; }
         public float Beat { get; }
         public float DurationBeats { get; }
+        public string SourceId { get; }
 
-        public RhythmChartNote(RhythmActor actor, RhythmNoteType type, float beat, float durationBeats = 0f)
+        public RhythmChartNote(
+            RhythmActor actor,
+            RhythmNoteType type,
+            float beat,
+            float durationBeats = 0f,
+            string sourceId = null)
         {
             Actor = actor;
             Type = type;
             Beat = Mathf.Max(0f, beat);
             DurationBeats = Mathf.Max(0f, durationBeats);
+            SourceId = sourceId;
         }
     }
 
@@ -96,10 +103,14 @@ namespace Dystopian.Rhythm
         [SerializeField, FormerlySerializedAs("minimumLongWidth"), Min(0f)]
         private float minimumLongWidth_ = 42f;
 
+        [SerializeField, Min(0.1f)]
+        private float attackNoteHeightMultiplier_ = 1.35f;
+
         public float OffscreenSpawnPadding => offscreenSpawnPadding_;
         public float SingleNoteWidth => singleNoteWidth_;
         public float NoteHeight => noteHeight_;
         public float MinimumLongWidth => minimumLongWidth_;
+        public float AttackNoteHeightMultiplier => attackNoteHeightMultiplier_;
     }
 
     [Serializable]

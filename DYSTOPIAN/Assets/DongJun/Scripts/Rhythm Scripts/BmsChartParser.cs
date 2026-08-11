@@ -5,12 +5,12 @@ using UnityEngine;
 
 namespace Dystopian.Rhythm
 {
-    internal sealed class ParsedBmsChart
+    internal sealed class ParsedRhythmChart
     {
         public List<RhythmChartNote> Notes { get; }
         public float? Bpm { get; }
 
-        public ParsedBmsChart(List<RhythmChartNote> notes, float? bpm)
+        public ParsedRhythmChart(List<RhythmChartNote> notes, float? bpm)
         {
             Notes = notes;
             Bpm = bpm;
@@ -19,7 +19,7 @@ namespace Dystopian.Rhythm
 
     internal static class BmsChartParser
     {
-        public static ParsedBmsChart Parse(
+        public static ParsedRhythmChart Parse(
             string playerSource,
             string opponentSource,
             RhythmActor opponentActor,
@@ -30,7 +30,8 @@ namespace Dystopian.Rhythm
             ParseNotes(opponentSource, opponentActor, beatsPerMeasure, notes);
             notes.Sort((left, right) => left.Beat.CompareTo(right.Beat));
 
-            return new ParsedBmsChart(notes, TryReadBpm(playerSource, out float bpm) ? bpm : null);
+            float? parsedBpm = TryReadBpm(playerSource, out float bpm) ? (float?)bpm : null;
+            return new ParsedRhythmChart(notes, parsedBpm);
         }
 
         private static void ParseNotes(

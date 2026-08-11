@@ -6,6 +6,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Dystopian.Rhythm
@@ -25,7 +26,11 @@ namespace Dystopian.Rhythm
         [SerializeField, Min(0.01f)] private float minimumDspLeadSeconds = 0.1f;
         [SerializeField] private bool primeMusicSourceOnLoad = true;
 
-        [Header("BMS Chart Sources")]
+        [Header("CMChart Source")]
+        [SerializeField] private TextAsset cmChart;
+        [SerializeField] private bool readBpmFromCmChart = true;
+
+        [Header("BMS Chart Sources (Fallback)")]
         [SerializeField] private TextAsset playerBms;
         [SerializeField] private TextAsset opponentBms;
         [SerializeField] private RhythmActor opponentActor = RhythmActor.Enemy;
@@ -38,7 +43,8 @@ namespace Dystopian.Rhythm
         [SerializeField] private KeyCode startChartKey = KeyCode.T;
         [SerializeField] private KeyCode singleNoteKey = KeyCode.A;
         [SerializeField] private KeyCode longNoteKey = KeyCode.D;
-        [SerializeField] private bool enableFreeInputDuringAttackState = true;
+        [SerializeField, FormerlySerializedAs("enableFreeInputDuringAttackState")]
+        private bool invokeFreeInputEventsDuringAttackState = true;
 
         [Header("Visibility")]
         [SerializeField] private bool hideUiOnStart = true;
@@ -55,6 +61,7 @@ namespace Dystopian.Rhythm
         [SerializeField] private RhythmLayout layout = new RhythmLayout();
         [SerializeField] private RhythmColors colors = new RhythmColors();
         [SerializeField] private bool logJudgements;
+        [SerializeField] private bool logGhostNotes = true;
 
         [Header("Combo")]
         [SerializeField] private bool showCombo = true;
@@ -123,6 +130,7 @@ namespace Dystopian.Rhythm
         private bool musicPriming;
         private bool pendingMusicStart;
         private int activeAttackStates;
+        private bool freeLongInputActive;
         private int combo;
         private int nextSpawnIndex;
 
@@ -212,7 +220,7 @@ namespace Dystopian.Rhythm
                 return;
             }
 
-            LoadBmsChart();
+            LoadConfiguredChart();
             WarmNotePool();
             RestartSong();
 
@@ -385,6 +393,38 @@ namespace Dystopian.Rhythm
             }
         }
 
+        [ContextMenu("Load Configured Chart")]
+        public void LoadConfiguredChart()
+        {
+            if (cmChart != null)
+            {
+                LoadCmChart();
+                return;
+            }
+
+            LoadBmsChart();
+        }
+
+        [ContextMenu("Load CMChart")]
+        public void LoadCmChart()
+        {
+            if (cmChart == null)
+            {
+                Debug.LogWarning("[Rhythm] Assign a CMChart asset.", this);
+                return;
+            }
+
+            try
+            {
+                ParsedRhythmChart parsedChart = CmChartParser.Parse(cmChart.text);
+                ApplyParsedChart(parsedChart, readBpmFromCmChart);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("[Rhythm] Failed to parse CMChart: " + exception.Message, this);
+            }
+        }
+
         [ContextMenu("Load Player + Opponent BMS")]
         public void LoadBmsChart()
         {
@@ -397,15 +437,20 @@ namespace Dystopian.Rhythm
             RhythmActor parsedOpponent = opponentActor == RhythmActor.Player
                 ? RhythmActor.Enemy
                 : opponentActor;
-            ParsedBmsChart parsedChart = BmsChartParser.Parse(
+            ParsedRhythmChart parsedChart = BmsChartParser.Parse(
                 playerBms.text,
                 opponentBms.text,
                 parsedOpponent,
                 beatsPerMeasure);
 
+            ApplyParsedChart(parsedChart, readBpmFromPlayerBms);
+        }
+
+        private void ApplyParsedChart(ParsedRhythmChart parsedChart, bool readChartBpm)
+        {
             chart.Clear();
             chart.AddRange(parsedChart.Notes);
-            if (readBpmFromPlayerBms && parsedChart.Bpm.HasValue)
+            if (readChartBpm && parsedChart.Bpm.HasValue)
             {
                 bpm = Mathf.Max(1f, parsedChart.Bpm.Value);
             }
@@ -450,6 +495,7 @@ namespace Dystopian.Rhythm
             activeNotes.Clear();
             nextSpawnIndex = 0;
             activeAttackStates = 0;
+            freeLongInputActive = false;
             SetComboImmediate(0);
             musicStarted = false;
             pendingMusicStart = false;
@@ -617,7 +663,10 @@ namespace Dystopian.Rhythm
 
             Color noteColor = GetNoteColor(note.data_);
             note.visualWidth_ = width;
-            note.view_.Configure(width, layout.NoteHeight, isPlayer ? 1f : 0f, noteColor);
+            float height = note.data_.Type == RhythmNoteType.AttackState
+                ? layout.NoteHeight * layout.AttackNoteHeightMultiplier
+                : layout.NoteHeight;
+            note.view_.Configure(width, height, isPlayer ? 1f : 0f, noteColor);
         }
 
         private Color GetNoteColor(RhythmChartNote note)
@@ -647,7 +696,8 @@ namespace Dystopian.Rhythm
                 RuntimeNote note = activeNotes[index];
                 UpdateNoteView(note, beat, badBeats);
 
-                if (note.data_.Actor == RhythmActor.Player)
+                if (note.data_.Actor == RhythmActor.Player &&
+                    note.data_.Type != RhythmNoteType.Ghost)
                 {
                     UpdatePlayerNote(note, beat, badBeats);
                 }
@@ -678,10 +728,10 @@ namespace Dystopian.Rhythm
                 isPlayer ? PlayerJudgeX : EnemyJudgeX,
                 progress);
 
-            bool isAutomaticLong = note.data_.Type == RhythmNoteType.Long &&
-                !isPlayer &&
-                beat >= note.data_.Beat;
-            bool isShrinkingLong = note.data_.Type == RhythmNoteType.Long &&
+            bool isAttackState = note.data_.Type == RhythmNoteType.AttackState;
+            bool isAutomaticLong = (note.data_.Type == RhythmNoteType.Long && !isPlayer ||
+                isAttackState) && beat >= note.data_.Beat;
+            bool isShrinkingLong = (note.data_.Type == RhythmNoteType.Long || isAttackState) &&
                 note.data_.DurationBeats > 0f &&
                 (note.holding_ || note.missedLongStart_ || isAutomaticLong);
 
@@ -697,7 +747,9 @@ namespace Dystopian.Rhythm
                 : note.data_.Beat;
             float remaining = Mathf.Clamp01(
                 1f - (beat - shrinkStartBeat) / note.data_.DurationBeats);
-            float anchorX = note.holding_
+            float anchorX = isAttackState
+                ? PlayerJudgeX
+                : note.holding_
                 ? PlayerJudgeX
                 : note.missedLongStart_ ? PlayerLateBadX : EnemyJudgeX;
 
@@ -767,6 +819,7 @@ namespace Dystopian.Rhythm
                 note.started_ = true;
                 if (note.data_.Type == RhythmNoteType.Ghost)
                 {
+                    LogGhostNote(note.data_);
                     onGhostAction.Invoke(note.data_);
                 }
                 else if (note.data_.Actor == RhythmActor.Boss)
@@ -819,6 +872,11 @@ namespace Dystopian.Rhythm
 
             note.resolved_ = true;
             activeAttackStates = Mathf.Max(0, activeAttackStates - 1);
+            if (!IsAttackStateActive)
+            {
+                EndFreeLongInput();
+            }
+
             onAttackStateEnd.Invoke(note.data_);
         }
 
@@ -840,34 +898,77 @@ namespace Dystopian.Rhythm
 
         private void HandleRhythmInput(float beat)
         {
+            if (IsAttackStateActive)
+            {
+                if (Input.GetKeyDown(singleNoteKey))
+                {
+                    if (invokeFreeInputEventsDuringAttackState)
+                    {
+                        onFreeSingleInput.Invoke();
+                    }
+
+                    PlayerSingleAccepted?.Invoke();
+                }
+
+                if (Input.GetKeyDown(longNoteKey))
+                {
+                    if (invokeFreeInputEventsDuringAttackState)
+                    {
+                        onFreeLongInput.Invoke();
+                    }
+
+                    freeLongInputActive = true;
+                    PlayerLongStarted?.Invoke();
+                }
+
+                if (Input.GetKeyUp(longNoteKey))
+                {
+                    EndFreeLongInput();
+                }
+
+                return;
+            }
+
             if (Input.GetKeyDown(singleNoteKey))
             {
-                if (IsAttackStateActive && enableFreeInputDuringAttackState)
-                {
-                    onFreeSingleInput.Invoke();
-                }
-                else
-                {
-                    JudgeSingleInput(beat);
-                }
+                JudgeSingleInput(beat);
             }
 
             if (Input.GetKeyDown(longNoteKey))
             {
-                if (IsAttackStateActive && enableFreeInputDuringAttackState)
-                {
-                    onFreeLongInput.Invoke();
-                }
-                else
-                {
-                    StartLongInput(beat);
-                }
+                StartLongInput(beat);
             }
 
             if (Input.GetKeyUp(longNoteKey))
             {
                 EndLongInput(beat);
             }
+        }
+
+        private void EndFreeLongInput()
+        {
+            if (!freeLongInputActive)
+            {
+                return;
+            }
+
+            freeLongInputActive = false;
+            PlayerLongEnded?.Invoke();
+        }
+
+        private void LogGhostNote(RhythmChartNote note)
+        {
+            if (!logGhostNotes)
+            {
+                return;
+            }
+
+            string sourceId = string.IsNullOrEmpty(note.SourceId) ? "(no id)" : note.SourceId;
+            Debug.Log(
+                "[Rhythm] Ghost triggered: " + note.Actor +
+                "_Ghost, id=" + sourceId +
+                ", beat=" + note.Beat.ToString("0.###", CultureInfo.InvariantCulture),
+                this);
         }
 
         private void JudgeSingleInput(float beat)

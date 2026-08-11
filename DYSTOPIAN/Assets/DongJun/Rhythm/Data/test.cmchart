@@ -1,0 +1,384 @@
+{
+  "format": "chartmaker-project",
+  "schemaVersion": 1,
+  "appVersion": "1.0.0",
+  "metadata": {
+    "title": "Untitled Chart",
+    "artist": "",
+    "author": "",
+    "totalMeasures": 100
+  },
+  "audio": {
+    "path": null,
+    "fileHash": null,
+    "chartZeroAtAudioUs": 0
+  },
+  "timing": {
+    "tempoEvents": [
+      {
+        "id": "tempo_a3aadf70-8300-442a-adc1-a02d89abf2a9",
+        "position": {
+          "measure": 0,
+          "offset": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "bpm": 120
+      }
+    ],
+    "timeSignatures": [
+      {
+        "id": "signature_1d9cbb4a-7c7a-4ec3-8afe-a3dbbc962253",
+        "measure": 0,
+        "numerator": 4,
+        "denominator": 4
+      }
+    ]
+  },
+  "gridDivisions": [],
+  "laneOrder": [
+    "lane_a1d201d1-ac23-4fdf-af39-c0e8cc2b0648",
+    "lane_13236f34-59a4-4d59-aea9-69bba60193c9",
+    "lane_45ab3df9-26af-4605-9fcf-0149cee0ec2e",
+    "lane_003749b1-17dc-4120-be08-6780ed122b86",
+    "lane_c6e87e0a-492f-499a-8c41-b38f8405f564"
+  ],
+  "lanes": [
+    {
+      "id": "lane_13236f34-59a4-4d59-aea9-69bba60193c9",
+      "tag": "Player",
+      "memo": ""
+    },
+    {
+      "id": "lane_a1d201d1-ac23-4fdf-af39-c0e8cc2b0648",
+      "tag": "Player_Ghost",
+      "memo": ""
+    },
+    {
+      "id": "lane_45ab3df9-26af-4605-9fcf-0149cee0ec2e",
+      "tag": "Enemy",
+      "memo": ""
+    },
+    {
+      "id": "lane_003749b1-17dc-4120-be08-6780ed122b86",
+      "tag": "Enemy_Ghost",
+      "memo": ""
+    },
+    {
+      "id": "lane_c6e87e0a-492f-499a-8c41-b38f8405f564",
+      "tag": "Attack",
+      "memo": ""
+    }
+  ],
+  "notes": [
+    {
+      "id": "note_9a087758-d1db-46b0-b4da-c7a80d041909",
+      "laneId": "lane_13236f34-59a4-4d59-aea9-69bba60193c9",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_2457b767-6078-47bd-b806-4609ba282ee2",
+      "laneId": "lane_13236f34-59a4-4d59-aea9-69bba60193c9",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 1,
+          "denominator": 1
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_c6228335-04df-48b8-b456-b2f3b50b8349",
+      "laneId": "lane_13236f34-59a4-4d59-aea9-69bba60193c9",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 2,
+          "denominator": 1
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_f04c597a-32e7-472d-8684-9152bd41af4d",
+      "laneId": "lane_13236f34-59a4-4d59-aea9-69bba60193c9",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 3,
+          "denominator": 1
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_55c050e7-3b47-4977-9b10-4d5b03f0c5ac",
+      "laneId": "lane_a1d201d1-ac23-4fdf-af39-c0e8cc2b0648",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 1,
+          "denominator": 2
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_201ef24b-2f7a-444b-bbca-7792591a463c",
+      "laneId": "lane_a1d201d1-ac23-4fdf-af39-c0e8cc2b0648",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 3,
+          "denominator": 2
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_201391b4-7669-4a5c-9485-4dcb574d862f",
+      "laneId": "lane_a1d201d1-ac23-4fdf-af39-c0e8cc2b0648",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 5,
+          "denominator": 2
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_0d314349-b93b-486a-82e8-107f243cdd0b",
+      "laneId": "lane_a1d201d1-ac23-4fdf-af39-c0e8cc2b0648",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 7,
+          "denominator": 2
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_658c29f9-4015-4d73-9ba9-00f339b0589b",
+      "laneId": "lane_45ab3df9-26af-4605-9fcf-0149cee0ec2e",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 1,
+          "denominator": 4
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_90b177fb-951b-43db-b017-2e748e516177",
+      "laneId": "lane_45ab3df9-26af-4605-9fcf-0149cee0ec2e",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 3,
+          "denominator": 4
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_7b977795-fefa-4425-8da5-a18bed02f20d",
+      "laneId": "lane_45ab3df9-26af-4605-9fcf-0149cee0ec2e",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 5,
+          "denominator": 4
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_2f5728c1-d8aa-4250-bb24-984f0ac9208f",
+      "laneId": "lane_45ab3df9-26af-4605-9fcf-0149cee0ec2e",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 7,
+          "denominator": 4
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_83b53339-4f69-4de9-a150-f5b84fcaca16",
+      "laneId": "lane_003749b1-17dc-4120-be08-6780ed122b86",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 1,
+          "denominator": 8
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_91b9ad6e-a35d-402e-b147-1eac3a7bb967",
+      "laneId": "lane_003749b1-17dc-4120-be08-6780ed122b86",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 9,
+          "denominator": 8
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_862cbab7-80c5-4674-b047-648ecf4819d3",
+      "laneId": "lane_003749b1-17dc-4120-be08-6780ed122b86",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 13,
+          "denominator": 8
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_862f7c0e-8617-4f0a-9180-8a90bd7ccd01",
+      "laneId": "lane_c6e87e0a-492f-499a-8c41-b38f8405f564",
+      "type": "hold",
+      "start": {
+        "measure": 1,
+        "offset": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      },
+      "end": {
+        "measure": 1,
+        "offset": {
+          "numerator": 11,
+          "denominator": 8
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_fc92cd18-2ea3-48bf-942c-e8ccf5786027",
+      "laneId": "lane_13236f34-59a4-4d59-aea9-69bba60193c9",
+      "type": "tap",
+      "start": {
+        "measure": 0,
+        "offset": {
+          "numerator": 29,
+          "denominator": 8
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_c642a6ac-c64b-4974-9aa3-42d4aac48d2b",
+      "laneId": "lane_13236f34-59a4-4d59-aea9-69bba60193c9",
+      "type": "hold",
+      "start": {
+        "measure": 1,
+        "offset": {
+          "numerator": 7,
+          "denominator": 4
+        }
+      },
+      "end": {
+        "measure": 1,
+        "offset": {
+          "numerator": 19,
+          "denominator": 8
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_268aa015-3acd-47b7-8350-cb21d013952a",
+      "laneId": "lane_45ab3df9-26af-4605-9fcf-0149cee0ec2e",
+      "type": "hold",
+      "start": {
+        "measure": 1,
+        "offset": {
+          "numerator": 5,
+          "denominator": 2
+        }
+      },
+      "end": {
+        "measure": 1,
+        "offset": {
+          "numerator": 25,
+          "denominator": 8
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_43ca936c-3de5-497c-b84e-9cf7bd38dbe9",
+      "laneId": "lane_13236f34-59a4-4d59-aea9-69bba60193c9",
+      "type": "hold",
+      "start": {
+        "measure": 1,
+        "offset": {
+          "numerator": 13,
+          "denominator": 4
+        }
+      },
+      "end": {
+        "measure": 1,
+        "offset": {
+          "numerator": 31,
+          "denominator": 8
+        }
+      },
+      "memo": ""
+    },
+    {
+      "id": "note_3b5c5972-9fd5-4828-8fe3-8889cd7662f4",
+      "laneId": "lane_45ab3df9-26af-4605-9fcf-0149cee0ec2e",
+      "type": "hold",
+      "start": {
+        "measure": 2,
+        "offset": {
+          "numerator": 0,
+          "denominator": 1
+        }
+      },
+      "end": {
+        "measure": 2,
+        "offset": {
+          "numerator": 1,
+          "denominator": 2
+        }
+      },
+      "memo": ""
+    }
+  ]
+}
