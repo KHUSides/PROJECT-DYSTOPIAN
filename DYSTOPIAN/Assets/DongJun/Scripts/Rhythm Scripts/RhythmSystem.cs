@@ -26,11 +26,14 @@ namespace Dystopian.Rhythm
         [SerializeField, Min(0.01f)] private float minimumDspLeadSeconds = 0.1f;
         [SerializeField] private bool primeMusicSourceOnLoad = true;
 
+        [Header("Chart Selection")]
+        [SerializeField] private RhythmChartSource chartSource = RhythmChartSource.CmChart;
+
         [Header("CMChart Source")]
         [SerializeField] private TextAsset cmChart;
         [SerializeField] private bool readBpmFromCmChart = true;
 
-        [Header("BMS Chart Sources (Fallback)")]
+        [Header("BMS Chart Sources")]
         [SerializeField] private TextAsset playerBms;
         [SerializeField] private TextAsset opponentBms;
         [SerializeField] private RhythmActor opponentActor = RhythmActor.Enemy;
@@ -60,6 +63,12 @@ namespace Dystopian.Rhythm
         [Header("Presentation")]
         [SerializeField] private RhythmLayout layout = new RhythmLayout();
         [SerializeField] private RhythmColors colors = new RhythmColors();
+        [SerializeField] private Sprite noteSprite;
+        [SerializeField] private string attackLabel = "ATTACK!";
+        [SerializeField] private TMP_FontAsset attackLabelFont;
+        [SerializeField, Min(1f)] private float attackLabelFontSize = 48f;
+        [SerializeField] private Color attackLabelColor = Color.white;
+        [SerializeField, Range(0f, 1f)] private float attackLabelPosition = 0.5f;
         [SerializeField] private bool logJudgements;
         [SerializeField] private bool logGhostNotes = true;
 
@@ -96,6 +105,7 @@ namespace Dystopian.Rhythm
         private readonly Queue<RhythmNoteView> notePool = new Queue<RhythmNoteView>();
 
         private AudioSource musicSource;
+        private Sprite runtimeNoteSprite;
         private Transform rhythmUiRoot;
         private CanvasScaler canvasScaler;
         private RectTransform noteLayer;
@@ -199,6 +209,7 @@ namespace Dystopian.Rhythm
         private void Awake()
         {
             musicSource = GetComponent<AudioSource>();
+            LoadDefaultNoteSprite();
 
             if (MusicClip == null)
             {
@@ -241,6 +252,14 @@ namespace Dystopian.Rhythm
             StopComboTierShake();
             UpdateComboText();
             StopComboBlurAnimation();
+        }
+
+        private void OnDestroy()
+        {
+            if (runtimeNoteSprite != null)
+            {
+                Destroy(runtimeNoteSprite);
+            }
         }
 
 
@@ -396,13 +415,18 @@ namespace Dystopian.Rhythm
         [ContextMenu("Load Configured Chart")]
         public void LoadConfiguredChart()
         {
-            if (cmChart != null)
+            switch (chartSource)
             {
-                LoadCmChart();
-                return;
+                case RhythmChartSource.CmChart:
+                    LoadCmChart();
+                    break;
+                case RhythmChartSource.Bms:
+                    LoadBmsChart();
+                    break;
+                default:
+                    Debug.LogError("[Rhythm] Unsupported chart source: " + chartSource, this);
+                    break;
             }
-
-            LoadBmsChart();
         }
 
         [ContextMenu("Load CMChart")]
@@ -410,7 +434,9 @@ namespace Dystopian.Rhythm
         {
             if (cmChart == null)
             {
-                Debug.LogWarning("[Rhythm] Assign a CMChart asset.", this);
+                Debug.LogError(
+                    "[Rhythm] Chart Source is CMChart, but Cm Chart is not assigned.",
+                    this);
                 return;
             }
 
@@ -430,7 +456,12 @@ namespace Dystopian.Rhythm
         {
             if (playerBms == null || opponentBms == null)
             {
-                Debug.LogWarning("[Rhythm] Assign both Player BMS and Opponent BMS.", this);
+                string missing = playerBms == null && opponentBms == null
+                    ? "Player BMS and Opponent BMS are"
+                    : playerBms == null ? "Player BMS is" : "Opponent BMS is";
+                Debug.LogError(
+                    "[Rhythm] Chart Source is BMS, but " + missing + " not assigned.",
+                    this);
                 return;
             }
 
@@ -608,6 +639,7 @@ namespace Dystopian.Rhythm
                 "Pooled Note",
                 typeof(RectTransform),
                 typeof(Image),
+                typeof(Mask),
                 typeof(RhythmNoteView));
             noteObject.transform.SetParent(noteLayer, false);
             noteObject.SetActive(false);
@@ -661,30 +693,30 @@ namespace Dystopian.Rhythm
                     TrackTravelDistance * note.data_.DurationBeats / travelBeats);
             }
 
-            Color noteColor = GetNoteColor(note.data_);
             note.visualWidth_ = width;
             float height = note.data_.Type == RhythmNoteType.AttackState
                 ? layout.NoteHeight * layout.AttackNoteHeightMultiplier
                 : layout.NoteHeight;
-            note.view_.Configure(width, height, isPlayer ? 1f : 0f, noteColor);
-        }
-
-        private Color GetNoteColor(RhythmChartNote note)
-        {
-            if (note.Type == RhythmNoteType.AttackState)
+            if (note.data_.Type == RhythmNoteType.AttackState)
             {
-                return colors.AttackState;
+                note.view_.ConfigureAttack(
+                    width,
+                    height,
+                    isPlayer ? 1f : 0f,
+                    colors.AttackState,
+                    attackLabel,
+                    attackLabelFont,
+                    attackLabelFontSize,
+                    attackLabelColor);
+                return;
             }
 
-            switch (note.Actor)
-            {
-                case RhythmActor.Player:
-                    return colors.PlayerNote;
-                case RhythmActor.Enemy:
-                    return colors.EnemyNote;
-                default:
-                    return colors.BossNote;
-            }
+            note.view_.ConfigureSprite(
+                width,
+                height,
+                isPlayer ? 1f : 0f,
+                Color.white,
+                noteSprite != null ? noteSprite : runtimeNoteSprite);
         }
 
         // Advances active notes and resolves all automatic or timed-out states.
@@ -739,6 +771,7 @@ namespace Dystopian.Rhythm
             {
                 note.view_.SetWidth(note.visualWidth_);
                 note.view_.SetPosition(movingX, 0f);
+                note.view_.SetAttackLabelPosition(AttackLabelX);
                 return;
             }
 
@@ -755,6 +788,29 @@ namespace Dystopian.Rhythm
 
             note.view_.SetWidth(note.visualWidth_ * remaining);
             note.view_.SetPosition(anchorX, 0f);
+            note.view_.SetAttackLabelPosition(AttackLabelX);
+        }
+
+        private void LoadDefaultNoteSprite()
+        {
+            if (noteSprite != null)
+            {
+                return;
+            }
+
+            Texture2D texture = Resources.Load<Texture2D>("Rhythm/test");
+            if (texture == null)
+            {
+                Debug.LogWarning("[Rhythm] Default note image could not be loaded.", this);
+                return;
+            }
+
+            runtimeNoteSprite = Sprite.Create(
+                texture,
+                new Rect(0f, 0f, texture.width, texture.height),
+                new Vector2(0.5f, 0.5f),
+                100f);
+            runtimeNoteSprite.name = texture.name + " Runtime Sprite";
         }
 
         private void UpdatePlayerNote(RuntimeNote note, float beat, float badBeats)
@@ -1631,6 +1687,7 @@ namespace Dystopian.Rhythm
         }
 
         private float TrackTravelDistance => Mathf.Max(1f, Mathf.Abs(PlayerJudgeX - PlayerSpawnX));
+        private float AttackLabelX => Mathf.Lerp(-ReferenceWidth * 0.5f, PlayerJudgeX, attackLabelPosition);
         private float PlayerJudgeX => playerJudgementLine.anchoredPosition.x;
         private float EnemyJudgeX => opponentJudgementLine.anchoredPosition.x;
         private float PlayerLateBadX => PlayerJudgeX +

@@ -35,6 +35,12 @@ namespace Dystopian.Rhythm
         FirstPlayerJudgement
     }
 
+    public enum RhythmChartSource
+    {
+        CmChart,
+        Bms
+    }
+
     [Serializable]
     public sealed class RhythmChartNote
     {
@@ -98,7 +104,7 @@ namespace Dystopian.Rhythm
         private float singleNoteWidth_ = 20f;
 
         [SerializeField, FormerlySerializedAs("noteHeight"), Min(1f)]
-        private float noteHeight_ = 72f;
+        private float noteHeight_ = 90f;
 
         [SerializeField, FormerlySerializedAs("minimumLongWidth"), Min(0f)]
         private float minimumLongWidth_ = 42f;
@@ -116,15 +122,6 @@ namespace Dystopian.Rhythm
     [Serializable]
     public sealed class RhythmColors
     {
-        [SerializeField, FormerlySerializedAs("playerNote")]
-        private Color playerNote_ = new Color(0.1f, 0.85f, 1f, 1f);
-
-        [SerializeField, FormerlySerializedAs("enemyNote")]
-        private Color enemyNote_ = new Color(1f, 0.2f, 0.26f, 1f);
-
-        [SerializeField, FormerlySerializedAs("bossNote")]
-        private Color bossNote_ = new Color(1f, 0.72f, 0.1f, 1f);
-
         [SerializeField, FormerlySerializedAs("attackState")]
         private Color attackState_ = new Color(1f, 0.25f, 0.82f, 0.9f);
 
@@ -143,9 +140,6 @@ namespace Dystopian.Rhythm
         [SerializeField, FormerlySerializedAs("miss")]
         private Color miss_ = new Color(1f, 0.15f, 0.2f, 1f);
 
-        public Color PlayerNote => playerNote_;
-        public Color EnemyNote => enemyNote_;
-        public Color BossNote => bossNote_;
         public Color AttackState => attackState_;
         public Color Critical => critical_;
         public Color Cool => cool_;

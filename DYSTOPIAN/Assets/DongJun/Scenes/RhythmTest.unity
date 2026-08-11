@@ -499,6 +499,7 @@ MonoBehaviour:
   useUnscaledClockWithoutMusic: 1
   minimumDspLeadSeconds: 0.1
   primeMusicSourceOnLoad: 1
+  chartSource: 1
   playerBms: {fileID: 4900000, guid: e903822a72ff5b04995a9231e1b6fe71, type: 3}
   opponentBms: {fileID: 4900000, guid: 971d6d134fc3b474d97c7ad41ff4da76, type: 3}
   opponentActor: 1
@@ -522,7 +523,7 @@ MonoBehaviour:
   layout:
     offscreenSpawnPadding_: 80
     singleNoteWidth_: 20
-    noteHeight_: 72
+    noteHeight_: 90
     minimumLongWidth_: 42
   colors:
     playerNote_: {r: 0.1, g: 0.85, b: 1, a: 1}

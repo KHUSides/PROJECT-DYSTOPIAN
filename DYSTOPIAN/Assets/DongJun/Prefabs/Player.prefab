@@ -314,12 +314,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHealth: 100
   currentHealth: 0
-  showHealthBar: 1
-  healthBarAnchoredPosition: {x: 24, y: -24}
-  healthBarSize: {x: 260, y: 28}
-  healthBarBackColor: {r: 0.1, g: 0.1, b: 0.1, a: 0.75}
-  healthBarFillColor: {r: 0.85, g: 0.1, b: 0.1, a: 0.9}
-  healthBarTextColor: {r: 1, g: 1, b: 1, a: 1}
   enableDebugInput: 1
   debugDamageAmount: 10
   debugHealAmount: 10

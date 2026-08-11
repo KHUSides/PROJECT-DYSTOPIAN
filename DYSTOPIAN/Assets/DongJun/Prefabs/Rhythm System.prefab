@@ -456,7 +456,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 0
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: cd6f03bdaf5e3234db0ad5393d10c2cf, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -491,7 +491,7 @@ MonoBehaviour:
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: -20
+  m_characterSpacing: -14
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -523,7 +523,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &2228200392326349862
@@ -1250,6 +1250,9 @@ MonoBehaviour:
   useUnscaledClockWithoutMusic: 1
   minimumDspLeadSeconds: 0.1
   primeMusicSourceOnLoad: 1
+  chartSource: 1
+  cmChart: {fileID: 6727790516650051051, guid: a3620979a966bd24c88810b96e78bd82, type: 3}
+  readBpmFromCmChart: 1
   playerBms: {fileID: 4900000, guid: e903822a72ff5b04995a9231e1b6fe71, type: 3}
   opponentBms: {fileID: 4900000, guid: 971d6d134fc3b474d97c7ad41ff4da76, type: 3}
   opponentActor: 1
@@ -1260,7 +1263,7 @@ MonoBehaviour:
   startChartKey: 116
   singleNoteKey: 97
   longNoteKey: 100
-  enableFreeInputDuringAttackState: 1
+  invokeFreeInputEventsDuringAttackState: 1
   hideUiOnStart: 1
   toggleUiKey: 114
   travelBeats: 2
@@ -1273,19 +1276,24 @@ MonoBehaviour:
   layout:
     offscreenSpawnPadding_: 80
     singleNoteWidth_: 20
-    noteHeight_: 72
+    noteHeight_: 90
     minimumLongWidth_: 42
+    attackNoteHeightMultiplier_: 1.35
   colors:
-    playerNote_: {r: 0.1, g: 0.85, b: 1, a: 1}
-    enemyNote_: {r: 1, g: 0.2, b: 0.26, a: 1}
-    bossNote_: {r: 1, g: 0.72, b: 0.1, a: 1}
-    attackState_: {r: 1, g: 0.25, b: 0.82, a: 0.9}
+    attackState_: {r: 0.25098038, g: 0.49012318, b: 1, a: 0.6431373}
     critical_: {r: 1, g: 0.9, b: 0.25, a: 1}
     cool_: {r: 0.2, g: 0.9, b: 1, a: 1}
     good_: {r: 0.25, g: 1, b: 0.48, a: 1}
     bad_: {r: 1, g: 0.45, b: 0.18, a: 1}
     miss_: {r: 1, g: 0.15, b: 0.2, a: 1}
+  noteSprite: {fileID: -1203724305, guid: b2ed63f1350f5c94db71173cd9d613c3, type: 3}
+  attackLabel: ATTACK!
+  attackLabelFont: {fileID: 11400000, guid: cd6f03bdaf5e3234db0ad5393d10c2cf, type: 2}
+  attackLabelFontSize: 60
+  attackLabelColor: {r: 1, g: 1, b: 1, a: 1}
+  attackLabelPosition: 0.5
   logJudgements: 0
+  logGhostNotes: 1
   showCombo: 1
   hideComboAtZero: 0
   resetComboOnBadOrMiss: 1
