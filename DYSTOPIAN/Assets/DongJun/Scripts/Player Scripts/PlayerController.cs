@@ -125,6 +125,7 @@ public class PlayerController : MonoBehaviour
     private float distanceChargePercent;
     private Vector3 lastDistanceChargePosition;
     private int activeNormalAttackDamage;
+    private int attackPowerBonus;
     private Color activeNormalAttackDebugColor;
     private Material runtimeDebugMaterial;
     private GameObject chargedAttackHitboxPoolRoot;
@@ -144,6 +145,7 @@ public class PlayerController : MonoBehaviour
     public bool IsGrounded => controller != null && controller.isGrounded;
     public bool IsCharging => isCharging;
     public bool IsAttackReinforceEnabled => enableDistanceChargeUpgrade;
+    public int AttackPowerBonus => attackPowerBonus;
     public float AttackReinforceChargePercent => distanceChargePercent;
     public Vector2 FacingDirection => facingDirection;
     public bool LastNormalAttackWasEmpowered { get; private set; }
@@ -339,7 +341,7 @@ public class PlayerController : MonoBehaviour
         Vector2 attackDirection = GetNormalAttackDirection();
         activeNormalAttackDamage = Mathf.Max(
             1,
-            normalAttackDamage + (isEmpowered ? empoweredAttackAdditionalDamage : 0));
+            normalAttackDamage + attackPowerBonus + (isEmpowered ? empoweredAttackAdditionalDamage : 0));
         activeNormalAttackDebugColor = isEmpowered
             ? empoweredNormalAttackDebugColor
             : normalAttackColliderDebugColor;
@@ -369,6 +371,11 @@ public class PlayerController : MonoBehaviour
     public void ToggleAttackReinforce()
     {
         SetAttackReinforceEnabled(!enableDistanceChargeUpgrade);
+    }
+
+    public void SetAttackPowerBonus(int bonus)
+    {
+        attackPowerBonus = Mathf.Max(0, bonus);
     }
 
     private Vector2 GetNormalAttackDirection()
@@ -496,7 +503,7 @@ public class PlayerController : MonoBehaviour
                 continue;
 
             ApplyDamage(target, new DamageInfo(
-                chargedAttackDamage,
+                Mathf.Max(1, chargedAttackDamage + attackPowerBonus),
                 hit.ClosestPoint(attackCollider.bounds.center),
                 gameObject));
         }

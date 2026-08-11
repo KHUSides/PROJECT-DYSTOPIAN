@@ -456,8 +456,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 0
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: cd6f03bdaf5e3234db0ad5393d10c2cf, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 74938d0049fa3794bae8175b83a4e7ad, type: 2}
+  m_sharedMaterial: {fileID: 4315801709702028729, guid: 74938d0049fa3794bae8175b83a4e7ad, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1288,7 +1288,7 @@ MonoBehaviour:
     miss_: {r: 1, g: 0.15, b: 0.2, a: 1}
   noteSprite: {fileID: -1203724305, guid: b2ed63f1350f5c94db71173cd9d613c3, type: 3}
   attackLabel: ATTACK!
-  attackLabelFont: {fileID: 11400000, guid: cd6f03bdaf5e3234db0ad5393d10c2cf, type: 2}
+  attackLabelFont: {fileID: 11400000, guid: 74938d0049fa3794bae8175b83a4e7ad, type: 2}
   attackLabelFontSize: 60
   attackLabelColor: {r: 1, g: 1, b: 1, a: 1}
   attackLabelPosition: 0.5

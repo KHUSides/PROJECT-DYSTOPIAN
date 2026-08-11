@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
@@ -16,12 +17,19 @@ public class PlayerHealth : MonoBehaviour
     [UnityEngine.Serialization.FormerlySerializedAs("debugHealAmount_")]
     [SerializeField] private int debugHealAmount = 10;
 
+    private int darknessResistance;
+    private bool isSoundBarrierActive;
+
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
     public float HealthRate =>
         maxHealth <= 0 ? 0f : (float)currentHealth / maxHealth;
     public bool IsEmpty => currentHealth <= 0;
     public bool IsFull => currentHealth >= maxHealth;
+    public int DarknessResistance => darknessResistance;
+    public bool IsSoundBarrierActive => isSoundBarrierActive;
+
+    public event Action<bool> SoundBarrierChanged;
 
     private void Awake()
     {
@@ -45,7 +53,16 @@ public class PlayerHealth : MonoBehaviour
         if (amount <= 0)
             return;
 
-        ChangeHealth(-amount);
+        if (isSoundBarrierActive)
+        {
+            isSoundBarrierActive = false;
+            Debug.Log("[PlayerHealth] Sound barrier consumed. Incoming damage was blocked.", this);
+            SoundBarrierChanged?.Invoke(false);
+            return;
+        }
+
+        int appliedDamage = Mathf.Max(0, amount - darknessResistance);
+        ChangeHealth(appliedDamage);
     }
 
     public void Heal(int amount)
@@ -53,7 +70,19 @@ public class PlayerHealth : MonoBehaviour
         if (amount <= 0)
             return;
 
-        ChangeHealth(amount);
+        ChangeHealth(-amount);
+    }
+
+    public void SetDarknessResistance(int resistance)
+    {
+        darknessResistance = Mathf.Max(0, resistance);
+    }
+
+    public void EnableSoundBarrier()
+    {
+        isSoundBarrierActive = true;
+        Debug.Log("[PlayerHealth] Sound barrier enabled.", this);
+        SoundBarrierChanged?.Invoke(true);
     }
 
     public void SetHealth(int value)
