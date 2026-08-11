@@ -13,6 +13,8 @@ namespace Dystopian.ObjectPixel
         private const string DisplayShaderName =
             "Hidden/DYSTOPIAN/IsolatedObjectPixelDisplay";
 
+        private const string ForegroundVfxLayerName = "PlayerVFX";
+
         [Header("Target isolation")]
         [Tooltip("Only objects on this layer enter the pixel buffer.")]
         [Range(0, 31)]
@@ -50,6 +52,7 @@ namespace Dystopian.ObjectPixel
         private Camera mainCamera;
         private Camera sourceCamera;
         private Camera compositeCamera;
+        private Camera foregroundCamera;
         private GameObject runtimeRoot;
         private GameObject compositeQuad;
         private RenderTexture pixelBuffer;
@@ -60,6 +63,9 @@ namespace Dystopian.ObjectPixel
         private int originalCullingMask;
         private int activeWidth;
         private int activeHeight;
+
+        private int foregroundVfxLayer;
+
 
         private static readonly int SourceTexId =
             Shader.PropertyToID("_SourceTex");
@@ -78,11 +84,25 @@ namespace Dystopian.ObjectPixel
         {
             mainCamera = GetComponent<Camera>();
             originalCullingMask = mainCamera.cullingMask;
+            foregroundVfxLayer =
+                LayerMask.NameToLayer(ForegroundVfxLayerName);
 
-            if (pixelObjectLayer == compositeLayer)
+            if (foregroundVfxLayer < 0)
             {
                 Debug.LogError(
-                    "[IsolatedObjectPixelRenderer] Pixel and composite layers must be different.",
+                    "[IsolatedObjectPixelRenderer] PlayerVFX layer is missing.",
+                    this);
+                enabled = false;
+                return;
+            }
+
+            if (pixelObjectLayer == compositeLayer ||
+                pixelObjectLayer == foregroundVfxLayer ||
+                compositeLayer == foregroundVfxLayer)
+            {
+                Debug.LogError(
+                    "[IsolatedObjectPixelRenderer] Pixel, composite, and " +
+                    "PlayerVFX layers must be different.",
                     this);
                 enabled = false;
                 return;
@@ -125,7 +145,7 @@ namespace Dystopian.ObjectPixel
         private void LateUpdate()
         {
             if (mainCamera == null || sourceCamera == null ||
-                compositeCamera == null)
+                compositeCamera == null || foregroundCamera == null)
             {
                 return;
             }
@@ -135,8 +155,11 @@ namespace Dystopian.ObjectPixel
                 1,
                 Mathf.RoundToInt(desiredHeight * GetCameraAspect()));
 
-            if (desiredWidth != activeWidth || desiredHeight != activeHeight)
+            if (desiredWidth != activeWidth ||
+                desiredHeight != activeHeight)
+            {
                 RebuildPixelBuffers();
+            }
 
             SynchronizeCameras();
             UpdateCompositeQuad();
@@ -145,19 +168,32 @@ namespace Dystopian.ObjectPixel
 
         private void BuildRuntimeCameras()
         {
-            runtimeRoot = new GameObject("__ISOLATED_OBJECT_PIXEL_RUNTIME");
+            runtimeRoot = new GameObject(
+                "__ISOLATED_OBJECT_PIXEL_RUNTIME");
             runtimeRoot.hideFlags = HideFlags.HideAndDontSave;
             runtimeRoot.transform.SetParent(transform, false);
 
-            GameObject sourceObject = new GameObject("Pixel Object Camera");
+            GameObject sourceObject = new GameObject(
+                "Pixel Object Camera");
             sourceObject.hideFlags = HideFlags.HideAndDontSave;
             sourceObject.transform.SetParent(runtimeRoot.transform, false);
             sourceCamera = sourceObject.AddComponent<Camera>();
 
-            GameObject compositeObject = new GameObject("Pixel Composite Camera");
+            GameObject compositeObject = new GameObject(
+                "Pixel Composite Camera");
             compositeObject.hideFlags = HideFlags.HideAndDontSave;
-            compositeObject.transform.SetParent(runtimeRoot.transform, false);
+            compositeObject.transform.SetParent(
+                runtimeRoot.transform,
+                false);
             compositeCamera = compositeObject.AddComponent<Camera>();
+
+            GameObject foregroundObject = new GameObject(
+                "Player VFX Foreground Camera");
+            foregroundObject.hideFlags = HideFlags.HideAndDontSave;
+            foregroundObject.transform.SetParent(
+                runtimeRoot.transform,
+                false);
+            foregroundCamera = foregroundObject.AddComponent<Camera>();
 
             UniversalAdditionalCameraData sourceCameraData =
                 sourceCamera.GetUniversalAdditionalCameraData();
@@ -169,24 +205,37 @@ namespace Dystopian.ObjectPixel
             compositeCameraData.renderType = CameraRenderType.Overlay;
             compositeCameraData.renderPostProcessing = false;
 
-            mainCameraData = mainCamera.GetUniversalAdditionalCameraData();
+            UniversalAdditionalCameraData foregroundCameraData =
+                foregroundCamera.GetUniversalAdditionalCameraData();
+            foregroundCameraData.renderType = CameraRenderType.Overlay;
+            foregroundCameraData.renderPostProcessing = false;
+
+            mainCameraData =
+                mainCamera.GetUniversalAdditionalCameraData();
             if (!mainCameraData.cameraStack.Contains(compositeCamera))
                 mainCameraData.cameraStack.Add(compositeCamera);
+            if (!mainCameraData.cameraStack.Contains(foregroundCamera))
+                mainCameraData.cameraStack.Add(foregroundCamera);
 
-            compositeQuad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            compositeQuad = GameObject.CreatePrimitive(
+                PrimitiveType.Quad);
             compositeQuad.name = "Pixel Composite Quad";
             compositeQuad.hideFlags = HideFlags.HideAndDontSave;
             compositeQuad.layer = compositeLayer;
-            compositeQuad.transform.SetParent(compositeObject.transform, false);
+            compositeQuad.transform.SetParent(
+                compositeObject.transform,
+                false);
 
-            Collider quadCollider = compositeQuad.GetComponent<Collider>();
+            Collider quadCollider =
+                compositeQuad.GetComponent<Collider>();
             if (quadCollider != null)
                 Destroy(quadCollider);
 
             MeshRenderer quadRenderer =
                 compositeQuad.GetComponent<MeshRenderer>();
             quadRenderer.sharedMaterial = displayMaterial;
-            quadRenderer.shadowCastingMode = ShadowCastingMode.Off;
+            quadRenderer.shadowCastingMode =
+                ShadowCastingMode.Off;
             quadRenderer.receiveShadows = false;
 
             SynchronizeCameras();
@@ -196,8 +245,12 @@ namespace Dystopian.ObjectPixel
         {
             int pixelMask = 1 << pixelObjectLayer;
             int compositeMask = 1 << compositeLayer;
+            int foregroundMask = 1 << foregroundVfxLayer;
             mainCamera.cullingMask =
-                originalCullingMask & ~pixelMask & ~compositeMask;
+                originalCullingMask &
+                ~pixelMask &
+                ~compositeMask &
+                ~foregroundMask;
 
             CopyCameraSettings(mainCamera, sourceCamera);
             sourceCamera.cullingMask = pixelMask;
@@ -216,6 +269,15 @@ namespace Dystopian.ObjectPixel
             compositeCamera.targetTexture = null;
             compositeCamera.allowHDR = false;
             compositeCamera.allowMSAA = false;
+
+            CopyCameraSettings(mainCamera, foregroundCamera);
+            foregroundCamera.cullingMask = foregroundMask;
+            foregroundCamera.clearFlags = CameraClearFlags.Depth;
+            foregroundCamera.backgroundColor = Color.clear;
+            foregroundCamera.depth = mainCamera.depth + 200f;
+            foregroundCamera.targetTexture = null;
+            foregroundCamera.allowHDR = false;
+            foregroundCamera.allowMSAA = false;
         }
 
         private static void CopyCameraSettings(Camera source, Camera target)
@@ -391,6 +453,8 @@ namespace Dystopian.ObjectPixel
 
             if (mainCameraData != null && compositeCamera != null)
                 mainCameraData.cameraStack.Remove(compositeCamera);
+            if (mainCameraData != null && foregroundCamera != null)
+                mainCameraData.cameraStack.Remove(foregroundCamera);
 
             ReleasePixelBuffers();
 
@@ -411,6 +475,11 @@ namespace Dystopian.ObjectPixel
                 Destroy(runtimeRoot);
                 runtimeRoot = null;
             }
+
+            sourceCamera = null;
+            compositeCamera = null;
+            foregroundCamera = null;
+            compositeQuad = null;
         }
 
         private void ReleasePixelBuffers()

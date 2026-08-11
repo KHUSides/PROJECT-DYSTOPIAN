@@ -129,12 +129,16 @@ public class PlayerController : MonoBehaviour
     private Material runtimeDebugMaterial;
     private GameObject chargedAttackHitboxPoolRoot;
 
+
     public event Action NormalAttackPerformed;
     public event Action ChargedAttackPerformed;
     public event Action ReinforcedAttackPerformed;
     public event Action TargetDefeated;
-    public event Action JumpStarted;
+    public event Action<DamageInfo> TargetDamaged;
+    public event Action<ChargedAttackArea> ChargedAttackAreaActivated;
 
+    public event Action JumpStarted;
+    public event Action Landed;
     public float HorizontalSpeed => Mathf.Abs(horizontalVelocity);
     public float VerticalSpeed => verticalVelocity;
     public bool IsGrounded => controller != null && controller.isGrounded;
@@ -142,6 +146,27 @@ public class PlayerController : MonoBehaviour
     public bool IsAttackReinforceEnabled => enableDistanceChargeUpgrade;
     public float AttackReinforceChargePercent => distanceChargePercent;
     public Vector2 FacingDirection => facingDirection;
+    public bool LastNormalAttackWasEmpowered { get; private set; }
+    public Vector2 LastNormalAttackDirection { get; private set; }
+    public Vector3 LastNormalAttackCenter { get; private set; }
+
+
+    public readonly struct ChargedAttackArea
+    {
+        public Vector3 Center { get; }
+        public Quaternion Rotation { get; }
+        public Vector3 Size { get; }
+        public bool IsReinforced { get; }
+
+        public ChargedAttackArea(Vector3 center, Quaternion rotation, Vector3 size, bool isReinforced)
+        {
+            Center = center;
+            Rotation = rotation;
+            Size = size;
+            IsReinforced = isReinforced;
+        }
+    }
+
 
     private struct ChargedAttackHitbox
     {
@@ -311,6 +336,7 @@ public class PlayerController : MonoBehaviour
     public void PerformNormalAttack()
     {
         bool isEmpowered = enableDistanceChargeUpgrade && distanceChargePercent >= 100f;
+        Vector2 attackDirection = GetNormalAttackDirection();
         activeNormalAttackDamage = Mathf.Max(
             1,
             normalAttackDamage + (isEmpowered ? empoweredAttackAdditionalDamage : 0));
@@ -318,8 +344,10 @@ public class PlayerController : MonoBehaviour
             ? empoweredNormalAttackDebugColor
             : normalAttackColliderDebugColor;
         damagedNormalAttackTargets.Clear();
-
-        ActivateNormalAttackCollider(GetNormalAttackDirection());
+        LastNormalAttackWasEmpowered = isEmpowered;
+        LastNormalAttackDirection = attackDirection;
+        LastNormalAttackCenter = transform.position + Vector3.up * controller.center.y;
+        ActivateNormalAttackCollider(attackDirection);
         if (isEmpowered)
         {
             distanceChargePercent = 0f;
@@ -378,6 +406,12 @@ public class PlayerController : MonoBehaviour
         }
 
         SetNormalAttackColliderEnabled(activeNormalAttackCollider, true);
+        Bounds attackBounds = activeNormalAttackCollider.bounds;
+        LastNormalAttackCenter = attackBounds.center + new Vector3(
+            direction.x * attackBounds.extents.x,
+            direction.y * attackBounds.extents.y,
+            0f);
+
         normalAttackColliderDisableTime = Time.time + Mathf.Max(0f, normalAttackColliderActiveDuration);
         DamageTargetsInActiveNormalAttack();
     }
@@ -472,6 +506,7 @@ public class PlayerController : MonoBehaviour
     {
         bool wasAlive = target.IsAlive;
         target.TakeDamage(damageInfo);
+        TargetDamaged?.Invoke(damageInfo);
 
         if (wasAlive && !target.IsAlive)
             TargetDefeated?.Invoke();
@@ -622,6 +657,7 @@ public class PlayerController : MonoBehaviour
         UpdateColliderDebugLine(hitbox.Collider, hitbox.DebugLine, chargedAttackColliderDebugColor, chargedAttackColliderDebugLineWidth);
         hitbox.DebugLine.enabled = showChargedAttackColliderDebug;
         chargedAttackHitboxes[hitboxIndex] = hitbox;
+        NotifyChargedAttackArea(hitbox);
         return hitboxIndex;
     }
 
@@ -810,6 +846,8 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyMovement()
     {
+        bool wasGrounded = controller.isGrounded;
+
         if (controller.isGrounded && verticalVelocity < 0f)
         {
             verticalVelocity = groundedStickVelocity;
@@ -834,6 +872,9 @@ public class PlayerController : MonoBehaviour
             isJumping = false;
             isHoldingJump = false;
         }
+
+        if (!wasGrounded && (flags & CollisionFlags.Below) != 0)
+            Landed?.Invoke();
     }
 
     private void ResolveAttackColliders()
@@ -920,6 +961,7 @@ public class PlayerController : MonoBehaviour
                 hitbox.DisableTime = Time.time + Mathf.Max(0.01f, chargedAttackColliderActiveDuration);
                 DamageTargetsInChargedAttack(hitbox.Collider);
                 chargedAttackHitboxes[i] = hitbox;
+                NotifyChargedAttackArea(hitbox);
                 if (hitbox.IsReinforced)
                     ReinforcedAttackPerformed?.Invoke();
                 continue;
@@ -1170,5 +1212,21 @@ public class PlayerController : MonoBehaviour
 
         if (runtimeDebugMaterial != null)
             Destroy(runtimeDebugMaterial);
+    }
+
+
+    private void NotifyChargedAttackArea(ChargedAttackHitbox hitbox)
+    {
+        BoxCollider attackCollider = hitbox.Collider;
+        Vector3 scale = attackCollider.transform.lossyScale;
+        Vector3 worldSize = Vector3.Scale(
+            attackCollider.size,
+            new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z)));
+
+        ChargedAttackAreaActivated?.Invoke(new ChargedAttackArea(
+            attackCollider.transform.TransformPoint(attackCollider.center),
+            attackCollider.transform.rotation,
+            worldSize,
+            hitbox.IsReinforced));
     }
 }
