@@ -73,6 +73,7 @@ public sealed class PlayerUpgradePanel : MonoBehaviour
     private int waveSwordLevel;
     private int waveImpactLevel;
     private bool isVisible;
+    private bool isInitialized;
 
     private void Awake()
     {
@@ -88,9 +89,21 @@ public sealed class PlayerUpgradePanel : MonoBehaviour
         positionCandidates[3] = bottomLeftOffset;
     }
 
-    private void Start()
+    public void Initialize(
+        PlayerController ownerController,
+        PlayerHealth ownerHealth,
+        PlayerRhythmAttackBridge ownerRhythmAttackBridge)
     {
-        ResolveReferences();
+        if (isInitialized)
+            return;
+
+        playerController = ownerController;
+        playerHealth = ownerHealth;
+        rhythmAttackBridge = ownerRhythmAttackBridge;
+        player = playerController != null ? playerController.transform : null;
+        isInitialized = true;
+
+        ResolveViewReferences();
         ConnectUpgradeButtons();
         ApplyLevelBonuses();
         RefreshView();
@@ -109,7 +122,7 @@ public sealed class PlayerUpgradePanel : MonoBehaviour
             UpdatePanelPosition();
     }
 
-    private void ResolveReferences()
+    private void ResolveViewReferences()
     {
         Canvas canvas = GetComponentInParent<Canvas>();
         canvasRect = canvas != null ? canvas.transform as RectTransform : null;
@@ -118,11 +131,6 @@ public sealed class PlayerUpgradePanel : MonoBehaviour
         Transform statusRoot = canvas != null ? canvas.transform.Find("ReinforceStatus") : null;
         chargeReinforceStatusText = FindText(statusRoot, "Charge Reinforce Status");
         attackReinforceStatusText = FindText(statusRoot, "Attack Reinforce Status");
-
-        playerController = FindFirstObjectByType<PlayerController>();
-        rhythmAttackBridge = FindFirstObjectByType<PlayerRhythmAttackBridge>();
-        playerHealth = playerController != null ? playerController.GetComponent<PlayerHealth>() : null;
-        player = playerController != null ? playerController.transform : null;
 
         attackPowerButton = FindButton("AttackPowerButton");
         darknessResistanceButton = FindButton("DarknessResistanceButton");
