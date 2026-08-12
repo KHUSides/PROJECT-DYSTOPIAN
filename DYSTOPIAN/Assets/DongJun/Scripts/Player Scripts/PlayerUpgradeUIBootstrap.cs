@@ -31,10 +31,16 @@ public sealed class PlayerUpgradeUIBootstrap : MonoBehaviour
             return;
         }
 
+        PlayerController playerController = GetComponent<PlayerController>();
         panel.Initialize(
-            GetComponent<PlayerController>(),
+            playerController,
             GetComponent<PlayerHealth>(),
             FindFirstObjectByType<PlayerRhythmAttackBridge>());
+
+        PlayerWaveSwordGauge waveSwordGauge =
+            upgradeCanvasInstance.GetComponentInChildren<PlayerWaveSwordGauge>(true);
+        if (waveSwordGauge != null)
+            waveSwordGauge.Initialize(playerController);
 
         if (EventSystem.current == null)
             Debug.LogWarning("[PlayerUpgradeUIBootstrap] An EventSystem is required to use the upgrade buttons.", this);
