@@ -26,7 +26,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.24, y: 2.24, z: 2.24}
+  m_LocalScale: {x: 1.6666667, y: 1.6666667, z: 1.6666667}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2734306512122313880}
@@ -121,13 +121,13 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 4
-  m_Radius: 0.9
+  m_Height: 3
+  m_Radius: 0.675
   m_SlopeLimit: 45
-  m_StepOffset: 0.35
+  m_StepOffset: 0.2625
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 2, z: 0}
+  m_Center: {x: 0, y: 1.5, z: 0}
 --- !u!114 &8116362303019412826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,17 +213,17 @@ MonoBehaviour:
   attackPower: 18
   thrustActionSeconds: 0.85
   swingActionSeconds: 0.95
-  thrustCenterOffset: {x: 1.35, y: 1.05, z: 0}
-  thrustSize: {x: 2.2, y: 1.25, z: 1.2}
-  swingCenterOffset: {x: 1.15, y: 1.1, z: 0}
-  swingSize: {x: 2.6, y: 1.65, z: 1.4}
+  thrustCenterOffset: {x: 1.0125, y: 0.7875, z: 0}
+  thrustSize: {x: 1.65, y: 0.9375, z: 0.9}
+  swingCenterOffset: {x: 0.8625, y: 0.825, z: 0}
+  swingSize: {x: 1.95, y: 1.2375, z: 1.05}
   throwAttackPower: 28
   throwActionSeconds: 1.25
   returnRecoverSeconds: 0.1
-  spearThrowSpeed: 42
+  spearThrowSpeed: 90
   spearReturnSpeed: 180
   spearMaxDistance: 14
-  spearHitRadius: 0.45
+  spearHitRadius: 0.3375
   spearReleaseDelaySeconds: 0.45
   spearAimOffset: {x: 0, y: 1.35, z: 0}
   lockThrowReleaseToHorizontalLine: 1
@@ -254,7 +254,7 @@ MonoBehaviour:
   spearRightGripLocal: {x: 0, y: 0, z: 0}
   oneHandSpearLocalPosition: {x: 0, y: 0, z: 0}
   oneHandSpearLocalEuler: {x: 0, y: 0, z: 180}
-  minimumTwoHandDistance: 0.18
+  minimumTwoHandDistance: 0.135
   sideViewForward: {x: 0, y: 0, z: 1}
   oneHandThrowAxis: {x: 1, y: 0.08, z: 0}
   forceHorizontalChargePose: 1
@@ -263,7 +263,7 @@ MonoBehaviour:
   drawDebugGizmos: 0
   forceForwardThrustPose: 1
   thrustAxis: {x: 1, y: 0.015, z: 0}
-  thrustForwardWorldOffset: 0.9
+  thrustForwardWorldOffset: 0.675
   thrustForwardStartNormalizedTime: 0.16
   thrustForwardPeakNormalizedTime: 0.48
   thrustForwardEndNormalizedTime: 0.82
@@ -302,9 +302,9 @@ MonoBehaviour:
   bossHealth: {fileID: 8116362303019412826}
   merlinCombat: {fileID: 1398106883403190470}
   crossFadeSeconds: 0.04
-  normalSpeed: 1
-  attackSpeed: 1.5
-  hitSpeed: 1.2
+  normalSpeed: 1.2
+  attackSpeed: 1.8
+  hitSpeed: 1.4
   thrustStartNormalizedTime: 0.18
   swingStartNormalizedTime: 0.22
   chargeHoldNormalizedTime: 0.2
@@ -314,10 +314,10 @@ MonoBehaviour:
   deathGroundMask:
     serializedVersion: 2
     m_Bits: 128
-  deathGroundRayStartHeight: 4
-  deathGroundRayDistance: 8
+  deathGroundRayStartHeight: 3
+  deathGroundRayDistance: 6
   deathGroundOffset: 0
-  maxDeathGroundCorrection: 1.5
+  maxDeathGroundCorrection: 1.125
   useDeathSupportBones: 1
 --- !u!1001 &2483889350881516403
 PrefabInstance:
@@ -436,15 +436,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400628, guid: 67554785dcf02cb4abf5df7ccd3d56dd, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400628, guid: 67554785dcf02cb4abf5df7ccd3d56dd, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400628, guid: 67554785dcf02cb4abf5df7ccd3d56dd, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400628, guid: 67554785dcf02cb4abf5df7ccd3d56dd, type: 3}
       propertyPath: m_LocalPosition.x

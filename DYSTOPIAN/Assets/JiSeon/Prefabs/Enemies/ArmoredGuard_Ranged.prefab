@@ -604,6 +604,19 @@ MonoBehaviour:
   rangedCombat: {fileID: 8008667001727539673}
   movingThreshold: 0.025
   speedDampSeconds: 0.08
+  normalSpeed: 1.2
+  attackSpeed: 1.8
+  hitSpeed: 1.4
+  turnSpeed: 1.3
+  deathSpeed: 1.15
+  singleAttackLockSeconds: 0.85
+  chargedAttackLockSeconds: 0.95
+  turnLockSeconds: 0.27
+  hitLockSeconds: 0.25
+  crossFadeSeconds: 0.04
+  singleAttackStartNormalizedTime: 0.22
+  longChargeStartNormalizedTime: 0.08
+  chargedAttackStartNormalizedTime: 0.18
 --- !u!1 &6960697173473071471
 GameObject:
   m_ObjectHideFlags: 0

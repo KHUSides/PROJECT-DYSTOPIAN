@@ -38,7 +38,7 @@ namespace Dystopian.EnemyTest
         [Header("Thrust Emphasis")]
         [SerializeField] private bool forceForwardThrustPose = true;
         [SerializeField] private Vector3 thrustAxis = new Vector3(1f, 0.015f, 0f);
-        [SerializeField, Min(0f)] private float thrustForwardWorldOffset = 0.9f;
+        [SerializeField, Min(0f)] private float thrustForwardWorldOffset = 0.675f;
         [SerializeField, Range(0f, 1f)] private float thrustForwardStartNormalizedTime = 0.16f;
         [SerializeField, Range(0f, 1f)] private float thrustForwardPeakNormalizedTime = 0.48f;
         [SerializeField, Range(0f, 1f)] private float thrustForwardEndNormalizedTime = 0.82f;

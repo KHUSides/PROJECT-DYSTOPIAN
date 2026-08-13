@@ -50,9 +50,19 @@ MonoBehaviour:
   lockOutgoingToHorizontalLine: 0
   lockToSideViewPlane: 1
   lockedZ: 0
+  clampOutgoingVerticalAngle: 1
+  maxOutgoingUpAngleDegrees: 45
+  maxOutgoingDownAngleDegrees: 18
+  preventOutgoingGroundHit: 1
+  outgoingGroundSafetyMask:
+    serializedVersion: 2
+    m_Bits: 128
+  fallbackOutgoingGroundY: 0
+  outgoingGroundClearance: 0.35
+  outgoingGroundProbeDistance: 20
   useTipAsBlockingProbe: 1
   autoCalculateTipForwardOffset: 1
-  spearTipForwardOffset: 1.9
+  spearTipForwardOffset: 1.18
   spearVisualRollDegrees: 90
   onlyStickToFacingWallsDuringHorizontalThrow: 1
   minimumFacingWallNormalDot: 0.35
@@ -65,11 +75,15 @@ MonoBehaviour:
     m_Bits: 512
   targetTriggerInteraction: 2
   blockingTriggerInteraction: 1
-  minimumBlockingDistance: 0.75
+  minimumBlockingDistance: 0.05
   stuckSecondsBeforeReturn: 0.18
   maxDistanceReturnDelaySeconds: 0.12
   stickSurfaceOffset: 0.03
   returnArriveDistance: 0.15
+  shakeCameraOnBlockingImpact: 1
+  blockingImpactShakeDuration: 0.28
+  blockingImpactShakeAmplitude: 0.35
+  blockingImpactShakeFrequency: 55
 --- !u!1001 &5316982432553850605
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -84,15 +98,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400628, guid: 67554785dcf02cb4abf5df7ccd3d56dd, type: 3}
       propertyPath: m_LocalScale.x
-      value: 2.4192
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 400628, guid: 67554785dcf02cb4abf5df7ccd3d56dd, type: 3}
       propertyPath: m_LocalScale.y
-      value: 2.4192
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 400628, guid: 67554785dcf02cb4abf5df7ccd3d56dd, type: 3}
       propertyPath: m_LocalScale.z
-      value: 2.4192
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 400628, guid: 67554785dcf02cb4abf5df7ccd3d56dd, type: 3}
       propertyPath: m_LocalPosition.x

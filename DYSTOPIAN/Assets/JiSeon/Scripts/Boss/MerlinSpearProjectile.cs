@@ -20,6 +20,14 @@ namespace Dystopian.EnemyTest
         [SerializeField] private bool lockOutgoingToHorizontalLine;
         [SerializeField] private bool lockToSideViewPlane = true;
         [SerializeField] private float lockedZ = 0f;
+        [SerializeField] private bool clampOutgoingVerticalAngle = true;
+        [SerializeField, Range(0f, 89f)] private float maxOutgoingUpAngleDegrees = 45f;
+        [SerializeField, Range(0f, 89f)] private float maxOutgoingDownAngleDegrees = 18f;
+        [SerializeField] private bool preventOutgoingGroundHit = true;
+        [SerializeField] private LayerMask outgoingGroundSafetyMask;
+        [SerializeField] private float fallbackOutgoingGroundY = 0f;
+        [SerializeField, Min(0f)] private float outgoingGroundClearance = 0.35f;
+        [SerializeField, Min(0.1f)] private float outgoingGroundProbeDistance = 20f;
         [SerializeField] private bool useTipAsBlockingProbe = true;
         [SerializeField] private bool autoCalculateTipForwardOffset = true;
         [SerializeField, Min(0f)] private float spearTipForwardOffset = 1.9f;
@@ -33,11 +41,17 @@ namespace Dystopian.EnemyTest
         [SerializeField] private LayerMask blockingMask;
         [SerializeField] private QueryTriggerInteraction targetTriggerInteraction = QueryTriggerInteraction.Collide;
         [SerializeField] private QueryTriggerInteraction blockingTriggerInteraction = QueryTriggerInteraction.Ignore;
-        [SerializeField, Min(0f)] private float minimumBlockingDistance = 0.75f;
+        [SerializeField, Min(0f)] private float minimumBlockingDistance = 0.05f;
         [SerializeField, Min(0f)] private float stuckSecondsBeforeReturn = 0.18f;
         [SerializeField, Min(0f)] private float maxDistanceReturnDelaySeconds = 0.12f;
         [SerializeField, Min(0.001f)] private float stickSurfaceOffset = 0.03f;
         [SerializeField, Min(0.01f)] private float returnArriveDistance = 0.15f;
+
+        [Header("Blocking Impact Feedback")]
+        [SerializeField] private bool shakeCameraOnBlockingImpact = true;
+        [SerializeField, Min(0f)] private float blockingImpactShakeDuration = 0.28f;
+        [SerializeField, Min(0f)] private float blockingImpactShakeAmplitude = 0.35f;
+        [SerializeField, Min(0.1f)] private float blockingImpactShakeFrequency = 55f;
 
         private readonly List<IDamageable> damagedTargets = new List<IDamageable>();
         private readonly RaycastHit[] blockerHitBuffer = new RaycastHit[16];
@@ -83,6 +97,7 @@ namespace Dystopian.EnemyTest
             returned = onReturned;
             targetMask = hitMask;
             blockingMask = blockMask;
+            InitializeGroundSafetyMaskIfNeeded();
             damage = Mathf.Max(1, attackDamage);
             throwSpeed = Mathf.Max(0.1f, outgoingSpeed);
             returnSpeed = Mathf.Max(0.1f, incomingSpeed);
@@ -138,7 +153,7 @@ namespace Dystopian.EnemyTest
             float remainingDistance = maxDistance - travelledDistance;
             if (remainingDistance <= 0f)
             {
-                BeginStuck(maxDistanceReturnDelaySeconds, "max distance");
+                BeginStuck(maxDistanceReturnDelaySeconds, "max distance", false);
                 return;
             }
 
@@ -155,7 +170,7 @@ namespace Dystopian.EnemyTest
                 transform.position = blockedPosition;
                 previousPosition = blockedPosition;
                 travelledDistance += blockerHit.distance;
-                BeginStuck(stuckSecondsBeforeReturn, blockerHit.collider != null ? blockerHit.collider.name : "environment");
+                BeginStuck(stuckSecondsBeforeReturn, blockerHit.collider != null ? blockerHit.collider.name : "environment", true);
                 return;
             }
 
@@ -167,7 +182,7 @@ namespace Dystopian.EnemyTest
 
             if (travelledDistance >= maxDistance)
             {
-                BeginStuck(maxDistanceReturnDelaySeconds, "max distance");
+                BeginStuck(maxDistanceReturnDelaySeconds, "max distance", false);
             }
         }
 
@@ -369,10 +384,90 @@ namespace Dystopian.EnemyTest
 
             if (toTarget.sqrMagnitude > 0.01f && Mathf.Sign(toTarget.x) == sign)
             {
-                return toTarget.normalized;
+                return ClampOutgoingVerticalAngle(toTarget.normalized, sign);
             }
 
             return Vector3.right * sign;
+        }
+
+        private Vector3 ClampOutgoingVerticalAngle(Vector3 rawDirection, int facingSign)
+        {
+            if (!clampOutgoingVerticalAngle)
+            {
+                return rawDirection;
+            }
+
+            int sign = facingSign >= 0 ? 1 : -1;
+            float horizontalMagnitude = Mathf.Abs(rawDirection.x);
+            if (horizontalMagnitude <= 0.0001f)
+            {
+                return Vector3.right * sign;
+            }
+
+            float angleDegrees = Mathf.Atan2(rawDirection.y, horizontalMagnitude) * Mathf.Rad2Deg;
+            float minAngle = -Mathf.Clamp(maxOutgoingDownAngleDegrees, 0f, 89f);
+            float maxAngle = Mathf.Clamp(maxOutgoingUpAngleDegrees, 0f, 89f);
+            if (preventOutgoingGroundHit)
+            {
+                minAngle = Mathf.Max(minAngle, CalculateGroundSafeMinimumAngle());
+            }
+
+            float clampedAngle = Mathf.Clamp(angleDegrees, minAngle, maxAngle);
+            float clampedRadians = clampedAngle * Mathf.Deg2Rad;
+
+            return new Vector3(
+                Mathf.Cos(clampedRadians) * sign,
+                Mathf.Sin(clampedRadians),
+                0f).normalized;
+        }
+
+        private float CalculateGroundSafeMinimumAngle()
+        {
+            float safetyDistance = Mathf.Max(0.1f, maxDistance + Mathf.Max(0f, spearTipForwardOffset));
+            float minimumY = ResolveOutgoingGroundSafetyY();
+
+            if (startPosition.y <= minimumY)
+            {
+                return 0f;
+            }
+
+            return Mathf.Atan2(minimumY - startPosition.y, safetyDistance) * Mathf.Rad2Deg;
+        }
+
+        private float ResolveOutgoingGroundSafetyY()
+        {
+            float groundY = fallbackOutgoingGroundY;
+
+            if (outgoingGroundSafetyMask.value != 0)
+            {
+                Vector3 rayOrigin = startPosition + Vector3.up * 0.05f;
+                if (Physics.Raycast(
+                        rayOrigin,
+                        Vector3.down,
+                        out RaycastHit hit,
+                        outgoingGroundProbeDistance,
+                        outgoingGroundSafetyMask,
+                        QueryTriggerInteraction.Ignore))
+                {
+                    groundY = hit.point.y;
+                }
+            }
+
+            return groundY + outgoingGroundClearance;
+        }
+
+        private void InitializeGroundSafetyMaskIfNeeded()
+        {
+            if (outgoingGroundSafetyMask.value != 0)
+            {
+                return;
+            }
+
+            int environmentLayer = LayerMask.NameToLayer("Environment");
+            if (environmentLayer >= 0)
+            {
+                outgoingGroundSafetyMask = 1 << environmentLayer;
+            }
         }
 
         private Vector3 LockToSideViewPlane(Vector3 position)
@@ -535,25 +630,52 @@ namespace Dystopian.EnemyTest
             trailEndWidth = Mathf.Max(0.001f, trailEndWidth);
             spearTipForwardOffset = Mathf.Max(0f, spearTipForwardOffset);
             spearVisualRollDegrees = Mathf.Repeat(spearVisualRollDegrees + 180f, 360f) - 180f;
+            maxOutgoingUpAngleDegrees = Mathf.Clamp(maxOutgoingUpAngleDegrees, 0f, 89f);
+            maxOutgoingDownAngleDegrees = Mathf.Clamp(maxOutgoingDownAngleDegrees, 0f, 89f);
+            fallbackOutgoingGroundY = Mathf.Max(-1000f, fallbackOutgoingGroundY);
+            outgoingGroundClearance = Mathf.Max(0f, outgoingGroundClearance);
+            outgoingGroundProbeDistance = Mathf.Max(0.1f, outgoingGroundProbeDistance);
+            InitializeGroundSafetyMaskIfNeeded();
             minimumFacingWallNormalDot = Mathf.Clamp01(minimumFacingWallNormalDot);
             stuckSecondsBeforeReturn = Mathf.Max(0f, stuckSecondsBeforeReturn);
             maxDistanceReturnDelaySeconds = Mathf.Max(0f, maxDistanceReturnDelaySeconds);
             minimumBlockingDistance = Mathf.Max(0f, minimumBlockingDistance);
             stickSurfaceOffset = Mathf.Max(0.001f, stickSurfaceOffset);
             returnArriveDistance = Mathf.Max(0.01f, returnArriveDistance);
+            blockingImpactShakeDuration = Mathf.Max(0f, blockingImpactShakeDuration);
+            blockingImpactShakeAmplitude = Mathf.Max(0f, blockingImpactShakeAmplitude);
+            blockingImpactShakeFrequency = Mathf.Max(0.1f, blockingImpactShakeFrequency);
         }
 
-        private void BeginStuck(float duration, string reason)
+        private void BeginStuck(float duration, string reason, bool triggerBlockingImpactShake)
         {
             state = ProjectileState.Stuck;
             stuckElapsed = 0f;
             currentStuckDuration = Mathf.Max(0f, duration);
             ApplyRotationAlongVelocity(direction);
 
+            if (triggerBlockingImpactShake)
+            {
+                TriggerBlockingImpactCameraShake();
+            }
+
             if (logLifecycle)
             {
                 Debug.Log($"[Merlin Spear] stuck by {reason} at {FormatVector(transform.position)} for {currentStuckDuration:F2}s.", this);
             }
+        }
+
+        private void TriggerBlockingImpactCameraShake()
+        {
+            if (!shakeCameraOnBlockingImpact)
+            {
+                return;
+            }
+
+            MerlinCameraShake.ShakeMainCamera(
+                blockingImpactShakeDuration,
+                blockingImpactShakeAmplitude,
+                blockingImpactShakeFrequency);
         }
 
         private void BeginReturn()
