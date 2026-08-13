@@ -36,11 +36,18 @@ namespace Dystopian.EnemyTest
         [SerializeField, Min(0f)] private float movingThreshold = 0.025f;
         [SerializeField, Min(0f)] private float speedDampSeconds = 0.08f;
 
+        [Header("Playback")]
+        [SerializeField, Min(0.01f)] private float normalSpeed = 1.2f;
+        [SerializeField, Min(0.01f)] private float attackSpeed = 1.8f;
+        [SerializeField, Min(0.01f)] private float hitSpeed = 1.4f;
+        [SerializeField, Min(0.01f)] private float turnSpeed = 1.3f;
+        [SerializeField, Min(0.01f)] private float deathSpeed = 1.15f;
+
         [Header("Action Locks")]
-        [SerializeField, Min(0.01f)] private float singleAttackLockSeconds = 1.10f;
-        [SerializeField, Min(0.01f)] private float chargedAttackLockSeconds = 1.20f;
-        [SerializeField, Min(0.01f)] private float turnLockSeconds = 0.35f;
-        [SerializeField, Min(0.01f)] private float hitLockSeconds = 0.35f;
+        [SerializeField, Min(0.01f)] private float singleAttackLockSeconds = 0.85f;
+        [SerializeField, Min(0.01f)] private float chargedAttackLockSeconds = 0.95f;
+        [SerializeField, Min(0.01f)] private float turnLockSeconds = 0.27f;
+        [SerializeField, Min(0.01f)] private float hitLockSeconds = 0.25f;
         [SerializeField, Min(0f)] private float crossFadeSeconds = 0.04f;
 
         [Header("Attack Timing")]
@@ -115,7 +122,7 @@ namespace Dystopian.EnemyTest
 
             if (isDead)
             {
-                PlayState(DeathStateName);
+                PlayState(DeathStateName, deathSpeed);
                 lastPosition = transform.position;
                 return;
             }
@@ -129,7 +136,7 @@ namespace Dystopian.EnemyTest
             int currentFacingSign = GetCurrentFacingSign();
             if (lastFacingSign != currentFacingSign)
             {
-                if (PlayState(currentFacingSign < lastFacingSign ? TurnLeftStateName : TurnRightStateName))
+                if (PlayState(currentFacingSign < lastFacingSign ? TurnLeftStateName : TurnRightStateName, turnSpeed))
                 {
                     LockAction(turnLockSeconds);
                 }
@@ -162,7 +169,7 @@ namespace Dystopian.EnemyTest
             animator.ResetTrigger(ChargedAttackHash);
             animator.SetBool(ChargingHash, false);
             LockAttack(singleAttackLockSeconds);
-            PlayStateImmediately(SingleAttackStateName, singleAttackStartNormalizedTime);
+            PlayStateImmediately(SingleAttackStateName, singleAttackStartNormalizedTime, attackSpeed);
         }
 
         private void HandleLongChargeStarted()
@@ -193,7 +200,7 @@ namespace Dystopian.EnemyTest
             animator.SetBool(ChargingHash, false);
             enemyController?.SetExternalMovementLock(false);
             LockAttack(chargedAttackLockSeconds);
-            PlayStateImmediately(ChargedAttackStateName, chargedAttackStartNormalizedTime);
+            PlayStateImmediately(ChargedAttackStateName, chargedAttackStartNormalizedTime, attackSpeed);
         }
 
         private void HandleLongChargeCancelled()
@@ -216,7 +223,7 @@ namespace Dystopian.EnemyTest
 
             animator.SetTrigger(HitHash);
             LockAction(hitLockSeconds);
-            PlayState(HitStateName);
+            PlayState(HitStateName, hitSpeed);
         }
 
         private void HandleDied(EnemyHealth _)
@@ -232,7 +239,7 @@ namespace Dystopian.EnemyTest
             animator.SetTrigger(DieHash);
             enemyController?.SetExternalMovementLock(false);
             actionLockedUntil = float.PositiveInfinity;
-            PlayState(DeathStateName);
+            PlayState(DeathStateName, deathSpeed);
         }
 
         private bool CanPlayAction()
@@ -254,6 +261,7 @@ namespace Dystopian.EnemyTest
             }
 
             animator.applyRootMotion = false;
+            animator.speed = normalSpeed;
             currentStateName = string.Empty;
         }
 
@@ -281,10 +289,15 @@ namespace Dystopian.EnemyTest
 
         private void HoldLongChargePose()
         {
-            PlayStateImmediately(LongChargeStateName, longChargeStartNormalizedTime);
+            PlayStateImmediately(LongChargeStateName, longChargeStartNormalizedTime, 0f);
         }
 
         private bool PlayState(string stateName)
+        {
+            return PlayState(stateName, normalSpeed);
+        }
+
+        private bool PlayState(string stateName, float speed)
         {
             if (animator == null || string.IsNullOrEmpty(stateName) || currentStateName == stateName)
             {
@@ -296,12 +309,18 @@ namespace Dystopian.EnemyTest
                 return false;
             }
 
+            animator.speed = Mathf.Max(0f, speed);
             animator.CrossFadeInFixedTime(stateHash, crossFadeSeconds, 0, 0f);
             currentStateName = stateName;
             return true;
         }
 
         private bool PlayStateImmediately(string stateName, float normalizedTime)
+        {
+            return PlayStateImmediately(stateName, normalizedTime, normalSpeed);
+        }
+
+        private bool PlayStateImmediately(string stateName, float normalizedTime, float speed)
         {
             if (animator == null || string.IsNullOrEmpty(stateName))
             {
@@ -313,6 +332,7 @@ namespace Dystopian.EnemyTest
                 return false;
             }
 
+            animator.speed = Mathf.Max(0f, speed);
             animator.Play(stateHash, 0, Mathf.Clamp01(normalizedTime));
             animator.Update(0f);
             currentStateName = stateName;
@@ -427,6 +447,11 @@ namespace Dystopian.EnemyTest
         {
             movingThreshold = Mathf.Max(0f, movingThreshold);
             speedDampSeconds = Mathf.Max(0f, speedDampSeconds);
+            normalSpeed = Mathf.Max(0.01f, normalSpeed);
+            attackSpeed = Mathf.Max(0.01f, attackSpeed);
+            hitSpeed = Mathf.Max(0.01f, hitSpeed);
+            turnSpeed = Mathf.Max(0.01f, turnSpeed);
+            deathSpeed = Mathf.Max(0.01f, deathSpeed);
             singleAttackLockSeconds = Mathf.Max(0.01f, singleAttackLockSeconds);
             chargedAttackLockSeconds = Mathf.Max(0.01f, chargedAttackLockSeconds);
             turnLockSeconds = Mathf.Max(0.01f, turnLockSeconds);

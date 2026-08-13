@@ -30,19 +30,19 @@ namespace Dystopian.EnemyTest
         [SerializeField, Min(1)] private int attackPower = 18;
         [SerializeField, Min(0.05f)] private float thrustActionSeconds = 0.85f;
         [SerializeField, Min(0.05f)] private float swingActionSeconds = 0.95f;
-        [SerializeField] private Vector3 thrustCenterOffset = new Vector3(1.35f, 1.05f, 0f);
-        [SerializeField] private Vector3 thrustSize = new Vector3(2.2f, 1.25f, 1.2f);
-        [SerializeField] private Vector3 swingCenterOffset = new Vector3(1.15f, 1.1f, 0f);
-        [SerializeField] private Vector3 swingSize = new Vector3(2.6f, 1.65f, 1.4f);
+        [SerializeField] private Vector3 thrustCenterOffset = new Vector3(1.0125f, 0.7875f, 0f);
+        [SerializeField] private Vector3 thrustSize = new Vector3(1.65f, 0.9375f, 0.9f);
+        [SerializeField] private Vector3 swingCenterOffset = new Vector3(0.8625f, 0.825f, 0f);
+        [SerializeField] private Vector3 swingSize = new Vector3(1.95f, 1.2375f, 1.05f);
 
         [Header("Long Note Pattern")]
         [SerializeField, Min(1)] private int throwAttackPower = 28;
         [SerializeField, Min(0.05f)] private float throwActionSeconds = 1.25f;
         [SerializeField, Min(0.05f)] private float returnRecoverSeconds = 0.1f;
-        [SerializeField, Min(0.1f)] private float spearThrowSpeed = 42f;
+        [SerializeField, Min(0.1f)] private float spearThrowSpeed = 90f;
         [SerializeField, Min(0.1f)] private float spearReturnSpeed = 180f;
         [SerializeField, Min(0.1f)] private float spearMaxDistance = 14f;
-        [SerializeField, Min(0.01f)] private float spearHitRadius = 0.45f;
+        [SerializeField, Min(0.01f)] private float spearHitRadius = 0.3375f;
         [SerializeField, Min(0f)] private float spearReleaseDelaySeconds = 0.45f;
         [SerializeField] private Vector3 spearAimOffset = new Vector3(0f, 1.35f, 0f);
         [SerializeField] private bool lockThrowReleaseToHorizontalLine = true;

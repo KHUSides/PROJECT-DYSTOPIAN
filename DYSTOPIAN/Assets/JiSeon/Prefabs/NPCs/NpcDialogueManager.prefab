@@ -66,6 +66,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dystopian.EnemyTest.NpcDialogueManager
   autoCreateUiIfMissing: 1
+  useWorldSpaceDialogue: 1
+  worldPanelSize: {x: 560, y: 220}
+  worldCanvasScale: 0.0085
+  worldCameraForwardOffset: 0.05
+  keepWorldDialogueFacingCamera: 1
   dialogueCanvas: {fileID: 0}
   dialogueCanvasGroup: {fileID: 0}
   speakerNameText: {fileID: 0}

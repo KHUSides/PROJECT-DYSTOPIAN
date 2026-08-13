@@ -445,10 +445,10 @@ HUD 표시:
 현재 임시 값:
 
 - 창 투척 공격력: `28`
-- 창 투척 속도: `26`
-- 창 회수 속도: `75`
+- 창 투척 속도: `90`
+- 창 회수 속도: `180`
 - 창 최대 거리: `14`
-- 창 Hit Radius: `0.45`
+- 창 Hit Radius: `0.3375`
 - 창 투척 release delay: `0.45초`
 - Spear blocking mask: `SpearBlocker` 레이어
 
@@ -459,9 +459,18 @@ HUD 표시:
 - 롱 노트 종료 시 플레이어 방향을 바라보고 `SpearThrow` 애니메이션을 재생합니다.
 - 손을 놓는 타이밍에 맞춰 `0.45초` 뒤에 손에 든 창을 숨기고, 같은 위치 / 회전에서 창 투사체를 생성합니다.
 - 창 투사체는 손 애니메이션 위치가 낮아져도 최소 높이 `1.5` 이상에서 생성되며, Z는 `0`으로 고정됩니다.
-- 창 투사체는 발사 순간 높이의 Y를 유지한 채 멀린이 바라보는 좌우 방향으로 수평 직선 비행합니다.
+- 창 투사체는 플레이어 몸통을 향하는 직선 방향으로 비행하되, 너무 아래로 꺾이지 않도록 발사 각도를 제한합니다.
+- 창 투사체 발사 각도 제한:
+  - 위 방향 최대 각도: `45도`
+  - 아래 방향 기본 최대 각도: `18도`
+  - 실제 아래 방향 최종 각도는 바닥 안전 높이를 기준으로 한 번 더 제한됩니다.
+- 바닥 안전 제한:
+  - `Environment` 레이어를 바닥 기준으로 사용합니다.
+  - 바닥을 찾지 못하면 fallback 바닥 높이 `Y=0`을 사용합니다.
+  - 창끝이 최대 비행거리까지 이동해도 바닥 안전 높이 아래로 내려가지 않는 각도로 자동 보정합니다.
 - 창 투사체는 플레이어를 관통하며, 플레이어에게 피해를 입혀도 즉시 회수되지 않습니다.
 - 창 투사체는 `SpearBlocker` 레이어의 벽에 닿으면 해당 지점에 꽂힌 상태로 잠시 멈춥니다.
+- 창 투사체가 `SpearBlocker` 벽에 꽂히는 순간 Main Camera가 짧게 흔들립니다.
 - 일반 `Environment` 플랫폼 / 발판은 창 투사체 blocker로 사용하지 않습니다.
 - 창 투사체가 환경에 꽂히거나 최대 거리까지 날아가면 일정 시간 뒤 멀린 손 쪽으로 빠르게 회수됩니다.
 - 창 회수 완료 후 손에 든 창을 다시 표시합니다.
@@ -532,15 +541,22 @@ HUD 표시:
 
 현재 동작:
 
-- 창은 포물선이 아니라 발사 순간 높이의 Y를 유지한 채 멀린이 바라보는 좌우 방향으로 수평 직선 비행합니다.
+- 창은 포물선이 아니라 플레이어 몸통을 향한 조준 방향으로 직선 비행합니다.
 - 창은 손 애니메이션 위치가 낮아져도 최소 높이 `1.5` 이상에서 생성되며, Z는 `0`으로 고정됩니다.
-- `lockOutgoingToHorizontalLine` 기본값은 `true`이며, `MerlinSpearProjectile.prefab`에도 켜진 상태로 저장되어 있습니다.
+- `lockOutgoingToHorizontalLine`은 `false`이며, 플레이어 몸통을 향해 직선으로 날아갑니다.
+- `clampOutgoingVerticalAngle`은 `true`이며, 창이 바닥 쪽으로 과하게 기울어지는 것을 막습니다.
+- `maxOutgoingUpAngleDegrees`는 `45`입니다.
+- `maxOutgoingDownAngleDegrees`는 `18`입니다.
+- `preventOutgoingGroundHit`은 `true`이며, 창이 바닥에 꽂히는 각도로 던져지지 않도록 최종 발사 각도를 한 번 더 보정합니다.
+- `outgoingGroundSafetyMask`는 `Environment` 레이어입니다.
+- `fallbackOutgoingGroundY`는 `0`입니다.
+- `outgoingGroundClearance`는 `0.35`입니다.
+- `outgoingGroundProbeDistance`는 `20`입니다.
 - `lockToSideViewPlane` 기본값은 `true`이며, 투사체의 Z 위치를 `0`으로 고정해 사이드뷰 카메라 기준에서 창이 앞뒤 깊이로 빠져 보이지 않는 상황을 줄입니다.
 - `useTipAsBlockingProbe` 기본값은 `true`이며, 벽 / 바닥 / 천장 충돌을 창 피벗이 아니라 창끝 기준으로 판정합니다.
 - `autoCalculateTipForwardOffset` 기본값은 `true`이며, 현재 창 모델 바운드 기준 창끝 오프셋은 약 `1.929`입니다.
-- `onlyStickToFacingWallsDuringHorizontalThrow` 기본값은 `true`이며, 수평 발사 중에는 진행 방향을 정면으로 막는 벽면만 꽂힘 대상으로 사용합니다.
-- 수평 발사 중 바닥 윗면 / 천장 아랫면처럼 normal이 진행 방향을 막지 않는 면은 꽂힘 대상으로 사용하지 않습니다.
-- 창끝이 Environment에 닿으면 창 피벗은 뒤쪽에 남고, 창끝이 벽 표면에 꽂힌 위치로 정지합니다.
+- `onlyStickToFacingWallsDuringHorizontalThrow`는 수평 발사 모드에서만 진행 방향을 정면으로 막는 벽면을 골라내는 옵션입니다.
+- 현재 멀린 창은 각도 제한 직선 발사 방식이며, `SpearBlocker` 벽에 닿으면 창 피벗은 뒤쪽에 남고 창끝이 벽 표면에 꽂힌 위치로 정지합니다.
 - 런타임 테스트용 `TrailRenderer`를 창 피벗이 아니라 창끝 위치에 자동으로 추가해, 창이 빠르게 날아가도 Game View에서 이동 궤적을 볼 수 있게 했습니다.
 - 디버그 로그를 통해 `spawned`, `pierced Player`, `stuck by ...`, `returning` 상태를 Console에서 확인할 수 있습니다.
 - `minimumBlockingDistance` 기본값은 `0.75`이며, 발사 직후 너무 가까운 환경 충돌은 무시해 손 주변 플랫폼에 즉시 박히는 상황을 줄입니다.
@@ -550,8 +566,9 @@ HUD 표시:
 - `blockingMask`에 포함된 `SpearBlocker` 오브젝트는 관통하지 않습니다.
 - 일반 `Environment` 플랫폼 / 발판은 관통합니다.
 - `SpearBlocker` 벽에 닿으면 해당 지점에 창이 꽂힌 상태로 잠시 멈춥니다.
-- 꽂힌 뒤 `1.2초`가 지나면 멀린 손 쪽으로 빠르게 회수됩니다.
-- 환경에 닿지 않고 최대 거리까지 날아간 경우에도 `0.35초` 뒤 자동 회수됩니다.
+- 꽂힌 뒤 `0.18초`가 지나면 멀린 손 쪽으로 빠르게 회수됩니다.
+- 환경에 닿지 않고 최대 거리까지 날아간 경우에도 `0.12초` 뒤 자동 회수됩니다.
+- `SpearBlocker` 벽에 꽂히는 순간 `MerlinCameraShake`를 통해 Main Camera가 짧게 흔들립니다.
 - 회수 중에는 플레이어에게 추가 피해를 주지 않습니다.
 
 ### 수정 프리팹
@@ -563,8 +580,8 @@ HUD 표시:
 - `MerlinHeldSpearPoseController` 컴포넌트 추가
 - `MerlinBossCombat.heldSpearPoseController` 참조 연결
 - `MerlinBossCombat.spearBlockingMask`를 `SpearBlocker` 레이어로 설정
-- `spearThrowSpeed`를 `26`으로 설정
-- `spearReturnSpeed`를 `75`로 설정
+- `spearThrowSpeed`를 `90`으로 설정
+- `spearReturnSpeed`를 `180`로 설정
 - `spearMaxDistance`를 `14`로 설정
 - `lockThrowReleaseToHorizontalLine`을 `true`로 설정
 - `minimumHorizontalThrowHeight`를 `1.5`로 설정
@@ -764,11 +781,11 @@ Unity 에디터:
 
 ---
 
-## 2026-07-31 - 멀린 보스 크기 2배 조정
+## 2026-08-12 - 멀린 보스 크기 1.5배 조정
 
 ### 구현 목적
 
-멀린 보스가 화면에서 더 보스답게 보이도록 외형 크기를 기존 대비 2배로 키웠습니다.
+멀린 보스가 화면에서 과하게 크게 보이지 않도록 외형 / 콜라이더 / 공격 판정 / 모션 보정 기준을 현재 1.5배 스케일로 맞췄습니다.
 
 ### 수정 대상
 
@@ -777,15 +794,32 @@ Unity 에디터:
 
 ### 현재 값
 
-- `VisualRoot.localScale`: `(2.24, 2.24, 2.24)`
-- `CharacterController.height`: `4`
-- `CharacterController.radius`: `0.9`
-- `CharacterController.center`: `(0, 2, 0)`
+- `VisualRoot.localScale`: `(1.6667, 1.6667, 1.6667)`
+- `Merlin_Visual.lossyScale`: `(1.5, 1.5, 1.5)`
+- `CharacterController.height`: `3`
+- `CharacterController.radius`: `0.675`
+- `CharacterController.center`: `(0, 1.5, 0)`
+- `CharacterController.stepOffset`: `0.2625`
+- `BossAnimationController.deathGroundRayStartHeight`: `3`
+- `BossAnimationController.deathGroundRayDistance`: `6`
+- `BossAnimationController.maxDeathGroundCorrection`: `1.125`
+
+공격 / 모션 보정 값:
+
+- `MerlinBossCombat.thrustCenterOffset`: `(1.0125, 0.7875, 0)`
+- `MerlinBossCombat.thrustSize`: `(1.65, 0.9375, 0.9)`
+- `MerlinBossCombat.swingCenterOffset`: `(0.8625, 0.825, 0)`
+- `MerlinBossCombat.swingSize`: `(1.95, 1.2375, 1.05)`
+- `MerlinBossCombat.spearHitRadius`: `0.3375`
+- `MerlinHeldSpearPoseController.minimumTwoHandDistance`: `0.135`
+- `MerlinHeldSpearPoseController.thrustForwardWorldOffset`: `0.675`
 
 ### 검증 상태
 
-- `MerlinBoss_Test.unity` 기준 활성 렌더러 bounds 샘플: `size=(3.604, 4.625, 5.020)`, `center=(3.169, 2.311, 0.062)`
-- 이전 새 멀린 모델 적용 직후 bounds 높이 약 `2.31`에서 현재 약 `4.63`으로 2배 확대됨을 확인했습니다.
+- `MerlinBoss.prefab` 기준 `Merlin_Visual.lossyScale=(1.5000, 1.5000, 1.5000)` 확인
+- `MerlinBoss_Test.unity` 씬 인스턴스 기준 `Merlin_Visual.lossyScale=(1.5000, 1.5000, 1.5000)` 확인
+- Play Mode 단일 공격 / 롱노트 차징 상태에서 `Merlin_Visual.lossyScale=(1.5000, 1.5000, 1.5000)` 유지 확인
+- Unity 콘솔 기준 에러 0개 확인
 
 ---
 
@@ -825,11 +859,11 @@ Unity 에디터:
 
 ---
 
-## 2026-07-31 - 멀린 창 크기 조정
+## 2026-08-12 - 멀린 창 크기 1.5배 조정
 
 ### 구현 목적
 
-멀린이 던진 창이 사이드뷰와 벽 꽂힘 상태에서 적절한 크기로 보이도록 창 시각 크기를 조정했습니다.
+멀린이 손에 들고 있는 창과 던지는 창의 최종 월드 크기가 멀린 1.5배 스케일과 맞도록 창 시각 크기를 조정했습니다.
 
 손에 들고 있는 창은 `VisualRoot`와 멀린 모델 부모 스케일 영향을 받아 실제 월드 크기가 더 커집니다. 투척용 창은 월드에 별도 생성되기 때문에 같은 local scale을 써도 더 작게 보였으므로, 투척용 창은 held spear의 실제 월드 스케일에 맞춰 별도로 보정했습니다.
 
@@ -840,20 +874,21 @@ Unity 에디터:
 
 ### 최종 구현 상태
 
-- 손에 들고 있는 `Merlin_Spear` local scale을 `1.2`로 설정했습니다.
-- 투척용 `MerlinSpearProjectile` 내부 `Merlin_Spear` local scale은 held spear의 실제 월드 스케일과 맞도록 `2.4192`로 설정했습니다.
+- 손에 들고 있는 `Merlin_Spear` local scale을 `1`로 설정했습니다.
+- 손에 들고 있는 `Merlin_Spear`의 최종 월드 스케일은 `(1.5, 1.5, 1.5)`입니다.
+- 투척용 `MerlinSpearProjectile` 내부 `Merlin_Spear` local scale을 `1.5`로 설정했습니다.
+- 투척용 `MerlinSpearProjectile` 내부 `spearTipForwardOffset`을 `1.18`로 설정했습니다.
 - held spear와 projectile spear의 실제 월드 크기를 동일하게 맞춰, 던지는 순간 또는 벽에 꽂힌 순간 창 크기가 갑자기 작아 보이지 않도록 했습니다.
 
 ### 검증 상태
 
-- Unity 씬 기준 held spear local scale: `held local=(1.20, 1.20, 1.20)`
-- Unity 씬 기준 held spear 월드 스케일: `held lossy=(2.42, 2.42, 2.42)`
-- Unity 프리팹 기준 projectile spear local scale: `projectile local=(2.42, 2.42, 2.42)`
-- Unity 프리팹 기준 projectile spear 월드 스케일: `projectile lossy=(2.42, 2.42, 2.42)`
+- Unity 씬 기준 held spear local scale: `held local=(1.00, 1.00, 1.00)`
+- Unity 씬 기준 held spear 월드 스케일: `held lossy=(1.50, 1.50, 1.50)`
+- Unity 프리팹 기준 projectile spear local scale: `projectile local=(1.50, 1.50, 1.50)`
+- Unity 프리팹 기준 projectile spear 월드 스케일: `projectile lossy=(1.50, 1.50, 1.50)`
 - held / projectile 월드 스케일 비율: `1.000`
-- Unity Play Mode에서 실제 Game View에 R/T 입력을 넣어 롱노트 창 투척을 확인했습니다.
-- 실제 로그 기준 플레이어 관통 샘플: `pierced Player for 28 damage`
-- 실제 로그 기준 벽 고정 샘플: `stuck by MerlinSpearTestWall_Left`
+- Unity Play Mode 단일 공격 / 롱노트 차징 상태에서 held spear 월드 스케일이 `(1.5000, 1.5000, 1.5000)`으로 유지되는 것을 확인했습니다.
+- Unity 콘솔 기준 에러 0개 확인
 
 ---
 
@@ -867,6 +902,7 @@ Unity 에디터:
 
 - 스크립트: `Assets/JiSeon/Scripts/Boss/MerlinBossCombat.cs`
 - 스크립트: `Assets/JiSeon/Scripts/Boss/MerlinSpearProjectile.cs`
+- 스크립트: `Assets/JiSeon/Scripts/Boss/MerlinCameraShake.cs`
 - 스크립트: `Assets/JiSeon/Scripts/Boss/MerlinHeldSpearPoseController.cs`
 - 스크립트: `Assets/JiSeon/Scripts/Boss/BossAnimationController.cs`
 - 보스 프리팹: `Assets/JiSeon/Prefabs/Bosses/Merlin/MerlinBoss.prefab`
@@ -876,12 +912,16 @@ Unity 에디터:
 
 롱노트 창 회수:
 
-- `MerlinBossCombat.spearThrowSpeed`: `42`
+- `MerlinBossCombat.spearThrowSpeed`: `90`
 - `MerlinBossCombat.spearReturnSpeed`: `180`
 - `MerlinBossCombat.returnRecoverSeconds`: `0.1`
 - `MerlinSpearProjectile.stuckSecondsBeforeReturn`: `0.18`
 - `MerlinSpearProjectile.maxDistanceReturnDelaySeconds`: `0.12`
 - `MerlinSpearProjectile.returnArriveDistance`: `0.15`
+- `MerlinSpearProjectile.shakeCameraOnBlockingImpact`: `true`
+- `MerlinSpearProjectile.blockingImpactShakeDuration`: `0.28`
+- `MerlinSpearProjectile.blockingImpactShakeAmplitude`: `0.35`
+- `MerlinSpearProjectile.blockingImpactShakeFrequency`: `55`
 - 창 투척 중 다음 노트가 먼저 들어오면 무시하지 않고, 창 회수 직후 실행되도록 큐 처리합니다.
 - 큐 로그 예시: `Queued long note charge until spear returns.`
 
@@ -890,7 +930,7 @@ Unity 에디터:
 - `BossAnimationController.thrustStartNormalizedTime`: `0.18`
 - `MerlinHeldSpearPoseController.forceForwardThrustPose`: `true`
 - `MerlinHeldSpearPoseController.thrustAxis`: `(1, 0.015, 0)`
-- `MerlinHeldSpearPoseController.thrustForwardWorldOffset`: `0.9`
+- `MerlinHeldSpearPoseController.thrustForwardWorldOffset`: `0.675`
 - 찌르기 상태에서는 창 축을 플레이어 방향으로 잡고, 애니메이션 진행에 따라 창을 전방으로 밀었다가 되돌립니다.
 
 ### 검증 상태
@@ -902,6 +942,7 @@ Unity 에디터:
 - 실제 로그 기준 창 회수: `returning from`
 - 실제 로그 기준 다음 노트 처리: `Queued long note charge until spear returns` 이후 창 회수 직후 `Long note charge started`
 - 단일 창 찌르기 수동 샘플에서 `Merlin_Spear` x 위치 변화 범위가 `1.71`로 확인되었습니다.
+- Play Mode 런타임 검증에서 창이 `SpearBlocker` 벽에 꽂힐 때 `MerlinCameraShake`가 Main Camera에 추가되고, 카메라 local offset이 생기는 것을 확인했습니다.
 
 ---
 
@@ -989,7 +1030,7 @@ Unity 에디터:
 
 - `Assets/JiSeon/Scripts/NPC/NpcDialogueManager.cs`
   - 대화 시작 / 종료 처리
-  - 임시 대화 UI 자동 생성
+  - NPC 머리 위 World Space 대화 UI 자동 생성 / 위치 갱신
   - Space / Enter / E 입력으로 다음 대사 진행
   - Escape 입력으로 대화 취소
   - 마지막 대사에서 E 입력으로 대화가 끝난 직후 같은 프레임에 대화가 다시 시작되지 않도록 처리
@@ -1086,6 +1127,116 @@ Unity:
 
 ---
 
+## 2026-08-12 - NPC 머리 위 대사 UI 적용
+
+### 구현 완료 범위
+
+NPC 대화 UI를 화면 하단 고정 UI가 아니라, 현재 대화 중인 NPC 머리 위에 표시되는 World Space UI 방식으로 정리했습니다.
+
+완료 기준:
+
+- 플레이어가 NPC와 대화를 시작하면 대화창이 NPC 머리 위에 표시됩니다.
+- 대화 중 NPC가 움직이거나 카메라 기준이 바뀌어도 대화창이 NPC 머리 위 위치를 따라갑니다.
+- 대화창은 Main Camera를 바라보도록 갱신됩니다.
+- 마지막 대사 종료 또는 Escape 취소 시 대화창이 닫히고 플레이어 조작이 복구됩니다.
+
+### 수정 스크립트
+
+- `Assets/JiSeon/Scripts/NPC/NpcInteractable.cs`
+  - `dialogueAnchor` / `dialogueAnchorOffset` 기준으로 대화창 위치를 제공
+  - 기본 대화창 위치: NPC 기준 `(0, 2.75, 0)`
+  - Scene View에서 선택 시 대화 UI 앵커 위치를 Gizmo로 확인 가능
+
+- `Assets/JiSeon/Scripts/NPC/NpcDialogueManager.cs`
+  - 런타임 자동 생성 대화 UI를 `Screen Space Overlay`가 아닌 `World Space` Canvas로 생성
+  - 기본 패널 크기: `560 x 220`
+  - 기본 월드 캔버스 스케일: `0.0085`
+  - 이름 폰트 크기: `24`
+  - 본문 폰트 크기: `28`
+  - 본문 3줄 기준으로 NPC 이름 영역과 겹치지 않도록 레이아웃 분리
+  - 대화 중 매 프레임 현재 NPC의 `DialogueAnchorPosition`으로 위치 갱신
+  - 카메라와 겹쳐 보이지 않도록 카메라 방향으로 `0.05`만큼 보정
+  - 대화창이 Main Camera를 바라보도록 회전 갱신
+  - 개구리 말풍선 느낌을 위해 작은 꼬리 UI 포함
+
+### 현재 동작
+
+- `TutorialNPC` 근처에서 `E`를 누르면 NPC 머리 위에 대화창이 뜹니다.
+- `Space`, `Enter`, `E`로 다음 대사를 넘길 수 있습니다.
+- 마지막 대사 이후 대화창이 꺼지고 플레이어 조작이 복구됩니다.
+- 마지막 대사 종료 입력이 같은 프레임에 다시 상호작용으로 처리되지 않도록 방지되어 있습니다.
+
+### 검증 상태
+
+- Unity `NPC_Test.unity` Play Mode에서 시작 / 종료 흐름을 확인했습니다.
+- 검증 샘플:
+  - 대화 시작: `started=True`
+  - World Space Canvas 위치: NPC 앵커 `(1.25, 2.75, 0.00)` 기준 `(1.24, 2.75, -0.05)`
+  - 패널 크기: `560 x 220`
+  - 3줄 대사 샘플 기준 NPC 이름 / 본문 영역 겹침 여부: `overlaps=False`
+  - 대화 종료 후 상태: `activeAfterEnd=False`
+  - 대화 종료 후 UI: `canvasActive=False`, `alpha=0.00`
+  - 대화 종료 후 플레이어 조작 잠금: `playerLocked=False`
+  - 같은 프레임 재상호작용 방지: `sameFrameRestartAttempt=False`
+- Unity 콘솔 기준 에러 0개를 확인했습니다.
+
+---
+
+## 2026-08-12 - 적 / 보스 애니메이션 속도 상향
+
+### 구현 완료 범위
+
+Enemy와 Merlin Boss의 애니메이션 재생 속도를 전반적으로 빠르게 조정했습니다.
+
+### 수정 대상
+
+- 스크립트: `Assets/JiSeon/Scripts/Enemy/EnemyAnimationController.cs`
+- 스크립트: `Assets/JiSeon/Scripts/Boss/BossAnimationController.cs`
+- 근거리 적 프리팹: `Assets/JiSeon/Prefabs/Enemies/ArmoredGuard_Melee.prefab`
+- 원거리 적 프리팹: `Assets/JiSeon/Prefabs/Enemies/ArmoredGuard_Ranged.prefab`
+- 보스 프리팹: `Assets/JiSeon/Prefabs/Bosses/Merlin/MerlinBoss.prefab`
+
+### Enemy 애니메이션 현재 값
+
+`EnemyAnimationController`에 상태별 재생 속도 필드를 추가했습니다.
+
+- `normalSpeed`: `1.2`
+- `attackSpeed`: `1.8`
+- `hitSpeed`: `1.4`
+- `turnSpeed`: `1.3`
+- `deathSpeed`: `1.15`
+
+적 공격 모션이 빨라진 만큼 액션 잠금 시간도 함께 줄였습니다.
+
+- `singleAttackLockSeconds`: `0.85`
+- `chargedAttackLockSeconds`: `0.95`
+- `turnLockSeconds`: `0.27`
+- `hitLockSeconds`: `0.25`
+
+적용 프리팹:
+
+- `ArmoredGuard_Melee`
+- `ArmoredGuard_Ranged`
+
+### Merlin Boss 애니메이션 현재 값
+
+`BossAnimationController`의 재생 속도 값을 상향했습니다.
+
+- `normalSpeed`: `1.2`
+- `attackSpeed`: `1.8`
+- `hitSpeed`: `1.4`
+
+보스 패턴 판정 시간과 리듬 이벤트 처리 구조는 변경하지 않고, 시각 애니메이션 재생 속도만 빠르게 조정했습니다.
+
+### 검증 상태
+
+- `ArmoredGuard_Melee.prefab`에 Enemy 속도 값 저장 확인
+- `ArmoredGuard_Ranged.prefab`에 Enemy 속도 값 저장 확인
+- `MerlinBoss.prefab`에 Boss 속도 값 저장 확인
+- Unity 콘솔 기준 에러 0개 확인
+
+---
+
 ## 현재 테스트 방법
 
 ### Enemy 테스트
@@ -1135,10 +1286,11 @@ Unity:
 2. 플레이어를 방향키로 움직여 `TutorialNPC` 근처로 이동합니다.
 3. NPC 머리 위에 `E : 대화` 프롬프트가 표시되는지 확인합니다.
 4. `E`를 눌러 대화를 시작합니다.
-5. 대화 중 플레이어가 움직이지 않는지 확인합니다.
-6. `Space`, `Enter`, 또는 `E`로 다음 대사를 넘깁니다.
-7. 마지막 대사 이후 대화창이 닫히고 플레이어 조작이 복구되는지 확인합니다.
-8. 다시 말을 걸었을 때 조건별 대화가 다음 분기로 넘어가는지 확인합니다.
+5. NPC 머리 위에 대화창이 표시되는지 확인합니다.
+6. 대화 중 플레이어가 움직이지 않는지 확인합니다.
+7. `Space`, `Enter`, 또는 `E`로 다음 대사를 넘깁니다.
+8. 마지막 대사 이후 대화창이 닫히고 플레이어 조작이 복구되는지 확인합니다.
+9. 다시 말을 걸었을 때 조건별 대화가 다음 분기로 넘어가는지 확인합니다.
 
 ### 입력
 
@@ -1184,3 +1336,4 @@ Unity:
 - 실제 멀린 전용 캐릭터 프리팹이 완성되면 `MerlinBoss.prefab`의 `Merlin_TempVisual`을 교체하면 됩니다.
 - 멀린 실제 캐릭터 프리팹으로 교체할 경우 `MerlinHeldSpearPoseController`의 손 위치 보정 값은 새 리그 기준으로 다시 확인해야 합니다.
 - 실제 UI 파트의 대화창이 완성되면 `NpcDialogueManager`의 임시 UI 참조를 정식 UI로 교체하면 됩니다.
+- NPC 머리 위 대화창 위치가 캐릭터별로 맞지 않으면 `NpcInteractable.dialogueAnchor` 또는 `dialogueAnchorOffset`을 조정하면 됩니다.

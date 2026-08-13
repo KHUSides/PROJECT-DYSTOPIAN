@@ -38,7 +38,7 @@
 
 역할:
 
-- NPC 대화 UI 표시
+- NPC 머리 위 World Space 대화 UI 표시
 - 대화 시작 / 종료 처리
 - 마지막 대사 종료 직후 같은 입력으로 대화가 바로 재시작되지 않도록 방지
 - 대화 중 플레이어 조작 제한
@@ -47,7 +47,7 @@
 사용 방법:
 
 1. 씬에 `NpcDialogueManager.prefab`을 하나만 배치합니다.
-2. 이 프리팹은 런타임에 임시 대화 UI를 자동 생성합니다.
+2. 이 프리팹은 런타임에 NPC 머리 위 대화 UI를 자동 생성합니다.
 3. 나중에 UI 파트의 정식 대화 UI가 완성되면 `NpcDialogueManager`의 UI 참조만 교체하면 됩니다.
 4. 실제 `Player`를 사용하는 테스트 씬에서는 `Rhythm System`도 함께 배치하는 것이 안전합니다.
 
@@ -68,7 +68,44 @@
 1. 씬에 `TutorialNPC.prefab`을 원하는 위치에 배치합니다.
 2. 플레이어가 NPC 근처에 오면 `E : 대화` 프롬프트가 표시됩니다.
 3. E를 누르면 대화가 시작되고, 대화 중에는 플레이어 조작이 잠깁니다.
-4. 대화가 끝나면 플레이어 조작이 다시 복구됩니다.
+4. 대화창은 NPC 머리 위에 표시됩니다.
+5. 대화가 끝나면 대화창이 닫히고 플레이어 조작이 다시 복구됩니다.
+
+---
+
+## 대화 UI 위치 조정
+
+대화 UI는 `NpcInteractable` 기준으로 위치를 잡습니다.
+
+조정 대상:
+
+- 스크립트: `Assets/JiSeon/Scripts/NPC/NpcInteractable.cs`
+- 컴포넌트 필드:
+  - `dialogueAnchor`
+  - `dialogueAnchorOffset`
+
+기본값:
+
+- `dialogueAnchorOffset`: `(0, 2.75, 0)`
+
+사용 기준:
+
+- 캐릭터 머리 위에 빈 오브젝트를 따로 두고 싶으면 `dialogueAnchor`에 연결합니다.
+- 별도 앵커가 없으면 NPC 위치 + `dialogueAnchorOffset`을 사용합니다.
+- 캐릭터 크기가 다르면 `dialogueAnchorOffset.y` 값을 조정하면 됩니다.
+- Scene View에서 NPC를 선택하면 대화 UI 앵커 위치를 Gizmo로 확인할 수 있습니다.
+
+`NpcDialogueManager` 쪽 현재 UI 기본값:
+
+- Canvas Render Mode: `World Space`
+- Panel Size: `560 x 220`
+- World Canvas Scale: `0.0085`
+- Speaker Font Size: `24`
+- Body Font Size: `28`
+- 3줄 대사 기준으로 NPC 이름 영역과 본문 영역이 겹치지 않도록 분리
+- Camera Forward Offset: `0.05`
+- 대화 중 매 프레임 NPC 머리 위 위치로 갱신
+- Main Camera를 바라보도록 회전 갱신
 
 ---
 
@@ -205,6 +242,7 @@ private void HandleDialogueEnded(
 - `NpcDialogueManager.prefab` 생성 확인
 - Play Mode에서 플레이어가 NPC 범위 안에 있을 때 프롬프트 활성화 확인
 - NPC 대화 시작 확인
+- NPC 머리 위 World Space 대화 UI 표시 확인
 - 마지막 대사 종료 직후 같은 프레임 재상호작용 방지 확인
 - 대화 중 `PlayerController` 비활성화 확인
 - 대화 종료 후 플레이어 조작 복구 확인

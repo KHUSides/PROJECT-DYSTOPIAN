@@ -501,7 +501,7 @@ Transform:
   m_GameObject: {fileID: 116155785}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.25, y: 2, z: 0}
+  m_LocalPosition: {x: 9.99, y: 2, z: 0}
   m_LocalScale: {x: 0.35, y: 4, z: 6}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -971,6 +971,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimationController
   facingRightYaw: 90
   facingLeftYaw: -90
+  limitAnimationFrameRate: 1
+  animationFrameRate: 12
 --- !u!114 &275838964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -985,12 +987,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHealth: 100
   currentHealth: 100
-  showHealthBar: 1
-  healthBarAnchoredPosition: {x: 24, y: -24}
-  healthBarSize: {x: 260, y: 28}
-  healthBarBackColor: {r: 0.1, g: 0.1, b: 0.1, a: 0.75}
-  healthBarFillColor: {r: 0.85, g: 0.1, b: 0.1, a: 0.9}
-  healthBarTextColor: {r: 1, g: 1, b: 1, a: 1}
   enableDebugInput: 1
   debugDamageAmount: 10
   debugHealAmount: 10
@@ -1066,6 +1062,10 @@ MonoBehaviour:
   airDashGravityMultiplier: 0.35
   maxFallSpeedAfterAirDash: -2
   chargedAttackColliderActiveDuration: 0.25
+  chargedAttackDamage: 20
+  chargedAttackDamageMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   showChargedAttackColliderDebug: 1
   chargedAttackColliderDebugColor: {r: 0.2, g: 0.8, b: 1, a: 1}
   chargedAttackRepeatColliderDebugColor: {r: 1, g: 0.15, b: 0.65, a: 1}
@@ -2038,6 +2038,18 @@ MonoBehaviour:
   toggleKey: 49
   alternateToggleKey: 257
   isVisibleOnStart: 0
+  attackPowerCost: 20
+  darknessResistanceCost: 20
+  waveSwordCost: 20
+  waveImpactCost: 20
+  soundBarrierCost: 30
+  attackPowerPerLevel: 2
+  darknessResistancePerLevel: 2
+  openDuration: 0.18
+  closeDuration: 0.14
+  borderPulseDuration: 1.2
+  enabledButtonColor: {r: 0.51, g: 1, b: 0.77, a: 1}
+  disabledButtonColor: {r: 0.85, g: 0.85, b: 0.85, a: 1}
 --- !u!114 &731049668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3512,7 +3524,7 @@ PrefabInstance:
       objectReference: {fileID: 275838960}
     - target: {fileID: 1420523601268273173, guid: 3e4ffc2ca03db764881927b3ea59554a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.2
+      value: 2.2
       objectReference: {fileID: 0}
     - target: {fileID: 1420523601268273173, guid: 3e4ffc2ca03db764881927b3ea59554a, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4937,6 +4949,8 @@ MonoBehaviour:
   minimumDspLeadSeconds: 0.1
   primeMusicSourceOnLoad: 1
   chartSource: 1
+  cmChart: {fileID: 0}
+  readBpmFromCmChart: 1
   playerBms: {fileID: 4900000, guid: e903822a72ff5b04995a9231e1b6fe71, type: 3}
   opponentBms: {fileID: 4900000, guid: 971d6d134fc3b474d97c7ad41ff4da76, type: 3}
   opponentActor: 2
@@ -4947,7 +4961,7 @@ MonoBehaviour:
   startChartKey: 116
   singleNoteKey: 97
   longNoteKey: 100
-  enableFreeInputDuringAttackState: 1
+  invokeFreeInputEventsDuringAttackState: 1
   hideUiOnStart: 1
   toggleUiKey: 114
   travelBeats: 2
@@ -4962,21 +4976,49 @@ MonoBehaviour:
     singleNoteWidth_: 20
     noteHeight_: 90
     minimumLongWidth_: 42
+    attackNoteHeightMultiplier_: 1.35
   colors:
-    playerNote_: {r: 0.1, g: 0.85, b: 1, a: 1}
-    enemyNote_: {r: 1, g: 0.2, b: 0.26, a: 1}
-    bossNote_: {r: 1, g: 0.72, b: 0.1, a: 1}
     attackState_: {r: 1, g: 0.25, b: 0.82, a: 0.9}
     critical_: {r: 1, g: 0.9, b: 0.25, a: 1}
     cool_: {r: 0.2, g: 0.9, b: 1, a: 1}
     good_: {r: 0.25, g: 1, b: 0.48, a: 1}
     bad_: {r: 1, g: 0.45, b: 0.18, a: 1}
     miss_: {r: 1, g: 0.15, b: 0.2, a: 1}
+  noteSprite: {fileID: 0}
+  attackLabel: ATTACK!
+  attackLabelFont: {fileID: 0}
+  attackLabelFontSize: 48
+  attackLabelColor: {r: 1, g: 1, b: 1, a: 1}
+  attackLabelPosition: 0.5
   logJudgements: 0
+  logGhostNotes: 1
   showCombo: 1
   hideComboAtZero: 0
   resetComboOnBadOrMiss: 1
   comboFormat: '{0}'
+  comboAnimation:
+    enabled_: 1
+    increaseDuration_: 0.12
+    increaseDistance_: 12
+    smearEnabled_: 1
+    smearCopies_: 5
+    smearDistance_: 32
+    smearStretch_: 1.35
+    smearAlpha_: 0.55
+    shakeStrength10_: 1.5
+    shakeStrength20_: 2.75
+    shakeStrength30_: 4.5
+    shakeCycleDuration_: 0.14
+    shakeVibrato_: 8
+    shakeRandomness_: 75
+    blurDuration_: 0.1
+    blurSoftness_: 0.45
+    blurFaceDilate_: -0.08
+    breakDuration_: 0.22
+    breakStrength_: 18
+    breakVibrato_: 24
+    breakRandomness_: 60
+    useUnscaledTime_: 1
   onChartStarted:
     m_PersistentCalls:
       m_Calls: []

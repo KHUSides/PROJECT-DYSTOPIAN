@@ -27,6 +27,10 @@ namespace Dystopian.EnemyTest
         [SerializeField] private string promptFormat = "E : 대화";
         [SerializeField] private bool keepPromptFacingCamera = true;
 
+        [Header("Dialogue UI Anchor")]
+        [SerializeField] private Transform dialogueAnchor;
+        [SerializeField] private Vector3 dialogueAnchorOffset = new Vector3(0f, 2.75f, 0f);
+
         [Header("Dialogue")]
         [SerializeField] private NpcDialogueBranch[] dialogueBranches = new NpcDialogueBranch[0];
 
@@ -41,6 +45,9 @@ namespace Dystopian.EnemyTest
 
         public string NpcDisplayName => npcDisplayName;
         public bool IsPlayerInRange => playerInRange;
+        public Vector3 DialogueAnchorPosition => dialogueAnchor != null
+            ? dialogueAnchor.position
+            : transform.position + dialogueAnchorOffset;
 
         private void Awake()
         {
@@ -237,6 +244,9 @@ namespace Dystopian.EnemyTest
             {
                 Gizmos.DrawWireSphere(transform.position, interactionRadius);
             }
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(DialogueAnchorPosition, 0.12f);
         }
     }
 }
