@@ -194,6 +194,8 @@ GameObject:
   - component: {fileID: 6537631758504979667}
   - component: {fileID: 2195358636141113237}
   - component: {fileID: 8753106420975318642}
+  - component: {fileID: 3214534392353413409}
+  - component: {fileID: 7818698401603454089}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -313,12 +315,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHealth: 100
   currentHealth: 0
-  showHealthBar: 1
-  healthBarAnchoredPosition: {x: 24, y: -24}
-  healthBarSize: {x: 260, y: 28}
-  healthBarBackColor: {r: 0.1, g: 0.1, b: 0.1, a: 0.75}
-  healthBarFillColor: {r: 0.85, g: 0.1, b: 0.1, a: 0.9}
-  healthBarTextColor: {r: 1, g: 1, b: 1, a: 1}
   enableDebugInput: 1
   debugDamageAmount: 10
   debugHealAmount: 10
@@ -360,6 +356,71 @@ MonoBehaviour:
   reinforcedVibrato: 50
   reinforcedRandomness: 70
   reinforcedFadeOut: 1
+--- !u!114 &3214534392353413409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3308381390464599992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2eeb10a40deeb6458a02d52fd11f47c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerVfxController
+  normalAttackVfx1: {fileID: 4748681987041982144, guid: c6737f8e0b4009a41bc200d2be203160, type: 3}
+  normalAttackVfx2: {fileID: 4748681987041982144, guid: e8c4e6b77c9b2704191678b8ce5ce50d, type: 3}
+  chargingVfx: {fileID: 4748681987041982144, guid: e5328f2596b99df4c837577f73da2aa3, type: 3}
+  chargedPathVfx: {fileID: 4748681987041982144, guid: 79d7222767b0b374babc737f228440a9, type: 3}
+  reinforcedChargedAttackVfx: {fileID: 4748681987041982144, guid: 3194a7fdea3d50a4c94617674fb54e36, type: 3}
+  hitVfx: {fileID: 4748681987041982144, guid: a4ac2fced72ad2c4ea100dcea11aa8b3, type: 3}
+  groundSmokeVfx: {fileID: 4748681987041982144, guid: a8a29e2c04adbab4f9bd4003fad921aa, type: 3}
+  landingVfx: {fileID: 4748681987041982144, guid: 28321ccd4a422ad46950c0ebe8efe33e, type: 3}
+  normalAttackScale: {x: 1.2, y: 1.2, z: 1.2}
+  reinforcedNormalAttackScale: {x: 2, y: 1.4, z: 1.2}
+  normalAttackDuration: 0.35
+  normalAttackRotationOffset: 180
+  fallbackHandOffset: {x: 0.55, y: 1.25, z: -0.25}
+  chargingScale: {x: 0.55, y: 0.55, z: 0.55}
+  chargedHandHorizontalRotationOffset: 0
+  chargedHandVerticalRotationOffset: 180
+  chargedHandDirectionalOffset: 0.45
+  chargedHandSlashScale: {x: 1.25, y: 1.25, z: 1.25}
+  chargedHandSlashColor: {r: 0.15, g: 0.65, b: 1, a: 1}
+  chargedPathScale: {x: 0.35, y: 0.35, z: 0.35}
+  chargedPathSpacing: 0.75
+  chargedAttackDuration: 0.45
+  reinforcedSlashCount: 7
+  reinforcedSlashScale: {x: 1, y: 1, z: 1}
+  reinforcedAttackDuration: 0.12
+  reinforcedAttackEmissionDuration: 0.01
+  reinforcedAttackSpeedMultiplier: 4
+  reinforcedSlashRandomAngle: 35
+  hitScale: {x: 1.6, y: 1.6, z: 1.6}
+  hitDuration: 0.4
+  jumpSmokeScale: {x: 0.5, y: 0.5, z: 0.5}
+  jumpSmokeEmissionDuration: 0.05
+  jumpSmokeSpeedMultiplier: 2
+  landingSmokeSpeedMultiplier: 4
+  landingSmokeScale: {x: 0.75, y: 0.5, z: 0.75}
+  jumpSmokeDuration: 0.65
+  landingSmokeDuration: 0.22
+  landingEmissionDuration: 0.02
+  effectZ: -0.5
+  footHeightOffset: 0.12
+--- !u!114 &7818698401603454089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3308381390464599992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71f50cb9f83d68b49a56ac4299792a47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerUpgradeUIBootstrap
+  upgradeCanvasPrefab: {fileID: 5665836324392698853, guid: 237a82e6da6709643ab62213a447bbf1, type: 3}
 --- !u!1 &4998769750700242966
 GameObject:
   m_ObjectHideFlags: 0
@@ -741,7 +802,7 @@ GameObject:
   - component: {fileID: 9000000000000000102}
   - component: {fileID: 9000000000000000103}
   m_Layer: 0
-  m_Name: Rhythm Judgement Text
+  m_Name: Rhythm Judgement
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
