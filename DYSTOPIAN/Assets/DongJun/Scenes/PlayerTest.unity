@@ -1464,18 +1464,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 8514692039715015, guid: 6a3439915556efc4f876c770428bdfd2, type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 7964200598784836049, guid: 0219b520984073a4e9d23906139bd49b, type: 2}
-    - target: {fileID: 8514692039715015, guid: 6a3439915556efc4f876c770428bdfd2, type: 3}
-      propertyPath: checkPaddingRequired
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8514692039715015, guid: 6a3439915556efc4f876c770428bdfd2, type: 3}
-      propertyPath: m_hasFontAssetChanged
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3505836017692740157, guid: 6a3439915556efc4f876c770428bdfd2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1515,10 +1503,6 @@ PrefabInstance:
     - target: {fileID: 3505836017692740157, guid: 6a3439915556efc4f876c770428bdfd2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8033792748233430152, guid: 6a3439915556efc4f876c770428bdfd2, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8174069462952358784, guid: 6a3439915556efc4f876c770428bdfd2, type: 3}
       propertyPath: m_Name
