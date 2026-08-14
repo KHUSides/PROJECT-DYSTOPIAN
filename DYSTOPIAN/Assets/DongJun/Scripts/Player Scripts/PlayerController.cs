@@ -837,7 +837,8 @@ public class PlayerController : MonoBehaviour
 
     private static bool IsDamageableCollider(Collider targetCollider)
     {
-        return targetCollider.GetComponentInParent<IDamageable>() != null;
+        return targetCollider.GetComponentInParent<IDamageable>() != null ||
+               targetCollider.GetComponentInParent<Dystopian.EnemyTest.IDamageable>() != null;
     }
 
     private void ApplyAirDashFallCorrection(Vector3 dashDirection)
