@@ -17,6 +17,30 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/DongJun/Scenes/AddtiveScenes/Core.unity
+    guid: 26f11a6470f74e143982240b2d8c72c5
+  - enabled: 1
+    path: Assets/DongJun/Scenes/AddtiveScenes/Stage_Test/Lobby_Test.unity
+    guid: 2bcf7b2a5d16d274586b59caf80d5171
+  - enabled: 1
+    path: Assets/DongJun/Scenes/AddtiveScenes/Stage_Test/Stage_Test.unity
+    guid: f0a05d24b44fcb7458a14abc564b5c2c
+  - enabled: 1
+    path: Assets/DongJun/Scenes/AddtiveScenes/Stage_Test/Stage1_Sub02.unity
+    guid: 102937a8ab0dac240b0353a2e058c09d
+  - enabled: 1
+    path: Assets/DongJun/Scenes/AddtiveScenes/Stage_Test/Stage1_Sub03.unity
+    guid: 2a6ebe46e8117c8429baa0d20fb8ed84
+  - enabled: 1
+    path: Assets/DongJun/Scenes/AddtiveScenes/Stage_Test/Stage1_Sub04.unity
+    guid: 4626e4f8165faba43aed85defd220b62
+  - enabled: 1
+    path: Assets/DongJun/Scenes/AddtiveScenes/Stage_Test/Stage1_Sub05.unity
+    guid: a3dd1b52ef866e44fb853344ba90c858
+  - enabled: 1
+    path: Assets/DongJun/Scenes/AddtiveScenes/Stage_Test/Stage1_BossRoom.unity
+    guid: 2513cb0238b1e884b8f04f769b272c60
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
