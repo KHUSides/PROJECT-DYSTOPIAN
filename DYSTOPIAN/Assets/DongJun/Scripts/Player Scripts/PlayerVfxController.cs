@@ -240,7 +240,7 @@ public sealed class PlayerVfxController : MonoBehaviour
     {
         Vector2 direction = playerController.LastNormalAttackDirection;
         Vector3 position = playerController.LastNormalAttackCenter;
-        position.z = effectZ;
+        position = playerController.ProjectToMovementPlane(position, effectZ);
         Vector3 scale = playerController.LastNormalAttackWasEmpowered
             ? reinforcedNormalAttackScale
             : normalAttackScale;
@@ -262,7 +262,7 @@ public sealed class PlayerVfxController : MonoBehaviour
 
         PooledVfx effect = pool.Play(
             position,
-            Quaternion.Euler(0f, 0f, angle),
+            playerController.MovementRotation(angle),
             scale,
             normalAttackDuration,
             particleRotationOffsetDegrees: angle);
@@ -275,7 +275,7 @@ public sealed class PlayerVfxController : MonoBehaviour
         bool isVertical =
             Mathf.Abs(direction.y) > Mathf.Abs(direction.x);
         Vector3 position = GetHandPosition(direction);
-        position += new Vector3(direction.x, direction.y, 0f) *
+        position += playerController.MovementDirection(direction) *
             chargedHandDirectionalOffset;
 
         float rotationOffset = isVertical
@@ -287,7 +287,7 @@ public sealed class PlayerVfxController : MonoBehaviour
 
         PooledVfx effect = normalAttackPool1.Play(
             position,
-            Quaternion.Euler(0f, 0f, angle),
+            playerController.MovementRotation(angle),
             chargedHandSlashScale,
             chargedAttackDuration,
             chargedHandSlashColor,
@@ -310,7 +310,7 @@ public sealed class PlayerVfxController : MonoBehaviour
         PlayerController.ChargedAttackArea area)
     {
         Vector3 halfSize = area.Size * 0.5f;
-        float baseAngle = area.Rotation.eulerAngles.z;
+        float baseAngle = (Quaternion.Inverse(transform.rotation) * area.Rotation).eulerAngles.z;
 
         for (int i = 0; i < reinforcedSlashCount; i++)
         {
@@ -319,14 +319,14 @@ public sealed class PlayerVfxController : MonoBehaviour
                 UnityEngine.Random.Range(-halfSize.y, halfSize.y),
                 0f);
             Vector3 position = area.Center + area.Rotation * localPosition;
-            position.z = effectZ;
+            position = playerController.ProjectToMovementPlane(position, effectZ);
             float angle = baseAngle + UnityEngine.Random.Range(
                 -reinforcedSlashRandomAngle,
                 reinforcedSlashRandomAngle);
 
             reinforcedSlashPool.Play(
                 position,
-                Quaternion.Euler(0f, 0f, angle),
+                playerController.MovementRotation(angle),
                 reinforcedSlashScale,
                 reinforcedAttackDuration,
                 null,
@@ -339,10 +339,10 @@ public sealed class PlayerVfxController : MonoBehaviour
     private void HandleTargetDamaged(DamageInfo damageInfo)
     {
         Vector3 position = damageInfo.HitPoint;
-        position.z = effectZ;
+        position = playerController.ProjectToMovementPlane(position, effectZ);
         hitPool.Play(
             position,
-            Quaternion.identity,
+            playerController.MovementRotation(0f),
             hitScale,
             hitDuration);
     }
@@ -351,7 +351,7 @@ public sealed class PlayerVfxController : MonoBehaviour
     {
         groundSmokePool.Play(
             GetFootPosition(),
-            Quaternion.identity,
+            playerController.MovementRotation(0f),
             jumpSmokeScale,
             jumpSmokeDuration,
             null,
@@ -363,7 +363,7 @@ public sealed class PlayerVfxController : MonoBehaviour
     {
         landingPool.Play(
             GetFootPosition(),
-            Quaternion.identity,
+            playerController.MovementRotation(0f),
             landingSmokeScale,
             landingSmokeDuration,
             null,
@@ -465,7 +465,7 @@ public sealed class PlayerVfxController : MonoBehaviour
             position = transform.TransformPoint(offset);
         }
 
-        position.z = effectZ;
+        position = playerController.ProjectToMovementPlane(position, effectZ);
         return position;
     }
 
@@ -482,7 +482,7 @@ public sealed class PlayerVfxController : MonoBehaviour
     private Vector3 GetFootPosition()
     {
         Bounds bounds = characterController.bounds;
-        Vector3 position = new Vector3(bounds.center.x, bounds.min.y + footHeightOffset, effectZ);
+        Vector3 position = playerController.ProjectToMovementPlane(new Vector3(bounds.center.x, bounds.min.y + footHeightOffset, bounds.center.z), effectZ);
         return position;
     }
 
@@ -492,14 +492,11 @@ public sealed class PlayerVfxController : MonoBehaviour
         return direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector2.right;
     }
 
-    private static Quaternion GetDirectionRotation(
+    private Quaternion GetDirectionRotation(
         Vector2 direction,
         float offset = 0f)
     {
-        return Quaternion.Euler(
-            0f,
-            0f,
-            GetDirectionAngle(direction, offset));
+        return playerController.MovementRotation(GetDirectionAngle(direction, offset));
     }
 
     private sealed class VfxPool
@@ -858,7 +855,7 @@ public sealed class PlayerVfxController : MonoBehaviour
             float progress = effectCount > 1 ? i / (float)(effectCount - 1) : 0.5f;
             Vector3 localPosition = new Vector3(Mathf.Lerp(-halfLength, halfLength, progress), 0f, 0f);
             Vector3 position = area.Center + area.Rotation * localPosition;
-            position.z = effectZ;
+            position = playerController.ProjectToMovementPlane(position, effectZ);
             chargedPathPool.Play(
                 position,
                 area.Rotation,
@@ -887,4 +884,5 @@ public sealed class PlayerVfxController : MonoBehaviour
             Mathf.Rad2Deg + offset;
     }
 }
+
 

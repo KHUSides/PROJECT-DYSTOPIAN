@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     [Header("Side View Plane")]
     [UnityEngine.Serialization.FormerlySerializedAs("lockedZ_")]
     [SerializeField] private float lockedZ = 0f;
+    private LevelMovementPlane movementPlane;
 
     [Header("Movement")]
     [UnityEngine.Serialization.FormerlySerializedAs("moveSpeed_")]
@@ -213,6 +214,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
+        movementPlane = GetComponent<LevelMovementPlane>();
         facingDirection = Vector2.right;
         lastHorizontalFacingDirection = Vector2.right;
         normalAttackColliderDisableTime = 0f;
@@ -240,6 +242,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (movementPlane != null) movementPlane.Prepare(0f);
         UpdateChargeTimer();
         UpdateFacingDirection();
         UpdateHorizontalMovement();
@@ -522,15 +525,15 @@ public class PlayerController : MonoBehaviour
     private void UpdateDistanceCharge()
     {
         Vector3 currentPosition = transform.position;
-        Vector2 previousPlanarPosition = new Vector2(lastDistanceChargePosition.x, lastDistanceChargePosition.y);
-        Vector2 currentPlanarPosition = new Vector2(currentPosition.x, currentPosition.y);
+        Vector3 previousPlanarPosition = lastDistanceChargePosition;
+        Vector3 currentPlanarPosition = currentPosition;
         lastDistanceChargePosition = currentPosition;
 
         if (!enableDistanceChargeUpgrade || distanceChargePercent >= 100f)
             return;
 
         float previousChargePercent = distanceChargePercent;
-        float movedDistance = Vector2.Distance(previousPlanarPosition, currentPlanarPosition);
+        float movedDistance = Vector3.Distance(previousPlanarPosition, currentPlanarPosition);
         distanceChargePercent = Mathf.Min(
             100f,
             distanceChargePercent + movedDistance / Mathf.Max(0.01f, distanceForFullCharge) * 100f);
@@ -612,7 +615,7 @@ public class PlayerController : MonoBehaviour
         if (releaseDirectionInput != Vector2.zero)
             facingDirection = releaseDirectionInput.normalized;
 
-        Vector3 dashDirection = new Vector3(facingDirection.x, facingDirection.y, 0f).normalized;
+        Vector3 dashDirection = MovementDirection(facingDirection).normalized;
         float requestedDistance = Mathf.Lerp(dashMinDistance, dashMaxDistance, Mathf.Clamp01(chargeTimer / maxChargeTime));
         float safeDistance = GetSafeDashDistance(dashDirection, requestedDistance);
         bool wasAirborne = !controller.isGrounded;
@@ -636,7 +639,7 @@ public class PlayerController : MonoBehaviour
         if (!isCharging || chargedAttackRangeCollider == null)
             return;
 
-        Vector3 dashDirection = new Vector3(facingDirection.x, facingDirection.y, 0f).normalized;
+        Vector3 dashDirection = MovementDirection(facingDirection).normalized;
         float requestedDistance = Mathf.Lerp(dashMinDistance, dashMaxDistance, Mathf.Clamp01(chargeTimer / maxChargeTime));
         float safeDistance = GetSafeDashDistance(dashDirection, requestedDistance);
 
@@ -717,12 +720,12 @@ public class PlayerController : MonoBehaviour
         if (boxCollider == null)
             return;
 
-        Vector3 direction = dashDirection.sqrMagnitude > 0.0001f ? dashDirection.normalized : Vector3.right;
+        Vector3 direction = dashDirection.sqrMagnitude > 0.0001f ? dashDirection.normalized : MovementDirection(Vector2.right);
         float pathLength = Mathf.Max(0.01f, (endPosition - startPosition).magnitude);
         Vector3 center = startPosition + direction * (pathLength * 0.5f) + transform.TransformVector(chargedAttackLocalOffset);
 
         boxCollider.transform.position = center;
-        boxCollider.transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
+        boxCollider.transform.rotation = MovementRotation(Mathf.Atan2(direction.y, Vector3.Dot(direction, MovementDirection(Vector2.right))) * Mathf.Rad2Deg);
         boxCollider.transform.localScale = Vector3.one;
         boxCollider.center = Vector3.zero;
         boxCollider.size = new Vector3(pathLength, chargedAttackWidth, chargedAttackDepth);
@@ -867,7 +870,10 @@ public class PlayerController : MonoBehaviour
         airDashFloatTimer = Mathf.Max(0f, airDashFloatTimer - Time.deltaTime);
         verticalVelocity += gravity * gravityMultiplier * Time.deltaTime;
 
-        CollisionFlags flags = controller.Move(new Vector3(horizontalVelocity * Time.deltaTime, verticalVelocity * Time.deltaTime, 0f));
+        Vector3 movement = movementPlane != null && movementPlane.IsActive
+            ? movementPlane.Displacement(horizontalVelocity * Time.deltaTime, verticalVelocity * Time.deltaTime)
+            : new Vector3(horizontalVelocity * Time.deltaTime, verticalVelocity * Time.deltaTime, 0f);
+        CollisionFlags flags = controller.Move(movement);
 
         if ((flags & CollisionFlags.Above) != 0 && verticalVelocity > 0f)
         {
@@ -1172,9 +1178,31 @@ public class PlayerController : MonoBehaviour
         return runtimeDebugMaterial;
     }
 
+    public Vector3 MovementDirection(Vector2 local)
+    {
+        return movementPlane != null && movementPlane.IsActive ? transform.right * local.x + Vector3.up * local.y : new Vector3(local.x, local.y, 0f);
+    }
+
+    public Quaternion MovementRotation(float angle)
+    {
+        return (movementPlane != null && movementPlane.IsActive ? transform.rotation : Quaternion.identity) * Quaternion.Euler(0f, 0f, angle);
+    }
+
+    public Vector3 ProjectToMovementPlane(Vector3 position, float depth = 0f)
+    {
+        if (movementPlane != null && movementPlane.IsActive) return movementPlane.Project(position, depth);
+        position.z = lockedZ + depth;
+        return position;
+    }
     private void LockSidePlane()
     {
         Vector3 position = transform.position;
+        if (movementPlane != null && movementPlane.IsActive)
+        {
+            transform.position = movementPlane.Project(position);
+            movementPlane.Prepare(0f);
+            return;
+        }
         if (Mathf.Approximately(position.z, lockedZ))
             return;
 
@@ -1238,3 +1266,4 @@ public class PlayerController : MonoBehaviour
             hitbox.IsReinforced));
     }
 }
+
