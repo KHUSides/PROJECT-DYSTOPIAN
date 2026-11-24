@@ -2612,6 +2612,7 @@ GameObject:
   - component: {fileID: 677279735}
   - component: {fileID: 677279734}
   - component: {fileID: 677279733}
+  - component: {fileID: 677279736}
   m_Layer: 0
   m_Name: BridgeSection
   m_TagString: Untagged
@@ -2727,6 +2728,40 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &677279736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 677279731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8966913f27213740b74a9e0dcc83ba7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LevelCameraTurn
+  routePoints:
+  - {fileID: 339573485}
+  - {fileID: 907997941}
+  - {fileID: 6249692}
+  - {fileID: 1348309065}
+  startYaw: 0
+  endYaw: 0
+  followPathHeading: 1
+  smoothRotation: 1
+  extendBeforeStart: 1
+  extendAfterEnd: 1
+  startSize: -1
+  endSize: -1
+  entryCameraPosition: {fileID: 0}
+  exitCameraPosition: {fileID: 0}
+  maxRouteDistance: 6
+  zoomOut: 1.3
+  lookDown: 15
+  focusHeight: 2
+  fadeFraction: 0.2
+  startStrength: 0
+  endStrength: 0
 --- !u!1 &725319345
 GameObject:
   m_ObjectHideFlags: 0

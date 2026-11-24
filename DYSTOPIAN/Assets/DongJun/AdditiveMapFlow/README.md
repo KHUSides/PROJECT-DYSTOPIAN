@@ -96,7 +96,7 @@ private IEnumerator BossIntro()
 | `SetTarget(Transform target)` | 추적 대상의 루트 Transform 교체 |
 | `SetZoom(float size, bool instant = false)` | 줌 지정. 자동 추적에서는 구역 경계보다 넓어지는 줌아웃을 제한 |
 | `ResetZoom()` | 구역 크기에 맞춘 자동 배율 복귀 |
-| `SetRotationSpeed(float degreesPerSecond)` | 자동 회전 속도. 기본 60도/초, 90도 회전은 약 1.5초 |
+| `SetRotationSpeed(float degreesPerSecond)` | 일반 자동 카메라의 시간 기반 방향 전환 속도. 통과율 회전에는 적용하지 않음 |
 | `SetSmoothing(float seconds)` | 추적 위치·배율의 감쇠 시간 |
 | `SetShakeOffset(Vector3 offset)` | 화면 흔들림 오프셋 지정 |
 | `SnapToTarget()` | 현재 제어 규칙에 따른 위치로 즉시 배치 |
@@ -113,7 +113,7 @@ private IEnumerator BossIntro()
 - 가로 스테이지 첫 구역은 `Clamp Camera Left`, 마지막 구역은 `Clamp Camera Right`를 켭니다. 내부 서브 구역의 연결은 계속 추적합니다.
 - 끝에 도착하면 카메라만 벽에서 멈춥니다. 통행과 보스 클리어 조건은 기존 게이트가 관리합니다.
 - 플레이어가 다음 그룹에 실제로 진입하면 입구 쪽 화면으로 이동한 후 추적을 재개합니다. 경계 이동 중에도 플레이어 조작은 유지합니다.
-- 분기점 1과 5스테이지의 회전은 위치 감쇠와 별도의 `Rotation Speed`로 조절합니다. 실제 회전 각도에 맞춰 카메라 위치도 같은 초점을 중심으로 돌립니다.
+- 분기점과 회전 구간은 아래의 통과율 기반 연출을 사용합니다. 일반 구역 추적과 수동 카메라 API는 유지합니다.
 
 ## 방향을 알아보기 위한 테스트 지형
 
@@ -124,3 +124,44 @@ private IEnumerator BossIntro()
 
 이번 수정 검증: 외부 제어 API(일시정지 중 이동 포함), 2-5→3-1 경계 정지·진입 이동·추적 재개, 분기점 1 회전 속도, 41개 구역 프레이밍, 고정 카메라 16개 항목, 3스테이지 곡선 실이동, 4-3→4-4 계단·다리 실이동, 5스테이지 회전 연결 3곳, 문·보스 진행 12개 항목을 통과했습니다.
 수정 직전 백업: `Library/AdditiveMapFlowBackups/CameraApiReadability_20261122_161346`.
+
+## 통과율에 따른 카메라 회전
+
+회전 구간에는 `AdditiveMapSection`과 같은 오브젝트에 `LevelCameraTurn`을 둡니다. 카메라 Transform의 최종 갱신은 계속 `SideViewCameraFollow`가 담당합니다.
+
+현재 플레이어 위치를 Route Points에 투영해 누적 이동 거리 / 전체 경로 길이로 통과율을 구합니다. 회전, 배율, 높이, 내려보는 각도를 이 값으로 직접 계산합니다. 이 연출에는 경과 시간이나 코루틴을 사용하지 않습니다.
+
+- 전진하면 진행하고, 멈추면 유지하며, 후진하면 같은 시점을 거꾸로 지나갑니다.
+- 기본 줌아웃은 1.3배, 최대 내려보기는 15도입니다. 기존 직교 투영을 유지하면서 배율과 카메라 거리를 함께 늘립니다.
+- 원형 건물을 지나는 3스테이지는 중앙 표식을 함께 보기 위해 1.6배와 Focus Height 4.5를 사용합니다.
+- 초반 20%에서 연출 강도가 커지고, 후반 20%에서 원래 화면으로 복귀합니다. 이어진 원형 구간과 방 경계는 중간에 강도가 떨어지지 않게 연결했습니다.
+- 분기점 1은 양 끝의 카메라 위치도 앞 보스방과 다음 방의 화면 위치에 연결했습니다.
+- 보스방과 고정 카메라 구역, `StopFollow` / `FixAt` / `MoveTo`로 시작한 수동 연출이 우선합니다.
+
+| LevelCameraTurn 설정 | 용도 |
+| --- | --- |
+| Route Points | 통과율을 측정할 순서대로 지정한 경로 |
+| Start Yaw / End Yaw | 구간 처음과 끝의 수평 카메라 각도 |
+| Follow Path Heading | 경로의 실제 접선 방향 사용. S자 다리에 적용 |
+| Smooth Rotation | 수평 회전의 공간 보간을 완만하게 처리 |
+| Zoom Out / Look Down | 최대 줌아웃 배수 / 최대 내려보기 각도 |
+| Focus Height | 최대 연출 시 플레이어 발 위치에서 올려 잡을 화면 중심 |
+| Fade Fraction | 진입·이탈 연출이 차지하는 경로 비율 |
+| Start Strength / End Strength | 다른 회전 구간과 연결할 때 양 끝의 연출 강도 |
+| Extend Before Start / After End | 경계 너머에서도 시작·끝 값을 유지할지 지정 |
+| Max Route Distance | 경로에서 너무 멀어진 다른 층에는 연출을 적용하지 않도록 제한 |
+| Start Size / End Size | 크기가 다른 방 사이의 기준 배율 연결. 음수면 구역 배율 사용 |
+| Entry Camera Position / Exit Camera Position | 선택 사항. 강도가 0인 양 끝에서 연결할 카메라 위치 |
+
+회전을 더 느리게 느끼게 하려면 Route Points의 연출 거리를 늘립니다. 이 구간에서는 `Rotation Speed`나 `SetRotationSpeed()`로 시간을 조절하지 않습니다. 해당 API는 일반 자동 카메라의 시간 기반 방향 전환에만 적용됩니다. 수동 `MoveTo`는 기존처럼 지정한 duration을 사용합니다.
+
+`SideViewCameraFollow.TurnProgress`와 `TurnStrength`로 현재 통과율과 연출 강도를 읽을 수 있습니다. `LevelCameraTurn.Sample`은 특정 위치의 연출 값을 계산하는 공개 메서드입니다.
+
+## 회전 중 지형 표시
+
+회전·줌아웃 중에는 카메라 Near Clip을 플레이어 가까이 밀어 지형 전체를 잘라내지 않습니다. 대신 플레이어의 몸과 머리 방향으로 시야 검사를 해서 실제로 가리는 앞쪽 맵 오브젝트만 잠시 숨깁니다. 회전 구간을 떠나거나 수동 카메라로 전환하면 즉시 복구하며 충돌은 유지합니다.
+
+원형 구간의 겹친 큐브 바닥·천장은 연속된 표시용 메시로 바꿨습니다. 기존 물리 콜라이더는 유지합니다. 메시 자산은 `Assets/DongJun/AdditiveMapFlow/Meshes/`에 있습니다. 연결부의 같은 높이 면도 아주 조금 분리해 깜빡임을 제거했습니다.
+
+이번 수정 검증: 48개 위치 샘플의 정지·역주행·timeScale 0/1 동일성 및 앞벽 가림, 분기점 1 실이동, 3스테이지 곡선 실이동, 4-3→4-4 다리 실이동, 5스테이지 회전 연결 3곳, 카메라 외부 API, 2-5→3-1 경계 이동, 41개 구역의 일반/연출 프레이밍을 통과했습니다. 로비 복귀 후 숨겨진 렌더러 0개, Unity 오류 0개를 확인했습니다.
+백업: `Library/AdditiveMapFlowBackups/PositionCameraTurn_20261124_200912`.

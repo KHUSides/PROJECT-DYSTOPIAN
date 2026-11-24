@@ -19,6 +19,8 @@ public class SideViewCameraFollow : MonoBehaviour
     [SerializeField] private bool drawCameraViewGizmo = true;
     [SerializeField] private bool drawCameraCenterLimitGizmo = true;
     private readonly List<LevelCameraZone> zones = new List<LevelCameraZone>();
+    private readonly List<Renderer> hiddenForeground = new List<Renderer>();
+    private readonly RaycastHit[] foregroundHits = new RaycastHit[32];
     private AdditiveMapSection section;
     private bool transitioning;
     private bool enteringSection, entryPending;
@@ -38,6 +40,8 @@ public class SideViewCameraFollow : MonoBehaviour
     public bool IsTransitioning => manualOverride ? manualMotion != null : transitioning || enteringSection;
     public bool HasManualOverride => manualOverride;
     public float RotationSpeed => rotationSpeed;
+    public float TurnProgress { get; private set; }
+    public float TurnStrength { get; private set; }
 
     private void Awake()
     {
@@ -144,11 +148,13 @@ public class SideViewCameraFollow : MonoBehaviour
 
     private void LateUpdate()
     {
+        RestoreForeground();
         if (manualOverride) { ApplyManualPose(); return; }
         if (target == null) return;
         Vector3 desired = Desired(out Quaternion rotation, out float size);
         if (hasZoomOverride) size = Mathf.Min(size, zoomOverride);
         desired = Confine(desired, size);
+        if (ApplyTraversalView(desired, rotation, size)) return;
         if (entryPending)
         {
             entryPosition = desired;
@@ -182,12 +188,14 @@ public class SideViewCameraFollow : MonoBehaviour
 
     public void SnapToTarget()
     {
+        RestoreForeground();
         if (manualOverride) { ApplyManualPose(); return; }
         if (target == null) return;
         if (cam == null) cam = GetComponent<Camera>();
         followPosition = Desired(out Quaternion rotation, out float size);
         if (hasZoomOverride) size = Mathf.Min(size, zoomOverride);
         followPosition = Confine(followPosition, size);
+        if (ApplyTraversalView(followPosition, rotation, size)) return;
         velocity = Vector3.zero;
         sizeVelocity = 0f;
         transitioning = false;
@@ -197,11 +205,71 @@ public class SideViewCameraFollow : MonoBehaviour
         UpdateNearClip();
     }
 
+    private bool ApplyTraversalView(Vector3 desired, Quaternion baseRotation, float size)
+    {
+        TurnProgress = TurnStrength = 0f;
+        if (ActiveMode == LevelCameraMode.Fixed || section == null || section.CameraTurns == null) return false;
+        foreach (var turn in section.CameraTurns)
+        {
+            if (turn == null || !turn.Sample(target.position, out Quaternion rotation, out float zoom, out float progress, out float strength)) continue;
+            // Orbit the framed focus, rather than pitching in place and losing sight of the player.
+            float distance = Mathf.Max(1f, Mathf.Abs(offset.z));
+            Vector3 focus = desired + baseRotation * Vector3.forward * distance;
+            focus = Vector3.Lerp(focus, target.position + Vector3.up * turn.focusHeight, strength);
+            if (!hasZoomOverride && turn.startSize > 0f && turn.endSize > 0f)
+                size = Mathf.Lerp(turn.startSize, turn.endSize, Mathf.SmoothStep(0f, 1f, progress));
+            followPosition = focus - rotation * Vector3.forward * (distance * zoom);
+            var edgePosition = progress < 0.5f ? turn.entryCameraPosition : turn.exitCameraPosition;
+            if (edgePosition != null) followPosition = Vector3.Lerp(edgePosition.position, followPosition, strength);
+            velocity = Vector3.zero;
+            sizeVelocity = 0f;
+            enteringSection = entryPending = transitioning = false;
+            TurnProgress = progress;
+            TurnStrength = strength;
+            transform.SetPositionAndRotation(followPosition + rotation * shakeOffset, rotation);
+            if (forceOrthographic) cam.orthographicSize = size * zoom;
+            UpdateNearClip();
+            HideForeground();
+            return true;
+        }
+        return false;
+    }
+
+    private void HideForeground()
+    {
+        // Cut away complete foreground objects, without slicing every surface with the near plane.
+        for (int ray = 0; ray < 2; ray++)
+        {
+            Vector3 delta = target.position + Vector3.up * (ray == 0 ? 0.9f : 1.6f) - transform.position;
+            if (delta.magnitude <= 0.2f) continue;
+            int count = Physics.RaycastNonAlloc(transform.position, delta.normalized, foregroundHits, delta.magnitude - 0.2f, ~0, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < count; i++)
+            {
+                var hit = foregroundHits[i];
+                if (hit.transform.IsChildOf(target) || hit.transform.root.name != "PrototypeMap") continue;
+                var renderer = hit.collider.GetComponent<Renderer>();
+                if (renderer == null || !renderer.enabled || renderer.forceRenderingOff) continue;
+                if (Vector3.Dot(hit.point - transform.position, transform.forward) <= cam.nearClipPlane) continue;
+                renderer.forceRenderingOff = true;
+                hiddenForeground.Add(renderer);
+            }
+        }
+    }
+
+    private void RestoreForeground()
+    {
+        foreach (var renderer in hiddenForeground) if (renderer != null) renderer.forceRenderingOff = false;
+        hiddenForeground.Clear();
+    }
+
+    private void OnDisable() => RestoreForeground();
+
     private void UpdateNearClip()
     {
         var plane = target != null ? target.GetComponent<LevelMovementPlane>() : null;
         if (plane == null || !plane.IsActive) { cam.nearClipPlane = normalNear; return; }
         float actorDepth = Vector3.Dot(target.position - transform.position, transform.forward);
+        if (TurnStrength > 0f) { cam.nearClipPlane = normalNear; return; }
         cam.nearClipPlane = Mathf.Max(0.1f, Mathf.Min(Mathf.Abs(offset.z) - 3f, actorDepth - 1.5f));
     }
 
@@ -213,6 +281,7 @@ public class SideViewCameraFollow : MonoBehaviour
 
     public void StopFollow()
     {
+        RestoreForeground();
         CancelManualMotion();
         manualPosition = transform.position - transform.rotation * shakeOffset;
         manualRotation = transform.rotation;
@@ -222,6 +291,7 @@ public class SideViewCameraFollow : MonoBehaviour
         enteringSection = entryPending = false;
         transitioning = false;
         ActiveMode = LevelCameraMode.Fixed;
+        TurnProgress = TurnStrength = 0f;
     }
 
     public void ResumeFollow(bool snap = false)

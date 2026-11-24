@@ -26,12 +26,14 @@ public sealed class AdditiveMapSection : MonoBehaviour
     public bool clampCameraLeft;
     public bool clampCameraRight;
     public int cameraGroup = -1;
+    public LevelCameraTurn[] CameraTurns { get; private set; }
     private AdditiveMapFlow flow;
     private SideViewCameraFollow cameraFollow;
     private LevelMovementPlane driver;
 
     private void Awake()
     {
+        CameraTurns = GetComponents<LevelCameraTurn>();
         flow = FindFirstObjectByType<AdditiveMapFlow>();
         cameraFollow = FindFirstObjectByType<SideViewCameraFollow>();
         if (flow != null) driver = flow.Player.GetComponent<LevelMovementPlane>();
