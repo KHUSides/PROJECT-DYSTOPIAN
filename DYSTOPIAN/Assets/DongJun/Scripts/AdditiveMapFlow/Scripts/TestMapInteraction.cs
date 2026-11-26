@@ -12,14 +12,19 @@ public sealed class TestMapInteraction : MonoBehaviour
     public Collider blocker;
     public GameObject bossVisual;
     private AdditiveMapFlow flow;
+    private BoxCollider trigger;
+    private CharacterController playerCollider;
     private bool inside;
     private bool used;
-    private bool PlayerInside => inside && flow != null && GetComponent<BoxCollider>().bounds.Intersects(flow.Player.GetComponent<CharacterController>().bounds);
+    private bool PlayerInside => inside && playerCollider != null && trigger.bounds.Intersects(playerCollider.bounds);
+    private bool BossRequirementMet => requiredBoss < 1 || flow.HasClearedBoss(requiredBoss);
 
     private void Awake()
     {
         flow = FindFirstObjectByType<AdditiveMapFlow>();
-        GetComponent<BoxCollider>().isTrigger = true;
+        trigger = GetComponent<BoxCollider>();
+        trigger.isTrigger = true;
+        if (flow != null) playerCollider = flow.Player.GetComponent<CharacterController>();
         var body = GetComponent<Rigidbody>();
         body.isKinematic = true;
         body.useGravity = false;
@@ -49,7 +54,7 @@ public sealed class TestMapInteraction : MonoBehaviour
 
     public bool TryInteract()
     {
-        if (!PlayerInside || used || flow.IsBusy || (requiredBoss > 0 && !flow.HasClearedBoss(requiredBoss))) return false;
+        if (!PlayerInside || used || flow.IsBusy || SubstageBattle.Active != null || !BossRequirementMet) return false;
         if (clearsBoss > 0) flow.ClearBoss(clearsBoss);
         if (blocker != null) blocker.gameObject.SetActive(false);
         if (destinationIndex >= 0) flow.TeleportTo(destinationIndex, destination);

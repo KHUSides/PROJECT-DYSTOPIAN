@@ -17,8 +17,6 @@ public sealed class AdditiveMapSection : MonoBehaviour
     public Transform[] pathPoints = Array.Empty<Transform>();
     public LevelCameraMode cameraMode;
     public Transform cameraView;
-    public Vector2 viewSize;
-    public Vector2 roomSize;
     public BoxCollider cameraFrame;
     public bool vertical;
     public bool clampCameraBottom = true;
@@ -30,14 +28,16 @@ public sealed class AdditiveMapSection : MonoBehaviour
     private AdditiveMapFlow flow;
     private SideViewCameraFollow cameraFollow;
     private LevelMovementPlane driver;
+    private BoxCollider trigger;
 
     private void Awake()
     {
         CameraTurns = GetComponents<LevelCameraTurn>();
         flow = FindFirstObjectByType<AdditiveMapFlow>();
         cameraFollow = FindFirstObjectByType<SideViewCameraFollow>();
-        if (flow != null) driver = flow.Player.GetComponent<LevelMovementPlane>();
-        GetComponent<BoxCollider>().isTrigger = true;
+        if (flow != null) driver = flow.MovementPlane;
+        trigger = GetComponent<BoxCollider>();
+        trigger.isTrigger = true;
         var body = GetComponent<Rigidbody>();
         body.isKinematic = true;
         body.useGravity = false;
@@ -67,13 +67,12 @@ public sealed class AdditiveMapSection : MonoBehaviour
             }
             if (!flow.Player.IsGrounded) return;
         }
-        var box = GetComponent<BoxCollider>();
-        if (!requireGrounded && box.enabled)
+        if (!requireGrounded && trigger.enabled)
         {
             Vector3 feet = other.bounds.center;
             feet.y = other.bounds.min.y + 0.05f;
-            Vector3 local = box.transform.InverseTransformPoint(feet);
-            Vector3 min = box.center - box.size * 0.5f, max = box.center + box.size * 0.5f;
+            Vector3 local = trigger.transform.InverseTransformPoint(feet);
+            Vector3 min = trigger.center - trigger.size * 0.5f, max = trigger.center + trigger.size * 0.5f;
             if (local.x < min.x - 0.01f || local.x > max.x + 0.01f ||
                 local.y < min.y || local.y > max.y ||
                 local.z < min.z - 0.01f || local.z > max.z + 0.01f) return;
@@ -81,7 +80,7 @@ public sealed class AdditiveMapSection : MonoBehaviour
         flow.EnterSection(routeIndex, this);
     }
 
-    public void Activate(PlayerController player)
+    public void Activate()
     {
         if (driver != null) driver.SetSection(movementPlane, pathPoints);
         if (cameraFollow != null) cameraFollow.SetSectionView(this);

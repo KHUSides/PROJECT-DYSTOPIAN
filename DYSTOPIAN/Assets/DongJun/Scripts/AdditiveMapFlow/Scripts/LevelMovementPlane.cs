@@ -2,44 +2,52 @@ using UnityEngine;
 
 public sealed class LevelMovementPlane : MonoBehaviour
 {
+    [SerializeField] private Transform actor;
     private Transform plane;
     private Transform[] points;
-    public bool IsActive => plane != null;
+    public bool IsActive => actor != null && plane != null;
+
+    public void SetTarget(Transform target)
+    {
+        actor = target;
+        Prepare();
+    }
 
     public void SetSection(Transform movementPlane, Transform[] path)
     {
         plane = movementPlane;
         points = path;
-        Prepare(0f);
+        Prepare();
     }
 
-    public void Prepare(float input)
+    public void Prepare()
     {
-        if (plane == null) return;
+        if (!IsActive) return;
         Vector3 right = plane.right;
         if (points != null && points.Length > 1)
         {
-            float distance = NearestDistance(transform.position);
+            float distance = NearestDistance(actor.position);
             Vector3 a = PointAt(distance - 0.8f);
             Vector3 b = PointAt(distance + 0.8f);
             right = (b - a).normalized;
         }
         right.y = 0f;
         if (right.sqrMagnitude > 0.01f)
-            transform.rotation = Quaternion.LookRotation(Vector3.Cross(right.normalized, Vector3.up), Vector3.up);
+            actor.rotation = Quaternion.LookRotation(Vector3.Cross(right.normalized, Vector3.up), Vector3.up);
     }
 
     public Vector3 Displacement(float horizontal, float vertical)
     {
+        if (!IsActive) return new Vector3(horizontal, vertical, 0f);
         if (points == null || points.Length < 2)
-            return transform.right * horizontal + Vector3.up * vertical;
-        Vector3 next = PointAt(NearestDistance(transform.position) + horizontal);
-        return new Vector3(next.x - transform.position.x, vertical, next.z - transform.position.z);
+            return actor.right * horizontal + Vector3.up * vertical;
+        Vector3 next = PointAt(NearestDistance(actor.position) + horizontal);
+        return new Vector3(next.x - actor.position.x, vertical, next.z - actor.position.z);
     }
 
     public Vector3 Project(Vector3 position, float depth = 0f)
     {
-        if (plane == null) return position;
+        if (!IsActive) return position;
         Vector3 result;
         if (points != null && points.Length > 1)
         {
@@ -52,7 +60,7 @@ public sealed class LevelMovementPlane : MonoBehaviour
             local.z = 0f;
             result = plane.TransformPoint(local);
         }
-        return result + transform.forward * depth;
+        return result + actor.forward * depth;
     }
 
     private float NearestDistance(Vector3 position)

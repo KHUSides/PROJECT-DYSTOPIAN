@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
     [UnityEngine.Serialization.FormerlySerializedAs("lockedZ_")]
     [SerializeField] private float lockedZ = 0f;
     private LevelMovementPlane movementPlane;
+    public LevelMovementPlane MovementPlane => movementPlane;
+    public void SetMovementPlane(LevelMovementPlane value) => movementPlane = value;
 
     [Header("Movement")]
     [UnityEngine.Serialization.FormerlySerializedAs("moveSpeed_")]
@@ -214,7 +216,6 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
-        movementPlane = GetComponent<LevelMovementPlane>();
         facingDirection = Vector2.right;
         lastHorizontalFacingDirection = Vector2.right;
         normalAttackColliderDisableTime = 0f;
@@ -242,7 +243,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (movementPlane != null) movementPlane.Prepare(0f);
+        if (movementPlane != null) movementPlane.Prepare();
         UpdateChargeTimer();
         UpdateFacingDirection();
         UpdateHorizontalMovement();
@@ -1200,7 +1201,7 @@ public class PlayerController : MonoBehaviour
         if (movementPlane != null && movementPlane.IsActive)
         {
             transform.position = movementPlane.Project(position);
-            movementPlane.Prepare(0f);
+            movementPlane.Prepare();
             return;
         }
         if (Mathf.Approximately(position.z, lockedZ))
